@@ -113,7 +113,7 @@ fun launchListeners(
     createListener(applicationState) {
 
         val kafkaconsumer = KafkaConsumer<String, String>(consumerProperties)
-        kafkaconsumer.subscribe(listOf(env.sm2013SakTopic))
+        kafkaconsumer.subscribe(listOf(env.pale2SakTopic))
         applicationState.ready = true
 
         blockingApplicationLogic(
