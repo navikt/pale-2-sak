@@ -8,7 +8,7 @@ import no.nav.syfo.client.PdfgenClient
 import no.nav.syfo.client.SakClient
 import no.nav.syfo.client.createPdfPayload
 import no.nav.syfo.log
-import no.nav.syfo.model.ReceivedSykmelding
+import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.wrapExceptions
@@ -22,16 +22,20 @@ class JournalService(
     private val pdfgenClient: PdfgenClient,
     private val personV3: PersonV3
 ) {
-    suspend fun onJournalRequest(receivedSykmelding: ReceivedSykmelding, validationResult: ValidationResult, loggingMeta: LoggingMeta) {
+    suspend fun onJournalRequest(
+        receivedLegeerklaering: ReceivedLegeerklaering,
+        validationResult: ValidationResult,
+        loggingMeta: LoggingMeta
+    ) {
         wrapExceptions(loggingMeta) {
             log.info("Mottok en legeerklearing, prover aa lagre i Joark {}", StructuredArguments.fields(loggingMeta))
 
-            val patient = fetchPerson(personV3, receivedSykmelding.personNrPasient, loggingMeta)
-            val pdfPayload = createPdfPayload(receivedSykmelding, validationResult, patient)
+            val patient = fetchPerson(personV3, receivedLegeerklaering.legeerklaering.pasient.foedselsnummer, loggingMeta)
 
-            val sak = sakClient.findOrCreateSak(receivedSykmelding.sykmelding.pasientAktoerId, receivedSykmelding.msgId,
+            val sak = sakClient.findOrCreateSak(receivedLegeerklaering.pasientAktoerId, receivedLegeerklaering.msgId,
                     loggingMeta)
 
+            val pdfPayload = createPdfPayload(receivedLegeerklaering.legeerklaering, validationResult)
             val pdf = pdfgenClient.createPdf(pdfPayload)
             log.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 

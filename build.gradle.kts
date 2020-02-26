@@ -15,7 +15,6 @@ val ktorVersion = "1.3.1"
 val logstashLogbackEncoder = "6.1"
 val logbackVersion = "1.2.3"
 val prometheusVersion = "0.6.0"
-val smCommonVersion = "1.7bf5e6f"
 val spekVersion = "2.0.8"
 val junitPlatformLauncher = "1.6.0"
 val navPersonv3Version = "1.2019.07.11-06.47-b55f47790a9d"
@@ -29,7 +28,7 @@ val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 val javaxJaxwsApiVersion = "2.2.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val navArbeidsfordelingv1Version = "1.2019.07.11-06.47-b55f47790a9d"
-val legeerklearingVersion = "1.ae6951f"
+val pale2CommonVersion = "1.30a1033"
 val kithHodemeldingVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 val fellesformatVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 
@@ -52,7 +51,7 @@ repositories {
     maven(url = "https://packages.confluent.io/maven/")
     maven(url = "https://kotlin.bintray.com/kotlinx")
     maven {
-        url = uri("https://maven.pkg.github.com/navikt/syfosm-common")
+        url = uri("https://maven.pkg.github.com/navikt/pale-2-common")
         credentials {
             username = githubUser
             password = githubPassword
@@ -81,14 +80,13 @@ dependencies {
 
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
-    implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-rest-sts:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-kafka:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-ws:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-diagnosis-codes:$smCommonVersion")
 
-    implementation("no.nav.syfo:pale-2-common-models:$legeerklearingVersion")
+    implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
+    implementation("no.nav.syfo:pale-2-common-networking:$pale2CommonVersion")
+    implementation("no.nav.syfo:pale-2-common-rest-sts:$pale2CommonVersion")
+    implementation("no.nav.syfo:pale-2-common-kafka:$pale2CommonVersion")
+    implementation("no.nav.syfo:pale-2-common-ws:$pale2CommonVersion")
+    implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
     implementation("no.nav.helse.xml:kith-hodemelding:$kithHodemeldingVersion")
     implementation("no.nav.helse.xml:xmlfellesformat:$fellesformatVersion")
 
