@@ -1,11 +1,14 @@
 [![Build status](https://github.com/navikt/pale-2-sak/workflows/Deploy%20to%20dev%20and%20prod/badge.svg)](https://github.com/navikt/pale-2-sak/workflows/Deploy%20to%20dev%20and%20prod/badge.svg)
 
-# Legeerklæringer (PALE) sak
-Repository for Pale sak
+# Legeerklæringer journaling
+This is a simple application who takes the legeerklæring document, generates a PDF and sends it to Joark to
+persist it
 
 ## Technologies used
 * Kotlin
 * Gradle
+* Ktor
+* Jackson
 
 #### Requirements
 
