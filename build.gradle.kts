@@ -117,7 +117,7 @@ dependencies {
 
 tasks {
     withType<Jar> {
-        manifest.attributes["Main-Class"] = "no.nav.no.nav.syfo.BootstrapKt"
+        manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
     }
 
     create("printVersion") {
