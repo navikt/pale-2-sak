@@ -17,7 +17,6 @@ val logbackVersion = "1.2.3"
 val prometheusVersion = "0.6.0"
 val spekVersion = "2.0.8"
 val junitPlatformLauncher = "1.6.0"
-val navPersonv3Version = "1.2019.07.11-06.47-b55f47790a9d"
 val javaxActivationVersion = "1.1.1"
 val cxfVersion = "3.2.9"
 val commonsTextVersion = "1.4"
@@ -27,8 +26,7 @@ val jaxwsToolsVersion = "2.3.1"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 val javaxJaxwsApiVersion = "2.2.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val navArbeidsfordelingv1Version = "1.2019.07.11-06.47-b55f47790a9d"
-val pale2CommonVersion = "1.30a1033"
+val pale2CommonVersion = "1.4154a6e"
 val kithHodemeldingVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 val fellesformatVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 
@@ -90,9 +88,6 @@ dependencies {
     implementation("no.nav.helse.xml:kith-hodemelding:$kithHodemeldingVersion")
     implementation("no.nav.helse.xml:xmlfellesformat:$fellesformatVersion")
 
-    implementation("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:$navPersonv3Version")
-    implementation("no.nav.tjenestespesifikasjoner:arbeidsfordeling-v1-tjenestespesifikasjon:$navArbeidsfordelingv1Version")
-
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
@@ -146,7 +141,7 @@ tasks {
     }
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "12"
     }
 
     "check" {

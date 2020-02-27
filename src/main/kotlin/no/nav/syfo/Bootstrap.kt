@@ -31,10 +31,10 @@ import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.envOverrides
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
+import no.nav.syfo.model.LegeerklaeringSak
 import no.nav.syfo.service.JournalService
+import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
-import no.nav.syfo.ws.createPort
-import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
@@ -79,15 +79,11 @@ fun main() {
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, stsClient, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
-    val personV3 = createPort<PersonV3>(env.personV3EndpointURL) {
-        port { withSTS(credentials.serviceuserUsername, credentials.serviceuserPassword, env.securityTokenServiceURL) }
-    }
-
     val kafkaBaseConfig = loadBaseConfig(env, credentials).envOverrides()
     val consumerConfig = kafkaBaseConfig.toConsumerConfig(
             "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class)
 
-    val journalService = JournalService(env, sakClient, dokArkivClient, pdfgenClient, personV3)
+    val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient)
 
     launchListeners(env, applicationState, consumerConfig, journalService)
 }
@@ -132,16 +128,19 @@ suspend fun blockingApplicationLogic(
     while (applicationState.ready) {
             kafkaConsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
                 log.info("Offset for topic: privat-no.nav.syfo-sm2013-sak, offset: ${consumerRecord.offset()}")
-                val receivedLegeerklearingSak: String = objectMapper.readValue(consumerRecord.value())
-/*
-            val loggingMeta = LoggingMeta(
-                    mottakId = receivedSykmelding.navLogId,
-                    orgNr = receivedSykmelding.legekontorOrgNr,
-                    msgId = receivedSykmelding.msgId,
-                    sykmeldingId = receivedSykmelding.sykmelding.id
-            )*/
+                val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
 
-            // journalService.onJournalRequest(receivedSykmelding, validationResult, loggingMeta)
+            val loggingMeta = LoggingMeta(
+                    mottakId = legeerklaeringSak.ReceivedLegeerklaering.navLogId,
+                    orgNr = legeerklaeringSak.ReceivedLegeerklaering.legekontorOrgNr,
+                    msgId = legeerklaeringSak.ReceivedLegeerklaering.msgId,
+                    legeerklaeringId = legeerklaeringSak.ReceivedLegeerklaering.legeerklaering.id
+            )
+
+            journalService.onJournalRequest(
+                legeerklaeringSak.ReceivedLegeerklaering,
+                legeerklaeringSak.validationResult,
+                loggingMeta)
         }
 
         delay(100)

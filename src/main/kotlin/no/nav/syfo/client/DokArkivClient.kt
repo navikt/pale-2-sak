@@ -10,8 +10,6 @@ import io.ktor.util.KtorExperimentalAPI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import net.logstash.logback.argument.StructuredArguments.fields
-import no.nav.helse.eiFellesformat.XMLMottakenhetBlokk
-import no.nav.helse.msgHead.XMLMsgHead
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
 import no.nav.syfo.model.AvsenderMottaker
@@ -58,19 +56,19 @@ class DokArkivClient(
 
 fun createJournalpostPayload(
     legeerklaering: Legeerklaering,
-    pasientfnr: String,
     caseId: String,
     pdf: ByteArray,
-    msgHead: XMLMsgHead,
-    receiverBlock: XMLMottakenhetBlokk,
+    avsenderFnr: String,
+    ediLoggId: String,
+    signaturDato: LocalDateTime,
     validationResult: ValidationResult
 ) = JournalpostRequest(
-    avsenderMottaker = when (validatePersonAndDNumber(receiverBlock.avsenderFnrFraDigSignatur)) {
-        true -> createAvsenderMottakerValidFnr(receiverBlock)
+    avsenderMottaker = when (validatePersonAndDNumber(avsenderFnr)) {
+        true -> createAvsenderMottakerValidFnr(avsenderFnr)
         else -> createAvsenderMottakerNotValidFnr()
     },
     bruker = Bruker(
-        id = pasientfnr,
+        id = legeerklaering.pasient.foedselsnummer,
         idType = "FNR"
     ),
     dokumenter = listOf(
@@ -89,11 +87,11 @@ fun createJournalpostPayload(
                 fysiskDokument = objectMapper.writeValueAsBytes(legeerklaering)
             )
         ),
-        tittel = createTittleJournalpost(validationResult, msgHead),
+        tittel = createTittleJournalpost(validationResult, signaturDato),
         brevkode = "NAV 08-07.08"
     )
     ),
-    eksternReferanseId = receiverBlock.ediLoggId,
+    eksternReferanseId = ediLoggId,
     journalfoerendeEnhet = "9999",
     journalpostType = "INNGAAENDE",
     kanal = "HELSENETTET",
@@ -102,11 +100,11 @@ fun createJournalpostPayload(
         arkivsaksystem = "GSAK"
     ),
     tema = "OPP",
-    tittel = createTittleJournalpost(validationResult, msgHead)
+    tittel = createTittleJournalpost(validationResult, signaturDato)
 )
 
-fun createAvsenderMottakerValidFnr(receiverBlock: XMLMottakenhetBlokk): AvsenderMottaker = AvsenderMottaker(
-    id = receiverBlock.avsenderFnrFraDigSignatur,
+fun createAvsenderMottakerValidFnr(avsenderFnr: String): AvsenderMottaker = AvsenderMottaker(
+    id = avsenderFnr,
     idType = "FNR",
     land = "Norge",
     navn = ""
@@ -117,11 +115,11 @@ fun createAvsenderMottakerNotValidFnr(): AvsenderMottaker = AvsenderMottaker(
     navn = ""
 )
 
-fun createTittleJournalpost(validationResult: ValidationResult, msgHead: XMLMsgHead): String {
+fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: LocalDateTime): String {
     return if (validationResult.status == Status.INVALID) {
-        "Avvist Legeerklaering ${formaterDato(msgHead.msgInfo.genDate)}"
+        "Avvist Legeerklaering ${formaterDato(signaturDato)}"
     } else {
-        "Legeerklaering ${formaterDato(msgHead.msgInfo.genDate)}"
+        "Legeerklaering ${formaterDato(signaturDato)}"
     }
 }
 fun formaterDato(dato: LocalDateTime): String {

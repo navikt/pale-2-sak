@@ -12,8 +12,7 @@ data class Environment(
     val dokArkivUrl: String = getEnvVar("DOK_ARKIV_URL"),
     val personV3EndpointURL: String = getEnvVar("PERSON_V3_ENDPOINT_URL"),
     val securityTokenServiceURL: String = getEnvVar("SECURITY_TOKEN_SERVICE_URL"),
-    val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen/api/v1/genpdf/pale-2/pale-2"),
-    val arbeidsfordelingV1EndpointURL: String = getEnvVar("ARBEIDSFORDELING_V1_ENDPOINT_URL")
+    val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen/api/v1/genpdf/pale-2/pale-2")
 ) : KafkaConfig
 
 data class VaultCredentials(
