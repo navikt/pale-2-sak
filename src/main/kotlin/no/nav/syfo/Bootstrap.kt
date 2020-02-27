@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
@@ -30,9 +29,7 @@ import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.envOverrides
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
-import no.nav.syfo.model.LegeerklaeringSak
 import no.nav.syfo.service.JournalService
-import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
 import no.nav.syfo.util.getFileAsString
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -112,12 +109,12 @@ fun launchListeners(
     journalService: JournalService
 ) {
     createListener(applicationState) {
-        val kafkaconsumer = KafkaConsumer<String, String>(consumerProperties)
-        kafkaconsumer.subscribe(listOf(env.pale2SakTopic))
+        val kafkaLegeerklaeringSakconsumer = KafkaConsumer<String, String>(consumerProperties)
+        kafkaLegeerklaeringSakconsumer.subscribe(listOf(env.pale2SakTopic))
         applicationState.ready = true
 
         blockingApplicationLogic(
-            kafkaconsumer,
+            kafkaLegeerklaeringSakconsumer,
             applicationState,
             journalService,
             env
@@ -127,15 +124,15 @@ fun launchListeners(
 
 @KtorExperimentalAPI
 suspend fun blockingApplicationLogic(
-    kafkaConsumer: KafkaConsumer<String, String>,
+    kafkaLegeerklaeringSakconsumer: KafkaConsumer<String, String>,
     applicationState: ApplicationState,
     journalService: JournalService,
     env: Environment
 ) {
     while (applicationState.ready) {
-        kafkaConsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
+        kafkaLegeerklaeringSakconsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
             log.info("Offset for topic: ${env.pale2SakTopic}, offset: ${consumerRecord.offset()}")
-            val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
+            /*val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
 
             val loggingMeta = LoggingMeta(
                 mottakId = legeerklaeringSak.ReceivedLegeerklaering.navLogId,
@@ -148,7 +145,7 @@ suspend fun blockingApplicationLogic(
                 legeerklaeringSak.ReceivedLegeerklaering,
                 legeerklaeringSak.validationResult,
                 loggingMeta
-            )
+            )*/
         }
 
         delay(100)
