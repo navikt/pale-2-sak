@@ -38,9 +38,8 @@ spec:
     paths:
       - kvPath: serviceuser/data/prod/srvpale2sak
         mountPath: /secrets/serviceuser
-  webproxy: true
   ingresses:
-    - "https://pale-2.nais.adeo.no"
+    - "https://pale-2-sak.nais.adeo.no"
   env:
     - name: AKTOR_REGISTER_V1_URL
       value: https://app.adeo.no/aktoerregister/api/v1
