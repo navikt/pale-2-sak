@@ -12,7 +12,6 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
-import java.nio.file.Paths
 import java.time.Duration
 import java.util.Properties
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +34,7 @@ import no.nav.syfo.model.LegeerklaeringSak
 import no.nav.syfo.service.JournalService
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
+import no.nav.syfo.util.getFileAsString
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
@@ -52,11 +52,15 @@ val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
 @KtorExperimentalAPI
 fun main() {
     val env = Environment()
-    val credentials = objectMapper.readValue<VaultCredentials>(Paths.get("/var/run/secrets/nais.io/vault/credentials.json").toFile())
+    val vaultSecrets = VaultSecrets(
+        serviceuserPassword = getFileAsString("/secrets/default/serviceuserPassword"),
+        serviceuserUsername = getFileAsString("/secrets/default/serviceuserUsername")
+    )
     val applicationState = ApplicationState()
     val applicationEngine = createApplicationEngine(
-            env,
-            applicationState)
+        env,
+        applicationState
+    )
 
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
     applicationServer.start()
@@ -74,14 +78,15 @@ fun main() {
         }
     }
 
-    val stsClient = StsOidcClient(credentials.serviceuserUsername, credentials.serviceuserPassword)
+    val stsClient = StsOidcClient(vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
     val sakClient = SakClient(env.opprettSakUrl, stsClient, httpClient)
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, stsClient, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
-    val kafkaBaseConfig = loadBaseConfig(env, credentials).envOverrides()
+    val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
     val consumerConfig = kafkaBaseConfig.toConsumerConfig(
-            "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class)
+        "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
+    )
 
     val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient)
 
@@ -89,15 +94,15 @@ fun main() {
 }
 
 fun createListener(applicationState: ApplicationState, action: suspend CoroutineScope.() -> Unit): Job =
-        GlobalScope.launch {
-            try {
-                action()
-            } catch (e: TrackableException) {
-                log.error("En uhåndtert feil oppstod, applikasjonen restarter {}", fields(e.loggingMeta), e.cause)
-            } finally {
-                applicationState.alive = false
-            }
+    GlobalScope.launch {
+        try {
+            action()
+        } catch (e: TrackableException) {
+            log.error("En uhåndtert feil oppstod, applikasjonen restarter {}", fields(e.loggingMeta), e.cause)
+        } finally {
+            applicationState.alive = false
         }
+    }
 
 @KtorExperimentalAPI
 fun launchListeners(
@@ -107,15 +112,16 @@ fun launchListeners(
     journalService: JournalService
 ) {
     createListener(applicationState) {
-
         val kafkaconsumer = KafkaConsumer<String, String>(consumerProperties)
         kafkaconsumer.subscribe(listOf(env.pale2SakTopic))
         applicationState.ready = true
 
         blockingApplicationLogic(
-                kafkaconsumer,
-                applicationState,
-                journalService)
+            kafkaconsumer,
+            applicationState,
+            journalService,
+            env
+        )
     }
 }
 
@@ -123,24 +129,26 @@ fun launchListeners(
 suspend fun blockingApplicationLogic(
     kafkaConsumer: KafkaConsumer<String, String>,
     applicationState: ApplicationState,
-    journalService: JournalService
+    journalService: JournalService,
+    env: Environment
 ) {
     while (applicationState.ready) {
-            kafkaConsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
-                log.info("Offset for topic: privat-no.nav.syfo-sm2013-sak, offset: ${consumerRecord.offset()}")
-                val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
+        kafkaConsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
+            log.info("Offset for topic: ${env.pale2SakTopic}, offset: ${consumerRecord.offset()}")
+            val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
 
             val loggingMeta = LoggingMeta(
-                    mottakId = legeerklaeringSak.ReceivedLegeerklaering.navLogId,
-                    orgNr = legeerklaeringSak.ReceivedLegeerklaering.legekontorOrgNr,
-                    msgId = legeerklaeringSak.ReceivedLegeerklaering.msgId,
-                    legeerklaeringId = legeerklaeringSak.ReceivedLegeerklaering.legeerklaering.id
+                mottakId = legeerklaeringSak.ReceivedLegeerklaering.navLogId,
+                orgNr = legeerklaeringSak.ReceivedLegeerklaering.legekontorOrgNr,
+                msgId = legeerklaeringSak.ReceivedLegeerklaering.msgId,
+                legeerklaeringId = legeerklaeringSak.ReceivedLegeerklaering.legeerklaering.id
             )
 
             journalService.onJournalRequest(
                 legeerklaeringSak.ReceivedLegeerklaering,
                 legeerklaeringSak.validationResult,
-                loggingMeta)
+                loggingMeta
+            )
         }
 
         delay(100)

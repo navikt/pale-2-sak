@@ -15,7 +15,7 @@ data class Environment(
     val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen/api/v1/genpdf/pale-2/pale-2")
 ) : KafkaConfig
 
-data class VaultCredentials(
+data class VaultSecrets(
     val serviceuserUsername: String,
     val serviceuserPassword: String
 ) : KafkaCredentials {
