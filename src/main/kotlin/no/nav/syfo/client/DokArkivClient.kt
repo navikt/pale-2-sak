@@ -68,7 +68,7 @@ fun createJournalpostPayload(
         else -> createAvsenderMottakerNotValidFnr()
     },
     bruker = Bruker(
-        id = legeerklaering.pasient.foedselsnummer,
+        id = legeerklaering.pasient.fnr,
         idType = "FNR"
     ),
     dokumenter = listOf(
