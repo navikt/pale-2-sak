@@ -26,7 +26,7 @@ val jaxwsToolsVersion = "2.3.1"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 val javaxJaxwsApiVersion = "2.2.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val pale2CommonVersion = "1.4154a6e"
+val pale2CommonVersion = "1.b4c64c3"
 val kithHodemeldingVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 val fellesformatVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 
