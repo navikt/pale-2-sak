@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
@@ -29,7 +30,9 @@ import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.envOverrides
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
+import no.nav.syfo.model.LegeerklaeringSak
 import no.nav.syfo.service.JournalService
+import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
 import no.nav.syfo.util.getFileAsString
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -132,23 +135,21 @@ suspend fun blockingApplicationLogic(
     while (applicationState.ready) {
         kafkaLegeerklaeringSakconsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
             log.info("Offset for topic: ${env.pale2SakTopic}, offset: ${consumerRecord.offset()}")
-            /*
+
             val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
 
             val loggingMeta = LoggingMeta(
-                mottakId = legeerklaeringSak.ReceivedLegeerklaering.navLogId,
-                orgNr = legeerklaeringSak.ReceivedLegeerklaering.legekontorOrgNr,
-                msgId = legeerklaeringSak.ReceivedLegeerklaering.msgId,
-                legeerklaeringId = legeerklaeringSak.ReceivedLegeerklaering.legeerklaering.id
+                mottakId = legeerklaeringSak.receivedLegeerklaering.navLogId,
+                orgNr = legeerklaeringSak.receivedLegeerklaering.legekontorOrgNr,
+                msgId = legeerklaeringSak.receivedLegeerklaering.msgId,
+                legeerklaeringId = legeerklaeringSak.receivedLegeerklaering.legeerklaering.id
             )
 
             journalService.onJournalRequest(
-                legeerklaeringSak.ReceivedLegeerklaering,
+                legeerklaeringSak.receivedLegeerklaering,
                 legeerklaeringSak.validationResult,
                 loggingMeta
             )
-
-             */
         }
 
         delay(100)
