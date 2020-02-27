@@ -9,6 +9,7 @@ persist it
 * Gradle
 * Ktor
 * Jackson
+* Spek
 
 #### Requirements
 
