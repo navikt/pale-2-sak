@@ -41,14 +41,10 @@ spec:
   ingresses:
     - "https://pale-2-sak.nais.adeo.no"
   env:
-    - name: AKTOR_REGISTER_V1_URL
-      value: https://app.adeo.no/aktoerregister/api/v1
     - name: SECURITY_TOKEN_SERVICE_URL
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
     - name: DOK_ARKIV_URL
       value: http://dokarkiv/rest/journalpostapi/v1/journalpost
-    - name: NORG2_V1_ENDPOINT_URL
-      value: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
     - name: PERSON_V3_ENDPOINT_URL
       value: https://wasapp.adeo.no/tpsws/ws/Person/v3
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
