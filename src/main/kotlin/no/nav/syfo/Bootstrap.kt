@@ -53,8 +53,8 @@ val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
 fun main() {
     val env = Environment()
     val vaultSecrets = VaultSecrets(
-        serviceuserPassword = getFileAsString("/secrets/default/serviceuserPassword"),
-        serviceuserUsername = getFileAsString("/secrets/default/serviceuserUsername")
+        serviceuserPassword = getFileAsString("/secrets/serviceuser/password"),
+        serviceuserUsername = getFileAsString("/secrets/serviceuser/username")
     )
     val applicationState = ApplicationState()
     val applicationEngine = createApplicationEngine(

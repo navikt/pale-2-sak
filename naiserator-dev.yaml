@@ -36,8 +36,8 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /kv/preprod/fss/pale-2-sak/default
-        mountPath: /secrets/default
+      - kvPath: serviceuser/data/dev/srvpale2sak
+        mountPath: /secrets/serviceuser
   webproxy: true
   ingresses:
     - "https://pale-2-sak.nais.preprod.local"
