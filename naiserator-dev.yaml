@@ -36,7 +36,7 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: serviceuser/data/test/srvpale2sak
+      - kvPath: serviceuser/data/dev/srvpale2sak
         mountPath: /secrets/serviceuser
   ingresses:
     - "https://pale-2-sak.nais.preprod.local"
