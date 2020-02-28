@@ -15,7 +15,6 @@ val ktorVersion = "1.3.1"
 val logstashLogbackEncoder = "6.1"
 val logbackVersion = "1.2.3"
 val prometheusVersion = "0.6.0"
-val spekVersion = "2.0.8"
 val junitPlatformLauncher = "1.6.0"
 val javaxActivationVersion = "1.1.1"
 val cxfVersion = "3.2.9"
@@ -29,9 +28,9 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val pale2CommonVersion = "1.ee30e14"
 val kithHodemeldingVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
 val fellesformatVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
+val junitVersion = "5.6.0"
 
 plugins {
-    java
     kotlin("jvm") version "1.3.61"
     id("org.jmailen.kotlinter") version "2.2.0"
     id("com.diffplug.gradle.spotless") version "3.23.0"
@@ -45,7 +44,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven(url = "https://dl.bintray.com/kotlin/ktor")
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
     maven(url = "https://packages.confluent.io/maven/")
     maven(url = "https://kotlin.bintray.com/kotlinx")
     maven {
@@ -104,13 +102,12 @@ dependencies {
     }
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedVersion")
 
-    testImplementation("org.junit.platform:junit-platform-launcher:$junitPlatformLauncher")
-    testRuntimeOnly("org.spekframework.spek2:spek-runtime-jvm:$spekVersion")
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
 }
 
@@ -134,10 +131,10 @@ tasks {
     }
 
     withType<Test> {
-        useJUnitPlatform {
-            includeEngines("spek2")
+        useJUnit()
+        testLogging {
+            showStandardStreams = true
         }
-        testLogging.showStandardStreams = true
     }
 
     withType<KotlinCompile> {
