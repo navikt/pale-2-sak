@@ -118,6 +118,7 @@ internal class PdfModelTest {
                     kontakteAnnenInstans = null,
                     onskesKopiAvVedtak = true
                 ),
+                tilbakeholdInnhold = false,
                 pasientenBurdeIkkeVite = null,
                 signatur = Signatur(
                     dato = ZonedDateTime.now().minusDays(1),
