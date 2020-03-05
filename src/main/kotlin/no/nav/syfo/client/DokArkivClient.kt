@@ -64,8 +64,8 @@ fun createJournalpostPayload(
     validationResult: ValidationResult
 ) = JournalpostRequest(
     avsenderMottaker = when (validatePersonAndDNumber(avsenderFnr)) {
-        true -> createAvsenderMottakerValidFnr(avsenderFnr)
-        else -> createAvsenderMottakerNotValidFnr()
+        true -> createAvsenderMottakerValidFnr(avsenderFnr, legeerklaering)
+        else -> createAvsenderMottakerNotValidFnr(legeerklaering)
     },
     bruker = Bruker(
         id = legeerklaering.pasient.fnr,
@@ -103,16 +103,17 @@ fun createJournalpostPayload(
     tittel = createTittleJournalpost(validationResult, signaturDato)
 )
 
-fun createAvsenderMottakerValidFnr(avsenderFnr: String): AvsenderMottaker = AvsenderMottaker(
+fun createAvsenderMottakerValidFnr(avsenderFnr: String, legeerklaering: Legeerklaering):
+        AvsenderMottaker = AvsenderMottaker(
     id = avsenderFnr,
     idType = "FNR",
     land = "Norge",
-    navn = ""
+    navn = legeerklaering.signatur.navn ?: ""
 )
 
-fun createAvsenderMottakerNotValidFnr(): AvsenderMottaker = AvsenderMottaker(
+fun createAvsenderMottakerNotValidFnr(legeerklaering: Legeerklaering): AvsenderMottaker = AvsenderMottaker(
     land = "Norge",
-    navn = ""
+    navn = legeerklaering.signatur.navn ?: ""
 )
 
 fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: LocalDateTime): String {
