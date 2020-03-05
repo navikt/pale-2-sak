@@ -59,7 +59,8 @@ internal class PdfModelTest {
                     arbeidsuforFra = ZonedDateTime.now().minusDays(3),
                     sykdomshistorie = "Tekst",
                     statusPresens = "Tekst",
-                    borNavKontoretVurdereOmDetErEnYrkesskade = true
+                    borNavKontoretVurdereOmDetErEnYrkesskade = true,
+                    yrkesSkadeDato = ZonedDateTime.now().minusDays(4)
                 ),
                 plan = Plan(
                     utredning = null,
