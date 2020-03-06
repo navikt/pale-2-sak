@@ -82,7 +82,6 @@ dependencies {
     implementation("no.nav.syfo:pale-2-common-rest-sts:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-kafka:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-ws:$pale2CommonVersion")
-    implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
     implementation("no.nav.helse.xml:kith-hodemelding:$kithHodemeldingVersion")
     implementation("no.nav.helse.xml:xmlfellesformat:$fellesformatVersion")
 
