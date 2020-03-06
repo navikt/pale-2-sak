@@ -31,7 +31,7 @@ class SakClient constructor(
             header("X-Correlation-ID", msgId)
             header("Authorization", "Bearer ${oidcClient.oidcToken().access_token}")
             body = OpprettSak(
-                    tema = "SYM",
+                    tema = "OPP",
                     applikasjon = "FS22",
                     aktoerId = pasientAktoerId,
                     orgnr = null,
@@ -48,7 +48,7 @@ class SakClient constructor(
             contentType(ContentType.Application.Json)
             header("X-Correlation-ID", msgId)
             header("Authorization", "Bearer ${oidcClient.oidcToken().access_token}")
-            parameter("tema", "SYM")
+            parameter("tema", "OPP")
             parameter("aktoerId", pasientAktoerId)
             parameter("applikasjon", "FS22")
         }
