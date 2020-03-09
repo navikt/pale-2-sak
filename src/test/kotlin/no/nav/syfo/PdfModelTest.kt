@@ -1,7 +1,6 @@
 package no.nav.syfo
 
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import no.nav.syfo.model.Arbeidsgiver
 import no.nav.syfo.model.Diagnose
 import no.nav.syfo.model.ForslagTilTiltak
@@ -56,17 +55,17 @@ internal class PdfModelTest {
                         tekst = "Engstelig for hjertesykdom",
                         kode = "K24"
                     )),
-                    arbeidsuforFra = ZonedDateTime.now().minusDays(3),
+                    arbeidsuforFra = LocalDateTime.now().minusDays(3),
                     sykdomshistorie = "Tekst",
                     statusPresens = "Tekst",
                     borNavKontoretVurdereOmDetErEnYrkesskade = true,
-                    yrkesSkadeDato = ZonedDateTime.now().minusDays(4)
+                    yrkesSkadeDato = LocalDateTime.now().minusDays(4)
                 ),
                 plan = Plan(
                     utredning = null,
                     behandling = Henvisning(
                         tekst = "2 timer i uken med svømming",
-                        dato = ZonedDateTime.now(),
+                        dato = LocalDateTime.now(),
                         antattVentetIUker = 1
                     ),
                     utredningsplan = "Tekst",
@@ -122,7 +121,7 @@ internal class PdfModelTest {
                 tilbakeholdInnhold = false,
                 pasientenBurdeIkkeVite = null,
                 signatur = Signatur(
-                    dato = ZonedDateTime.now().minusDays(1),
+                    dato = LocalDateTime.now().minusDays(1),
                     navn = "Lege Legesen",
                     adresse = "Legeveien 33",
                     postnummer = "9999",
