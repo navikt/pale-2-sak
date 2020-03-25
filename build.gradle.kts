@@ -11,7 +11,7 @@ val jacksonVersion = "2.9.8"
 val kafkaVersion = "2.4.0"
 val kafkaEmbeddedVersion = "2.4.0"
 val kluentVersion = "1.51"
-val ktorVersion = "1.3.1"
+val ktorVersion = "1.3.2"
 val logstashLogbackEncoder = "6.1"
 val logbackVersion = "1.2.3"
 val prometheusVersion = "0.6.0"
@@ -31,7 +31,7 @@ val fellesformatVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1
 val junitVersion = "5.6.0"
 
 plugins {
-    kotlin("jvm") version "1.3.70"
+    kotlin("jvm") version "1.3.71"
     id("org.jmailen.kotlinter") version "2.2.0"
     id("com.diffplug.gradle.spotless") version "3.23.0"
     id("com.github.johnrengelman.shadow") version "5.2.0"
