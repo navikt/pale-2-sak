@@ -7,7 +7,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.util.KtorExperimentalAPI
@@ -68,6 +70,11 @@ fun main() {
     DefaultExports.initialize()
 
     val httpClient = HttpClient(Apache) {
+        engine {
+            socketTimeout = 30_000
+            connectTimeout = 30_000
+            connectionRequestTimeout = 30_000
+        }
         install(JsonFeature) {
             serializer = JacksonSerializer {
                 registerKotlinModule()
