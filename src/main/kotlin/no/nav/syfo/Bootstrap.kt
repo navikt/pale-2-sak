@@ -69,6 +69,7 @@ fun main() {
 
     val httpClient = HttpClient(Apache) {
         install(JsonFeature) {
+            socketTimeout = 20_000
             serializer = JacksonSerializer {
                 registerKotlinModule()
                 registerModule(JavaTimeModule())
