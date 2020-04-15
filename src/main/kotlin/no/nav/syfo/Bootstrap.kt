@@ -68,6 +68,11 @@ fun main() {
     DefaultExports.initialize()
 
     val httpClient = HttpClient(Apache) {
+        engine {
+            socketTimeout = 40_000
+            connectTimeout = 40_000
+            connectionRequestTimeout = 40_000
+        }
         install(JsonFeature) {
             serializer = JacksonSerializer {
                 registerKotlinModule()
