@@ -50,7 +50,7 @@ class SakClient constructor(
             header("Authorization", "Bearer ${oidcClient.oidcToken().access_token}")
             parameter("tema", "OPP")
             parameter("aktoerId", pasientAktoerId)
-            parameter("applikasjon", "FS22")
+            parameter("applikasjon", "AO01")
         }
     }
 

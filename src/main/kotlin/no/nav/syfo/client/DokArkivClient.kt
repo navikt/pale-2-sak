@@ -75,7 +75,7 @@ fun createJournalpostPayload(
         Dokument(
         dokumentvarianter = listOf(
             Dokumentvarianter(
-                filnavn = "Legeerklæring",
+                filnavn = "${ediLoggId}.pdf",
                 filtype = "PDFA",
                 variantformat = "ARKIV",
                 fysiskDokument = pdf
