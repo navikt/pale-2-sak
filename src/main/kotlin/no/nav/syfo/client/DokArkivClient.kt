@@ -38,7 +38,7 @@ class DokArkivClient(
     ): JournalpostResponse = retry(callName = "dokarkiv",
         retryIntervals = arrayOf(500L, 1000L, 3000L, 5000L, 10000L)) {
         try {
-            log.info("Kall til dokakriv Nav-Callid {}, {}", journalpostRequest.eksternReferanseId,
+            log.info("Kall til dokarkiv Nav-Callid {}, {}", journalpostRequest.eksternReferanseId,
                 fields(loggingMeta))
             httpClient.post<JournalpostResponse>(url) {
                 contentType(ContentType.Application.Json)
@@ -56,7 +56,7 @@ class DokArkivClient(
 
 fun createJournalpostPayload(
     legeerklaering: Legeerklaering,
-    caseId: String,
+    sakId: String,
     pdf: ByteArray,
     avsenderFnr: String,
     ediLoggId: String,
@@ -75,7 +75,7 @@ fun createJournalpostPayload(
         Dokument(
         dokumentvarianter = listOf(
             Dokumentvarianter(
-                filnavn = "${ediLoggId}.pdf",
+                filnavn = "$ediLoggId.pdf",
                 filtype = "PDFA",
                 variantformat = "ARKIV",
                 fysiskDokument = pdf
@@ -96,7 +96,7 @@ fun createJournalpostPayload(
     journalpostType = "INNGAAENDE",
     kanal = "HELSENETTET",
     sak = Sak(
-        arkivsaksnummer = caseId,
+        arkivsaksnummer = sakId,
         arkivsaksystem = "GSAK"
     ),
     tema = "OPP",
