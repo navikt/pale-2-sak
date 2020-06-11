@@ -18,9 +18,9 @@ import no.nav.syfo.util.LoggingMeta
 
 @KtorExperimentalAPI
 class SakClient constructor(
-    val url: String,
-    val oidcClient: StsOidcClient,
-    val httpClient: HttpClient
+    private val url: String,
+    private val oidcClient: StsOidcClient,
+    private val httpClient: HttpClient
 ) {
     private suspend fun createSak(
         pasientAktoerId: String,
