@@ -117,12 +117,12 @@ fun createAvsenderMottakerValidFnr(avsenderFnr: String, legeerklaering: Legeerkl
     id = avsenderFnr,
     idType = "FNR",
     land = "Norge",
-    navn = legeerklaering.signatur.navn ?: ""
+    navn = legeerklaering.signatur.navn ?: "Helsepersonell"
 )
 
 fun createAvsenderMottakerNotValidFnr(legeerklaering: Legeerklaering): AvsenderMottaker = AvsenderMottaker(
     land = "Norge",
-    navn = legeerklaering.signatur.navn ?: ""
+    navn = legeerklaering.signatur.navn ?: "Helsepersonell"
 )
 
 fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: LocalDateTime): String {
