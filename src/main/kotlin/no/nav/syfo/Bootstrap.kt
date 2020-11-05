@@ -39,6 +39,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.LocalDate
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
     registerKotlinModule()
@@ -90,6 +91,7 @@ fun main() {
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
+    kafkaBaseConfig["auto.offset.reset"] = "none"
     val consumerConfig = kafkaBaseConfig.toConsumerConfig(
         "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
     )
@@ -151,13 +153,17 @@ suspend fun blockingApplicationLogic(
                 legeerklaeringId = legeerklaeringSak.receivedLegeerklaering.legeerklaering.id
             )
 
-            journalService.onJournalRequest(
-                legeerklaeringSak.receivedLegeerklaering,
-                legeerklaeringSak.validationResult,
-                loggingMeta
-            )
+            if (legeerklaeringSak.receivedLegeerklaering.mottattDato.isBefore(LocalDate.of(2020, 11, 5).atStartOfDay())) {
+                log.info("Behandler ikke gammel legeerklæring {}", fields(loggingMeta))
+            } else {
+                journalService.onJournalRequest(
+                    legeerklaeringSak.receivedLegeerklaering,
+                    legeerklaeringSak.validationResult,
+                    loggingMeta
+                )
+            }
         }
 
-        delay(100)
+        delay(1)
     }
 }
