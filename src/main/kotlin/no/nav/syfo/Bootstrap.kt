@@ -13,6 +13,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import java.time.Duration
+import java.time.LocalDate
 import java.util.Properties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -39,7 +40,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.LocalDate
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
     registerKotlinModule()

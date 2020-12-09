@@ -30,7 +30,6 @@ internal class KafkaITTest {
         applicationName = "syfosminfotrygd",
         dokArkivUrl = "TODO",
         opprettSakUrl = "TODO",
-        personV3EndpointURL = "TODO",
         securityTokenServiceURL = "TODO",
         pale2SakTopic = "topic"
 
