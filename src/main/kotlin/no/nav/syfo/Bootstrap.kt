@@ -35,7 +35,6 @@ import no.nav.syfo.model.LegeerklaeringSak
 import no.nav.syfo.service.JournalService
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
-import no.nav.syfo.util.getFileAsString
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
@@ -53,10 +52,7 @@ val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
 @KtorExperimentalAPI
 fun main() {
     val env = Environment()
-    val vaultSecrets = VaultSecrets(
-        serviceuserPassword = getFileAsString("/secrets/serviceuser/password"),
-        serviceuserUsername = getFileAsString("/secrets/serviceuser/username")
-    )
+    val vaultSecrets = VaultSecrets()
     val applicationState = ApplicationState()
     val applicationEngine = createApplicationEngine(
         env,
@@ -85,7 +81,7 @@ fun main() {
         expectSuccess = false
     }
 
-    val stsClient = StsOidcClient(vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
+    val stsClient = StsOidcClient(vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword, env.securityTokenServiceURL)
     val sakClient = SakClient(env.opprettSakUrl, stsClient, httpClient)
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, stsClient, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
