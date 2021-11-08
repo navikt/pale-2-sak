@@ -66,7 +66,7 @@ fun main() {
 
     val httpClient = HttpClient(Apache) {
         engine {
-            socketTimeout = 40_000
+            socketTimeout = 120_000
             connectTimeout = 40_000
             connectionRequestTimeout = 40_000
         }
