@@ -45,3 +45,5 @@ spec:
       value: https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
+    - name: OPPRETT_SAK_URL
+      value: https://sak-q1.dev.intern.nav.no/api/v1/saker
