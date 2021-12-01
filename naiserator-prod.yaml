@@ -45,3 +45,5 @@ spec:
       value: https://dokarkiv.nais.adeo.no/rest/journalpostapi/v1/journalpost
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
+    - name: OPPRETT_SAK_URL
+      value: https://sak.intern.nav.no/api/v1/saker

@@ -9,7 +9,7 @@ data class Environment(
     val applicationName: String = getEnvVar("NAIS_APP_NAME", "pale-2-sak"),
     override val kafkaBootstrapServers: String = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
     val pale2SakTopic: String = getEnvVar("KAFKA_PALE_2_SAK_TOPIC", "privat-syfo-pale2-sak-v1"),
-    val opprettSakUrl: String = getEnvVar("OPPRETT_SAK_URL", "http://sak.default/api/v1/saker"),
+    val opprettSakUrl: String = getEnvVar("OPPRETT_SAK_URL"),
     val dokArkivUrl: String = getEnvVar("DOK_ARKIV_URL"),
     val securityTokenServiceURL: String = getEnvVar("SECURITY_TOKEN_SERVICE_URL", "http://security-token-service.default/rest/v1/sts/token"),
     val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen.teamsykmelding/api/v1/genpdf/pale-2/pale-2")
