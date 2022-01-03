@@ -1,6 +1,5 @@
 package no.nav.syfo.service
 
-import io.ktor.util.KtorExperimentalAPI
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PdfgenClient
@@ -14,7 +13,6 @@ import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.wrapExceptions
 
-@KtorExperimentalAPI
 class JournalService(
     private val sakClient: SakClient,
     private val dokArkivClient: DokArkivClient,
@@ -28,8 +26,10 @@ class JournalService(
         wrapExceptions(loggingMeta) {
             log.info("Mottok en legeerklearing, prover aa lagre i Joark {}", StructuredArguments.fields(loggingMeta))
 
-            val sak = sakClient.findOrCreateSak(receivedLegeerklaering.pasientAktoerId, receivedLegeerklaering.msgId,
-                    loggingMeta)
+            val sak = sakClient.findOrCreateSak(
+                receivedLegeerklaering.pasientAktoerId, receivedLegeerklaering.msgId,
+                loggingMeta
+            )
 
             val pdfPayload = createPdfPayload(receivedLegeerklaering.legeerklaering, validationResult)
             val pdf = pdfgenClient.createPdf(pdfPayload)
@@ -47,9 +47,11 @@ class JournalService(
             val journalpost = dokArkivClient.createJournalpost(journalpostPayload, loggingMeta)
 
             MELDING_LAGER_I_JOARK.inc()
-            log.info("Melding lagret i Joark med journalpostId {}, {}",
-                    journalpost.journalpostId,
-                    StructuredArguments.fields(loggingMeta))
+            log.info(
+                "Melding lagret i Joark med journalpostId {}, {}",
+                journalpost.journalpostId,
+                StructuredArguments.fields(loggingMeta)
+            )
         }
     }
 }

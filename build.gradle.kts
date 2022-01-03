@@ -6,36 +6,25 @@ group = "no.nav.no.nav.syfo"
 version = "1.0.0"
 
 val confluentVersion = "5.3.1"
-val coroutinesVersion = "1.3.4"
-val jacksonVersion = "2.9.8"
-val kafkaVersion = "2.4.0"
-val kafkaEmbeddedVersion = "2.4.0"
-val kluentVersion = "1.51"
-val ktorVersion = "1.3.2"
-val logstashLogbackEncoder = "6.1"
-val logbackVersion = "1.2.3"
-val prometheusVersion = "0.6.0"
+val coroutinesVersion = "1.5.2"
+val jacksonVersion = "2.13.1"
+val kafkaVersion = "2.8.0"
+val kluentVersion = "1.68"
+val ktorVersion = "1.6.7"
+val logstashLogbackEncoder = "7.0.1"
+val logbackVersion = "1.2.10"
+val prometheusVersion = "0.14.1"
 val junitPlatformLauncher = "1.6.0"
-val javaxActivationVersion = "1.1.1"
-val cxfVersion = "3.2.9"
-val commonsTextVersion = "1.4"
-val jaxbBasicAntVersion = "1.11.1"
-val javaxAnnotationApiVersion = "1.3.2"
-val jaxwsToolsVersion = "2.3.1"
-val jaxbRuntimeVersion = "2.4.0-b180830.0438"
-val javaxJaxwsApiVersion = "2.2.1"
-val jaxbApiVersion = "2.4.0-b180830.0359"
-val pale2CommonVersion = "1.773adee"
-val kithHodemeldingVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
-val fellesformatVersion = "2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a"
-val junitVersion = "5.6.0"
-val ioMockVersion = "1.9.3"
+val pale2CommonVersion = "1.a86680d"
+val junitVersion = "5.8.2"
+val ioMockVersion = "1.12.1"
+val kotlinVersion = "1.6.0"
 
 plugins {
-    kotlin("jvm") version "1.3.72"
-    id("org.jmailen.kotlinter") version "2.2.0"
-    id("com.diffplug.gradle.spotless") version "3.23.0"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    kotlin("jvm") version "1.6.0"
+    id("org.jmailen.kotlinter") version "3.6.0"
+    id("com.diffplug.spotless") version "5.16.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 val githubUser: String by project
@@ -43,10 +32,7 @@ val githubPassword: String by project
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven(url = "https://dl.bintray.com/kotlin/ktor")
     maven(url = "https://packages.confluent.io/maven/")
-    maven(url = "https://kotlin.bintray.com/kotlinx")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/pale-2-common")
         credentials {
@@ -57,19 +43,18 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-auth-basic:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-    implementation ("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
@@ -83,28 +68,9 @@ dependencies {
     implementation("no.nav.syfo:pale-2-common-networking:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-rest-sts:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-kafka:$pale2CommonVersion")
-    implementation("no.nav.syfo:pale-2-common-ws:$pale2CommonVersion")
-    implementation("no.nav.helse.xml:kith-hodemelding:$kithHodemeldingVersion")
-    implementation("no.nav.helse.xml:xmlfellesformat:$fellesformatVersion")
-
-    implementation("org.apache.commons:commons-text:$commonsTextVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-
-    implementation("javax.xml.ws:jaxws-api:$javaxJaxwsApiVersion")
-    implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
-    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
-    implementation("javax.activation:activation:$javaxActivationVersion")
-    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
-    }
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedVersion")
     testImplementation ("io.mockk:mockk:$ioMockVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -140,7 +106,7 @@ tasks {
     }
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "12"
+        kotlinOptions.jvmTarget = "17"
     }
 
     "check" {

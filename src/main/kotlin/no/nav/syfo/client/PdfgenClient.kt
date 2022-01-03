@@ -8,14 +8,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
 import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.PdfModel
 import no.nav.syfo.model.ValidationResult
 
-@KtorExperimentalAPI
 class PdfgenClient constructor(
     private val url: String,
     private val httpClient: HttpClient

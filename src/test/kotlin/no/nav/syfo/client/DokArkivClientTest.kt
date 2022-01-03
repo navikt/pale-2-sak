@@ -19,21 +19,19 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.util.KtorExperimentalAPI
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.net.ServerSocket
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.model.JournalpostRequest
 import no.nav.syfo.model.JournalpostResponse
 import no.nav.syfo.util.LoggingMeta
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.net.ServerSocket
+import java.util.concurrent.TimeUnit
 
-@KtorExperimentalAPI
 internal class DokArkivClientTest {
     private val stsOidcClientMock = mockk<StsOidcClient>()
     private val httpClient = HttpClient(Apache) {
@@ -58,12 +56,18 @@ internal class DokArkivClientTest {
         routing {
             post("/dokarkiv") {
                 when {
-                    call.request.header("Nav-Callid") == "NY" -> call.respond(HttpStatusCode.Created, JournalpostResponse(
-                        emptyList(), "nyJpId", true, null, null
-                    ))
-                    call.request.header("Nav-Callid") == "DUPLIKAT" -> call.respond(HttpStatusCode.Conflict, JournalpostResponse(
-                        emptyList(), "eksisterendeJpId", true, null, null
-                    ))
+                    call.request.header("Nav-Callid") == "NY" -> call.respond(
+                        HttpStatusCode.Created,
+                        JournalpostResponse(
+                            emptyList(), "nyJpId", true, null, null
+                        )
+                    )
+                    call.request.header("Nav-Callid") == "DUPLIKAT" -> call.respond(
+                        HttpStatusCode.Conflict,
+                        JournalpostResponse(
+                            emptyList(), "eksisterendeJpId", true, null, null
+                        )
+                    )
                     else -> call.respond(HttpStatusCode.InternalServerError)
                 }
             }
@@ -84,21 +88,33 @@ internal class DokArkivClientTest {
 
     @Test
     internal fun `Happy-case`() {
-        var jpResponse: JournalpostResponse? = null
+        var jpResponse: JournalpostResponse?
         runBlocking {
-            jpResponse = dokArkivClient.createJournalpost(JournalpostRequest(dokumenter = emptyList(), eksternReferanseId = "NY"), loggingMetadata)
+            jpResponse = dokArkivClient.createJournalpost(
+                JournalpostRequest(
+                    dokumenter = emptyList(),
+                    eksternReferanseId = "NY"
+                ),
+                loggingMetadata
+            )
         }
 
-        jpResponse?.journalpostId shouldEqual "nyJpId"
+        jpResponse?.journalpostId shouldBeEqualTo "nyJpId"
     }
 
     @Test
     internal fun `Feiler ikke ved duplikat`() {
-        var jpResponse: JournalpostResponse? = null
+        var jpResponse: JournalpostResponse?
         runBlocking {
-            jpResponse = dokArkivClient.createJournalpost(JournalpostRequest(dokumenter = emptyList(), eksternReferanseId = "DUPLIKAT"), loggingMetadata)
+            jpResponse = dokArkivClient.createJournalpost(
+                JournalpostRequest(
+                    dokumenter = emptyList(),
+                    eksternReferanseId = "DUPLIKAT"
+                ),
+                loggingMetadata
+            )
         }
 
-        jpResponse?.journalpostId shouldEqual "eksisterendeJpId"
+        jpResponse?.journalpostId shouldBeEqualTo "eksisterendeJpId"
     }
 }

@@ -9,9 +9,6 @@ import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.util.KtorExperimentalAPI
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import net.logstash.logback.argument.StructuredArguments.fields
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
@@ -28,8 +25,9 @@ import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.objectMapper
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.validation.validatePersonAndDNumber
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-@KtorExperimentalAPI
 class DokArkivClient(
     private val url: String,
     private val stsClient: StsOidcClient,
@@ -38,11 +36,15 @@ class DokArkivClient(
     suspend fun createJournalpost(
         journalpostRequest: JournalpostRequest,
         loggingMeta: LoggingMeta
-    ): JournalpostResponse = retry(callName = "dokarkiv",
-        retryIntervals = arrayOf(500L, 1000L, 3000L, 5000L, 10000L)) {
+    ): JournalpostResponse = retry(
+        callName = "dokarkiv",
+        retryIntervals = arrayOf(500L, 1000L, 3000L, 5000L, 10000L)
+    ) {
         try {
-            log.info("Kall til dokarkiv Nav-Callid {}, {}", journalpostRequest.eksternReferanseId,
-                fields(loggingMeta))
+            log.info(
+                "Kall til dokarkiv Nav-Callid {}, {}", journalpostRequest.eksternReferanseId,
+                fields(loggingMeta)
+            )
             val httpResponse = httpClient.post<HttpStatement>(url) {
                 contentType(ContentType.Application.Json)
                 header("Authorization", "Bearer ${stsClient.oidcToken().access_token}")
@@ -82,23 +84,23 @@ fun createJournalpostPayload(
     ),
     dokumenter = listOf(
         Dokument(
-        dokumentvarianter = listOf(
-            Dokumentvarianter(
-                filnavn = "$ediLoggId.pdf",
-                filtype = "PDFA",
-                variantformat = "ARKIV",
-                fysiskDokument = pdf
+            dokumentvarianter = listOf(
+                Dokumentvarianter(
+                    filnavn = "$ediLoggId.pdf",
+                    filtype = "PDFA",
+                    variantformat = "ARKIV",
+                    fysiskDokument = pdf
+                ),
+                Dokumentvarianter(
+                    filnavn = "Legeerklæring Original",
+                    filtype = "JSON",
+                    variantformat = "ORIGINAL",
+                    fysiskDokument = objectMapper.writeValueAsBytes(legeerklaering)
+                )
             ),
-            Dokumentvarianter(
-                filnavn = "Legeerklæring Original",
-                filtype = "JSON",
-                variantformat = "ORIGINAL",
-                fysiskDokument = objectMapper.writeValueAsBytes(legeerklaering)
-            )
-        ),
-        tittel = createTittleJournalpost(validationResult, signaturDato),
-        brevkode = "NAV 08-07.08"
-    )
+            tittel = createTittleJournalpost(validationResult, signaturDato),
+            brevkode = "NAV 08-07.08"
+        )
     ),
     eksternReferanseId = ediLoggId,
     journalfoerendeEnhet = "9999",
@@ -113,7 +115,7 @@ fun createJournalpostPayload(
 )
 
 fun createAvsenderMottakerValidFnr(avsenderFnr: String, legeerklaering: Legeerklaering):
-        AvsenderMottaker = AvsenderMottaker(
+    AvsenderMottaker = AvsenderMottaker(
     id = avsenderFnr,
     idType = "FNR",
     land = "Norge",

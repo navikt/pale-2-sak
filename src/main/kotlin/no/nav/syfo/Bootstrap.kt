@@ -8,13 +8,11 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.HttpResponseValidator
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.network.sockets.SocketTimeoutException
 import io.prometheus.client.hotspot.DefaultExports
-import java.time.Duration
-import java.time.LocalDate
-import java.util.Properties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -24,6 +22,7 @@ import net.logstash.logback.argument.StructuredArguments.fields
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
+import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PdfgenClient
 import no.nav.syfo.client.SakClient
@@ -39,6 +38,9 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.Duration
+import java.time.LocalDate
+import java.util.Properties
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
     registerKotlinModule()
@@ -49,7 +51,6 @@ val objectMapper: ObjectMapper = ObjectMapper().apply {
 
 val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
 
-@KtorExperimentalAPI
 fun main() {
     val env = Environment()
     val vaultSecrets = VaultSecrets()
@@ -79,6 +80,13 @@ fun main() {
             }
         }
         expectSuccess = false
+        HttpResponseValidator {
+            handleResponseException { exception ->
+                when (exception) {
+                    is SocketTimeoutException -> throw ServiceUnavailableException(exception.message)
+                }
+            }
+        }
     }
 
     val stsClient = StsOidcClient(vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword, env.securityTokenServiceURL)
@@ -108,7 +116,6 @@ fun createListener(applicationState: ApplicationState, action: suspend Coroutine
         }
     }
 
-@KtorExperimentalAPI
 fun launchListeners(
     env: Environment,
     applicationState: ApplicationState,
@@ -129,7 +136,6 @@ fun launchListeners(
     }
 }
 
-@KtorExperimentalAPI
 suspend fun blockingApplicationLogic(
     kafkaLegeerklaeringSakconsumer: KafkaConsumer<String, String>,
     applicationState: ApplicationState,
