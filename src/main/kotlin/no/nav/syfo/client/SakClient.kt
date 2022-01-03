@@ -7,7 +7,6 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.util.KtorExperimentalAPI
 import net.logstash.logback.argument.StructuredArguments.fields
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
@@ -16,7 +15,6 @@ import no.nav.syfo.model.OpprettSak
 import no.nav.syfo.model.SakResponse
 import no.nav.syfo.util.LoggingMeta
 
-@KtorExperimentalAPI
 class SakClient constructor(
     private val url: String,
     private val oidcClient: StsOidcClient,
@@ -31,11 +29,11 @@ class SakClient constructor(
             header("X-Correlation-ID", msgId)
             header("Authorization", "Bearer ${oidcClient.oidcToken().access_token}")
             body = OpprettSak(
-                    tema = "OPP",
-                    applikasjon = "FS22",
-                    aktoerId = pasientAktoerId,
-                    orgnr = null,
-                    fagsakNr = null
+                tema = "OPP",
+                applikasjon = "FS22",
+                aktoerId = pasientAktoerId,
+                orgnr = null,
+                fagsakNr = null
             )
         }
     }
