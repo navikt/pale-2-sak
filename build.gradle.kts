@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.no.nav.syfo"
 version = "1.0.0"
 
-val confluentVersion = "5.3.1"
 val coroutinesVersion = "1.5.2"
 val jacksonVersion = "2.13.1"
 val kafkaVersion = "2.8.0"
@@ -61,7 +60,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
 
-    implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
 
     implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
