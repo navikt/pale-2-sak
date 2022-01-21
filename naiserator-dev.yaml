@@ -40,6 +40,7 @@ spec:
         mountPath: /secrets/serviceuser
       - kvPath: /kv/preprod/fss/pale-2-sak/teamsykmelding
         mountPath: /var/run/secrets/nais.io/vault
+  webproxy: true
   ingresses:
     - "https://pale-2-sak.nais.preprod.local"
   env:
