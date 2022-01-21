@@ -157,7 +157,7 @@ fun leggtilDokument(
                                 fysiskDokument = vedlegg.content
                             )
                         ),
-                        tittel = "Vedlegg til Legeerklæring"
+                        tittel = "Vedlegg til legeerklæring ${formaterDato(signaturDato)}"
                     )
                 )
             }
