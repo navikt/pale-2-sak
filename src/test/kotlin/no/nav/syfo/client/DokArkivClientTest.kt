@@ -3,6 +3,7 @@ package no.nav.syfo.client
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.application.call
 import io.ktor.application.install
@@ -24,8 +25,11 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.model.JournalpostRequest
 import no.nav.syfo.model.JournalpostResponse
+import no.nav.syfo.model.VedleggMessage
+import no.nav.syfo.objectMapper
 import no.nav.syfo.util.LoggingMeta
 import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldNotBeEqualTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -116,5 +120,27 @@ internal class DokArkivClientTest {
         }
 
         jpResponse?.journalpostId shouldBeEqualTo "eksisterendeJpId"
+    }
+
+    @Test
+    internal fun `Returnerer samme vedlegg hvis vedlegget er PDF`() {
+        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_pdf.json"))
+        val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
+
+        val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
+
+        oppdatertVedlegg shouldBeEqualTo gosysVedlegg
+    }
+
+    @Test
+    internal fun `Konverterer til PDF hvis vedlegget ikke er PDF`() {
+        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_bilde.json"))
+        val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
+
+        val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
+
+        oppdatertVedlegg shouldNotBeEqualTo gosysVedlegg
+        oppdatertVedlegg.contentType shouldBeEqualTo "application/pdf"
+        oppdatertVedlegg.description shouldBeEqualTo vedleggMessage.vedlegg.description
     }
 }

@@ -38,6 +38,9 @@ spec:
     paths:
       - kvPath: serviceuser/data/dev/srvpale2sak
         mountPath: /secrets/serviceuser
+      - kvPath: /kv/preprod/fss/pale-2-sak/teamsykmelding
+        mountPath: /var/run/secrets/nais.io/vault
+  webproxy: true
   ingresses:
     - "https://pale-2-sak.nais.preprod.local"
   env:
@@ -47,3 +50,5 @@ spec:
       value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
     - name: OPPRETT_SAK_URL
       value: https://sak-q1.dev.intern.nav.no/api/v1/saker
+    - name: PALE_VEDLEGG_BUCKET_NAME
+      value: teamsykmelding-pale2-vedlegg-bucket-dev
