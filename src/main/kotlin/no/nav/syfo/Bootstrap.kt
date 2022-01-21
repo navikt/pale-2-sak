@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.google.auth.Credentials
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.storage.Storage
+import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.HttpResponseValidator
@@ -14,6 +18,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.network.sockets.SocketTimeoutException
 import io.prometheus.client.hotspot.DefaultExports
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,6 +36,7 @@ import no.nav.syfo.kafka.envOverrides
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.model.LegeerklaeringSak
+import no.nav.syfo.service.BucketService
 import no.nav.syfo.service.JournalService
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
@@ -38,6 +44,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.FileInputStream
 import java.time.Duration
 import java.time.LocalDate
 import java.util.Properties
@@ -51,6 +58,7 @@ val objectMapper: ObjectMapper = ObjectMapper().apply {
 
 val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
 
+@DelicateCoroutinesApi
 fun main() {
     val env = Environment()
     val vaultSecrets = VaultSecrets()
@@ -94,17 +102,22 @@ fun main() {
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, stsClient, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
+    val paleVedleggStorageCredentials: Credentials = GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/nais.io/vault/pale2-google-creds.json"))
+    val paleVedleggStorage: Storage = StorageOptions.newBuilder().setCredentials(paleVedleggStorageCredentials).build().service
+    val paleVedleggBucketService = BucketService(env.paleVedleggBucketName, paleVedleggStorage)
+
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
     kafkaBaseConfig["auto.offset.reset"] = "none"
     val consumerConfig = kafkaBaseConfig.toConsumerConfig(
         "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
     )
 
-    val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient)
+    val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient, paleVedleggBucketService)
 
     launchListeners(env, applicationState, consumerConfig, journalService)
 }
 
+@DelicateCoroutinesApi
 fun createListener(applicationState: ApplicationState, action: suspend CoroutineScope.() -> Unit): Job =
     GlobalScope.launch {
         try {
@@ -116,6 +129,7 @@ fun createListener(applicationState: ApplicationState, action: suspend Coroutine
         }
     }
 
+@DelicateCoroutinesApi
 fun launchListeners(
     env: Environment,
     applicationState: ApplicationState,
@@ -161,6 +175,7 @@ suspend fun blockingApplicationLogic(
                 journalService.onJournalRequest(
                     legeerklaeringSak.receivedLegeerklaering,
                     legeerklaeringSak.validationResult,
+                    legeerklaeringSak.vedlegg,
                     loggingMeta
                 )
             }

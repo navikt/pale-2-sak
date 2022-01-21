@@ -14,10 +14,12 @@ val logstashLogbackEncoder = "7.0.1"
 val logbackVersion = "1.2.10"
 val prometheusVersion = "0.14.1"
 val junitPlatformLauncher = "1.6.0"
-val pale2CommonVersion = "1.a86680d"
+val pale2CommonVersion = "1.a40bf1a"
 val junitVersion = "5.8.2"
 val ioMockVersion = "1.12.1"
 val kotlinVersion = "1.6.0"
+val googleCloudStorageVersion = "2.3.0"
+val pdfboxVersion = "2.0.24"
 
 plugins {
     kotlin("jvm") version "1.6.0"
@@ -61,6 +63,8 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
 
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
+    implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
     implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-networking:$pale2CommonVersion")
