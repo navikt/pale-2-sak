@@ -41,6 +41,8 @@ spec:
       - kvPath: /kv/preprod/fss/pale-2-sak/teamsykmelding
         mountPath: /var/run/secrets/nais.io/vault
   webproxy: true
+  kafka:
+    pool: nav-dev
   ingresses:
     - "https://pale-2-sak.nais.preprod.local"
   env:
@@ -52,3 +54,5 @@ spec:
       value: https://sak-q1.dev.intern.nav.no/api/v1/saker
     - name: PALE_VEDLEGG_BUCKET_NAME
       value: teamsykmelding-pale2-vedlegg-bucket-dev
+    - name: PALE_BUCKET_NAME
+      value: teamsykmelding-pale2-legeerklaring-bucket-dev

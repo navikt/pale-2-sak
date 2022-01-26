@@ -13,7 +13,9 @@ data class Environment(
     val dokArkivUrl: String = getEnvVar("DOK_ARKIV_URL"),
     val securityTokenServiceURL: String = getEnvVar("SECURITY_TOKEN_SERVICE_URL", "http://security-token-service.default/rest/v1/sts/token"),
     val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen.teamsykmelding/api/v1/genpdf/pale-2/pale-2"),
-    val paleVedleggBucketName: String = getEnvVar("PALE_VEDLEGG_BUCKET_NAME")
+    val paleVedleggBucketName: String = getEnvVar("PALE_VEDLEGG_BUCKET_NAME"),
+    val legeerklaeringBucketName: String = getEnvVar("PALE_BUCKET_NAME"),
+    val legeerklaringTopic: String = "teamsykmelding.legeerklaering"
 ) : KafkaConfig
 
 data class VaultSecrets(

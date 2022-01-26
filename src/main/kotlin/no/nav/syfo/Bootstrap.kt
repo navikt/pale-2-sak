@@ -32,14 +32,17 @@ import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PdfgenClient
 import no.nav.syfo.client.SakClient
 import no.nav.syfo.client.StsOidcClient
+import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.envOverrides
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.model.LegeerklaeringSak
+import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
 import no.nav.syfo.service.BucketService
 import no.nav.syfo.service.JournalService
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
@@ -104,7 +107,11 @@ fun main() {
 
     val paleVedleggStorageCredentials: Credentials = GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/nais.io/vault/pale2-google-creds.json"))
     val paleVedleggStorage: Storage = StorageOptions.newBuilder().setCredentials(paleVedleggStorageCredentials).build().service
-    val paleVedleggBucketService = BucketService(env.paleVedleggBucketName, paleVedleggStorage)
+    val paleBucketService = BucketService(
+        vedleggBucketName = env.paleVedleggBucketName,
+        legeerklaeringBucketName = env.legeerklaeringBucketName,
+        storage = paleVedleggStorage
+    )
 
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
     kafkaBaseConfig["auto.offset.reset"] = "none"
@@ -112,9 +119,9 @@ fun main() {
         "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
     )
 
-    val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient, paleVedleggBucketService)
+    val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient, paleBucketService)
 
-    launchListeners(env, applicationState, consumerConfig, journalService)
+    launchListeners(env, applicationState, consumerConfig, paleBucketService, journalService)
 }
 
 @DelicateCoroutinesApi
@@ -134,15 +141,25 @@ fun launchListeners(
     env: Environment,
     applicationState: ApplicationState,
     consumerProperties: Properties,
+    bucketService: BucketService,
     journalService: JournalService
 ) {
     createListener(applicationState) {
         val kafkaLegeerklaeringSakconsumer = KafkaConsumer<String, String>(consumerProperties)
         kafkaLegeerklaeringSakconsumer.subscribe(listOf(env.pale2SakTopic))
+
+        val aivenConsumerProperties = KafkaUtils.getAivenKafkaConfig()
+            .toConsumerConfig("${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class)
+            .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest" }
+        val kafkaLegeerklaeringAivenConsumer = KafkaConsumer<String, String>(aivenConsumerProperties)
+        kafkaLegeerklaeringAivenConsumer.subscribe(listOf(env.legeerklaringTopic))
+
         applicationState.ready = true
 
         blockingApplicationLogic(
             kafkaLegeerklaeringSakconsumer,
+            kafkaLegeerklaeringAivenConsumer,
+            bucketService,
             applicationState,
             journalService,
             env
@@ -152,6 +169,8 @@ fun launchListeners(
 
 suspend fun blockingApplicationLogic(
     kafkaLegeerklaeringSakconsumer: KafkaConsumer<String, String>,
+    kafkaLegeerklaeringAivenConsumer: KafkaConsumer<String, String>,
+    bucketService: BucketService,
     applicationState: ApplicationState,
     journalService: JournalService,
     env: Environment
@@ -180,6 +199,28 @@ suspend fun blockingApplicationLogic(
                 )
             }
         }
+
+        kafkaLegeerklaeringAivenConsumer.poll(Duration.ofMillis(0))
+            .filter { !(it.headers().any { header -> header.value().contentEquals("macgyver".toByteArray()) }) }
+            .forEach { consumerRecord ->
+                log.info("Offset for topic: ${env.legeerklaringTopic}, offset: ${consumerRecord.offset()}")
+                val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage = objectMapper.readValue(consumerRecord.value())
+                val receivedLegeerklaering = bucketService.getLegeerklaeringFromBucket(legeerklaeringKafkaMessage.legeerklaeringObjectId)
+
+                val loggingMeta = LoggingMeta(
+                    mottakId = receivedLegeerklaering.navLogId,
+                    orgNr = receivedLegeerklaering.legekontorOrgNr,
+                    msgId = receivedLegeerklaering.msgId,
+                    legeerklaeringId = receivedLegeerklaering.legeerklaering.id
+                )
+
+                journalService.onJournalRequest(
+                    receivedLegeerklaering,
+                    legeerklaeringKafkaMessage.validationResult,
+                    legeerklaeringKafkaMessage.vedlegg,
+                    loggingMeta
+                )
+            }
 
         delay(1)
     }
