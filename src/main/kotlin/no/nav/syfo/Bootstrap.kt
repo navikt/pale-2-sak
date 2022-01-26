@@ -49,6 +49,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.FileInputStream
 import java.time.Duration
+import java.time.LocalDate
 import java.util.Properties
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
@@ -187,7 +188,7 @@ suspend fun blockingApplicationLogic(
                 legeerklaeringId = legeerklaeringSak.receivedLegeerklaering.legeerklaering.id
             )
 
-            /*if (legeerklaeringSak.receivedLegeerklaering.mottattDato.isBefore(LocalDate.of(2020, 11, 5).atStartOfDay())) {
+            if (legeerklaeringSak.receivedLegeerklaering.mottattDato.isBefore(LocalDate.of(2020, 11, 5).atStartOfDay())) {
                 log.info("Behandler ikke gammel legeerklæring {}", fields(loggingMeta))
             } else {
                 journalService.onJournalRequest(
@@ -196,11 +197,11 @@ suspend fun blockingApplicationLogic(
                     legeerklaeringSak.vedlegg,
                     loggingMeta
                 )
-            }*/
+            }
         }
 
         kafkaLegeerklaeringAivenConsumer.poll(Duration.ofMillis(0))
-            // .filter { !(it.headers().any { header -> header.value().contentEquals("macgyver".toByteArray()) }) }
+            .filter { !(it.headers().any { header -> header.value().contentEquals("macgyver".toByteArray()) }) }
             .forEach { consumerRecord ->
                 log.info("Offset for topic: ${env.legeerklaringTopic}, offset: ${consumerRecord.offset()}")
                 val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage = objectMapper.readValue(consumerRecord.value())
