@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.logstash.logback.argument.StructuredArguments.fields
 import no.nav.syfo.application.ApplicationServer
@@ -33,10 +32,7 @@ import no.nav.syfo.client.PdfgenClient
 import no.nav.syfo.client.SakClient
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.aiven.KafkaUtils
-import no.nav.syfo.kafka.envOverrides
-import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
-import no.nav.syfo.model.LegeerklaeringSak
 import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
 import no.nav.syfo.service.BucketService
 import no.nav.syfo.service.JournalService
@@ -49,8 +45,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.FileInputStream
 import java.time.Duration
-import java.time.LocalDate
-import java.util.Properties
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
     registerKotlinModule()
@@ -113,15 +107,9 @@ fun main() {
         storage = paleVedleggStorage
     )
 
-    val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
-    kafkaBaseConfig["auto.offset.reset"] = "none"
-    val consumerConfig = kafkaBaseConfig.toConsumerConfig(
-        "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
-    )
-
     val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient, paleBucketService)
 
-    launchListeners(env, applicationState, consumerConfig, paleBucketService, journalService)
+    launchListeners(env, applicationState, paleBucketService, journalService)
 }
 
 @DelicateCoroutinesApi
@@ -140,24 +128,19 @@ fun createListener(applicationState: ApplicationState, action: suspend Coroutine
 fun launchListeners(
     env: Environment,
     applicationState: ApplicationState,
-    consumerProperties: Properties,
     bucketService: BucketService,
     journalService: JournalService
 ) {
     createListener(applicationState) {
-        val kafkaLegeerklaeringSakconsumer = KafkaConsumer<String, String>(consumerProperties)
-        kafkaLegeerklaeringSakconsumer.subscribe(listOf(env.pale2SakTopic))
-
         val aivenConsumerProperties = KafkaUtils.getAivenKafkaConfig()
             .toConsumerConfig("${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class)
-            .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest" }
+            .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none" }
         val kafkaLegeerklaeringAivenConsumer = KafkaConsumer<String, String>(aivenConsumerProperties)
         kafkaLegeerklaeringAivenConsumer.subscribe(listOf(env.legeerklaringTopic))
 
         applicationState.ready = true
 
         blockingApplicationLogic(
-            kafkaLegeerklaeringSakconsumer,
             kafkaLegeerklaeringAivenConsumer,
             bucketService,
             applicationState,
@@ -168,7 +151,6 @@ fun launchListeners(
 }
 
 suspend fun blockingApplicationLogic(
-    kafkaLegeerklaeringSakconsumer: KafkaConsumer<String, String>,
     kafkaLegeerklaeringAivenConsumer: KafkaConsumer<String, String>,
     bucketService: BucketService,
     applicationState: ApplicationState,
@@ -176,31 +158,7 @@ suspend fun blockingApplicationLogic(
     env: Environment
 ) {
     while (applicationState.ready) {
-        kafkaLegeerklaeringSakconsumer.poll(Duration.ofMillis(0)).forEach { consumerRecord ->
-            log.info("Offset for topic: ${env.pale2SakTopic}, offset: ${consumerRecord.offset()}")
-
-            val legeerklaeringSak: LegeerklaeringSak = objectMapper.readValue(consumerRecord.value())
-
-            val loggingMeta = LoggingMeta(
-                mottakId = legeerklaeringSak.receivedLegeerklaering.navLogId,
-                orgNr = legeerklaeringSak.receivedLegeerklaering.legekontorOrgNr,
-                msgId = legeerklaeringSak.receivedLegeerklaering.msgId,
-                legeerklaeringId = legeerklaeringSak.receivedLegeerklaering.legeerklaering.id
-            )
-
-            if (legeerklaeringSak.receivedLegeerklaering.mottattDato.isBefore(LocalDate.of(2020, 11, 5).atStartOfDay())) {
-                log.info("Behandler ikke gammel legeerklæring {}", fields(loggingMeta))
-            } else {
-                journalService.onJournalRequest(
-                    legeerklaeringSak.receivedLegeerklaering,
-                    legeerklaeringSak.validationResult,
-                    legeerklaeringSak.vedlegg,
-                    loggingMeta
-                )
-            }
-        }
-
-        kafkaLegeerklaeringAivenConsumer.poll(Duration.ofMillis(0))
+        kafkaLegeerklaeringAivenConsumer.poll(Duration.ofSeconds(10))
             .filter { !(it.headers().any { header -> header.value().contentEquals("macgyver".toByteArray()) }) }
             .forEach { consumerRecord ->
                 log.info("Offset for topic: ${env.legeerklaringTopic}, offset: ${consumerRecord.offset()}")
@@ -221,7 +179,5 @@ suspend fun blockingApplicationLogic(
                     loggingMeta
                 )
             }
-
-        delay(1)
     }
 }
