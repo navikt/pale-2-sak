@@ -20,7 +20,6 @@ import no.nav.syfo.model.GosysVedlegg
 import no.nav.syfo.model.JournalpostRequest
 import no.nav.syfo.model.JournalpostResponse
 import no.nav.syfo.model.Legeerklaering
-import no.nav.syfo.model.Sak
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.model.Vedlegg
@@ -72,7 +71,6 @@ class DokArkivClient(
 
 fun createJournalpostPayload(
     legeerklaering: Legeerklaering,
-    sakId: String,
     pdf: ByteArray,
     avsenderFnr: String,
     ediLoggId: String,
@@ -102,10 +100,6 @@ fun createJournalpostPayload(
     journalfoerendeEnhet = "9999",
     journalpostType = "INNGAAENDE",
     kanal = "HELSENETTET",
-    sak = Sak(
-        arkivsaksnummer = sakId,
-        arkivsaksystem = "GSAK"
-    ),
     tema = "OPP",
     tittel = createTittleJournalpost(validationResult, signaturDato)
 )

@@ -5,7 +5,6 @@ import no.nav.syfo.util.getFileAsString
 data class Environment(
     val applicationPort: Int = getEnvVar("APPLICATION_PORT", "8080").toInt(),
     val applicationName: String = getEnvVar("NAIS_APP_NAME", "pale-2-sak"),
-    val opprettSakUrl: String = getEnvVar("OPPRETT_SAK_URL"),
     val dokArkivUrl: String = getEnvVar("DOK_ARKIV_URL"),
     val securityTokenServiceURL: String = getEnvVar("SECURITY_TOKEN_SERVICE_URL", "http://security-token-service.default/rest/v1/sts/token"),
     val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen.teamsykmelding/api/v1/genpdf/pale-2/pale-2"),

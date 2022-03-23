@@ -29,7 +29,6 @@ import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PdfgenClient
-import no.nav.syfo.client.SakClient
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
@@ -95,7 +94,6 @@ fun main() {
     }
 
     val stsClient = StsOidcClient(vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword, env.securityTokenServiceURL)
-    val sakClient = SakClient(env.opprettSakUrl, stsClient, httpClient)
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, stsClient, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
@@ -107,7 +105,7 @@ fun main() {
         storage = paleVedleggStorage
     )
 
-    val journalService = JournalService(sakClient, dokArkivClient, pdfgenClient, paleBucketService)
+    val journalService = JournalService(dokArkivClient, pdfgenClient, paleBucketService)
 
     launchListeners(env, applicationState, paleBucketService, journalService)
 }

@@ -12,7 +12,6 @@ data class JournalpostRequest(
     val journalfoerendeEnhet: String? = null,
     val journalpostType: String? = null,
     val kanal: String? = null,
-    val sak: Sak? = null,
     val tema: String? = null,
     val tittel: String? = null
 )
@@ -45,10 +44,4 @@ data class Dokumentvarianter(
     val filtype: String,
     val fysiskDokument: ByteArray,
     val variantformat: String
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class Sak(
-    val arkivsaksnummer: String? = null,
-    val arkivsaksystem: String? = null
 )
