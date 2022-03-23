@@ -43,6 +43,10 @@ spec:
   webproxy: true
   kafka:
     pool: nav-prod
+  azure:
+    application:
+      enabled: true
+      tenant: nav.no
   ingresses:
     - "https://pale-2-sak.nais.adeo.no"
   env:

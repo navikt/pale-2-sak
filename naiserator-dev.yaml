@@ -43,6 +43,10 @@ spec:
   webproxy: true
   kafka:
     pool: nav-dev
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
   ingresses:
     - "https://pale-2-sak.nais.preprod.local"
   env:
