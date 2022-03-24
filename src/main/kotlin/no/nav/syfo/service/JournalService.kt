@@ -3,7 +3,6 @@ package no.nav.syfo.service
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PdfgenClient
-import no.nav.syfo.client.SakClient
 import no.nav.syfo.client.createJournalpostPayload
 import no.nav.syfo.client.createPdfPayload
 import no.nav.syfo.log
@@ -15,7 +14,6 @@ import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.wrapExceptions
 
 class JournalService(
-    private val sakClient: SakClient,
     private val dokArkivClient: DokArkivClient,
     private val pdfgenClient: PdfgenClient,
     private val bucketService: BucketService
@@ -28,11 +26,6 @@ class JournalService(
     ) {
         wrapExceptions(loggingMeta) {
             log.info("Mottok en legeerklearing, prover aa lagre i Joark {}", StructuredArguments.fields(loggingMeta))
-
-            val sak = sakClient.findOrCreateSak(
-                receivedLegeerklaering.pasientAktoerId, receivedLegeerklaering.msgId,
-                loggingMeta
-            )
 
             val vedleggListe: List<Vedlegg> = if (vedlegg.isNullOrEmpty()) {
                 emptyList()
@@ -49,7 +42,6 @@ class JournalService(
 
             val journalpostPayload = createJournalpostPayload(
                 receivedLegeerklaering.legeerklaering,
-                sak.id.toString(),
                 pdf,
                 receivedLegeerklaering.personNrLege,
                 receivedLegeerklaering.navLogId,

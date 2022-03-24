@@ -52,8 +52,6 @@ spec:
   env:
     - name: DOK_ARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost
-    - name: OPPRETT_SAK_URL
-      value: https://sak-q1.dev.intern.nav.no/api/v1/saker
     - name: PALE_VEDLEGG_BUCKET_NAME
       value: teamsykmelding-pale2-vedlegg-bucket-dev
     - name: PALE_BUCKET_NAME

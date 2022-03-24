@@ -72,7 +72,6 @@ class DokArkivClient(
 
 fun createJournalpostPayload(
     legeerklaering: Legeerklaering,
-    sakId: String,
     pdf: ByteArray,
     avsenderFnr: String,
     ediLoggId: String,
@@ -103,8 +102,7 @@ fun createJournalpostPayload(
     journalpostType = "INNGAAENDE",
     kanal = "HELSENETTET",
     sak = Sak(
-        arkivsaksnummer = sakId,
-        arkivsaksystem = "GSAK"
+        sakstype = "GENERELL_SAK"
     ),
     tema = "OPP",
     tittel = createTittleJournalpost(validationResult, signaturDato)
