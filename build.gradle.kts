@@ -20,6 +20,8 @@ val ioMockVersion = "1.12.3"
 val kotlinVersion = "1.6.0"
 val googleCloudStorageVersion = "2.4.5"
 val pdfboxVersion = "2.0.24"
+val jacksonPatchVersion = "2.13.2.1"
+val jacksonBomVersion = "2.13.2.20220324"
 
 plugins {
     kotlin("jvm") version "1.6.0"
@@ -52,12 +54,14 @@ dependencies {
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
-    implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-client-auth-basic:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson:jackson-bom:$jacksonBomVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonPatchVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
