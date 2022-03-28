@@ -35,7 +35,8 @@ import java.util.Base64
 
 class DokArkivClient(
     private val url: String,
-    private val stsClient: StsOidcClient,
+    private val accessTokenClient: AccessTokenClient,
+    private val scope: String,
     private val httpClient: HttpClient
 ) {
     suspend fun createJournalpost(
@@ -52,7 +53,7 @@ class DokArkivClient(
             )
             val httpResponse = httpClient.post<HttpStatement>(url) {
                 contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer ${stsClient.oidcToken().access_token}")
+                header("Authorization", "Bearer ${accessTokenClient.getAccessToken(scope)}")
                 header("Nav-Callid", journalpostRequest.eksternReferanseId)
                 body = journalpostRequest
                 parameter("forsoekFerdigstill", true)

@@ -37,7 +37,7 @@ import java.net.ServerSocket
 import java.util.concurrent.TimeUnit
 
 internal class DokArkivClientTest {
-    private val stsOidcClientMock = mockk<StsOidcClient>()
+    private val accessTokenClient = mockk<AccessTokenClient>()
     private val httpClient = HttpClient(Apache) {
         install(JsonFeature) {
             serializer = JacksonSerializer {
@@ -78,7 +78,7 @@ internal class DokArkivClientTest {
         }
     }.start()
 
-    private val dokArkivClient = DokArkivClient("$mockHttpServerUrl/dokarkiv", stsOidcClientMock, httpClient)
+    private val dokArkivClient = DokArkivClient("$mockHttpServerUrl/dokarkiv", accessTokenClient, "scope", httpClient)
 
     @After
     fun after() {
@@ -87,7 +87,7 @@ internal class DokArkivClientTest {
 
     @Before
     fun before() {
-        coEvery { stsOidcClientMock.oidcToken() } returns OidcToken("token", "type", 300L)
+        coEvery { accessTokenClient.getAccessToken(any()) } returns "token"
     }
 
     @Test

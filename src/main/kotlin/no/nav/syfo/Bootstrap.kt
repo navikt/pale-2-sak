@@ -11,7 +11,9 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.features.HttpResponseValidator
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
@@ -27,9 +29,9 @@ import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.application.exception.ServiceUnavailableException
+import no.nav.syfo.client.AccessTokenClient
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PdfgenClient
-import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
@@ -37,12 +39,14 @@ import no.nav.syfo.service.BucketService
 import no.nav.syfo.service.JournalService
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.FileInputStream
+import java.net.ProxySelector
 import java.time.Duration
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
@@ -57,7 +61,6 @@ val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
 @DelicateCoroutinesApi
 fun main() {
     val env = Environment()
-    val vaultSecrets = VaultSecrets()
     val applicationState = ApplicationState()
     val applicationEngine = createApplicationEngine(
         env,
@@ -69,12 +72,7 @@ fun main() {
 
     DefaultExports.initialize()
 
-    val httpClient = HttpClient(Apache) {
-        engine {
-            socketTimeout = 120_000
-            connectTimeout = 40_000
-            connectionRequestTimeout = 40_000
-        }
+    val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {
                 registerKotlinModule()
@@ -92,9 +90,27 @@ fun main() {
             }
         }
     }
+    val proxyConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+        config()
+        engine {
+            customizeClient {
+                setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault()))
+            }
+        }
+    }
+    val defaultConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+        config()
+        engine {
+            socketTimeout = 120_000
+            connectTimeout = 40_000
+            connectionRequestTimeout = 40_000
+        }
+    }
+    val httpClient = HttpClient(Apache, defaultConfig)
+    val httpClientWithProxy = HttpClient(Apache, proxyConfig)
 
-    val stsClient = StsOidcClient(vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword, env.securityTokenServiceURL)
-    val dokArkivClient = DokArkivClient(env.dokArkivUrl, stsClient, httpClient)
+    val accessTokenClient = AccessTokenClient(env.aadAccessTokenUrl, env.clientId, env.clientSecret, httpClientWithProxy)
+    val dokArkivClient = DokArkivClient(env.dokArkivUrl, accessTokenClient, env.dokArkivScope, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
     val paleVedleggStorageCredentials: Credentials = GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/nais.io/vault/pale2-google-creds.json"))

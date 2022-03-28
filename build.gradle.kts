@@ -5,20 +5,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion = "1.5.2"
+val coroutinesVersion = "1.6.0"
 val jacksonVersion = "2.13.2"
 val kafkaVersion = "2.8.0"
 val kluentVersion = "1.68"
 val ktorVersion = "1.6.8"
 val logstashLogbackEncoder = "7.0.1"
-val logbackVersion = "1.2.10"
+val logbackVersion = "1.2.11"
 val prometheusVersion = "0.15.0"
 val junitPlatformLauncher = "1.6.0"
 val pale2CommonVersion = "1.b61e3d4"
 val junitVersion = "5.8.2"
 val ioMockVersion = "1.12.3"
 val kotlinVersion = "1.6.0"
-val googleCloudStorageVersion = "2.3.0"
+val googleCloudStorageVersion = "2.4.5"
 val pdfboxVersion = "2.0.24"
 
 plugins {
@@ -68,7 +68,6 @@ dependencies {
 
     implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-networking:$pale2CommonVersion")
-    implementation("no.nav.syfo:pale-2-common-rest-sts:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-kafka:$pale2CommonVersion")
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
