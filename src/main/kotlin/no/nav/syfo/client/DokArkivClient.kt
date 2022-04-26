@@ -1,16 +1,16 @@
 package no.nav.syfo.client
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
+import io.ktor.client.call.body
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpStatement
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import net.logstash.logback.argument.StructuredArguments.fields
-import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
 import no.nav.syfo.model.AvsenderMottaker
 import no.nav.syfo.model.Bruker
@@ -42,24 +42,21 @@ class DokArkivClient(
     suspend fun createJournalpost(
         journalpostRequest: JournalpostRequest,
         loggingMeta: LoggingMeta
-    ): JournalpostResponse = retry(
-        callName = "dokarkiv",
-        retryIntervals = arrayOf(500L, 1000L, 3000L, 5000L, 10000L)
-    ) {
+    ): JournalpostResponse {
         try {
             log.info(
                 "Kall til dokarkiv Nav-Callid {}, {}", journalpostRequest.eksternReferanseId,
                 fields(loggingMeta)
             )
-            val httpResponse = httpClient.post<HttpStatement>(url) {
+            val httpResponse: HttpResponse = httpClient.post(url) {
                 contentType(ContentType.Application.Json)
                 header("Authorization", "Bearer ${accessTokenClient.getAccessToken(scope)}")
                 header("Nav-Callid", journalpostRequest.eksternReferanseId)
-                body = journalpostRequest
+                setBody(journalpostRequest)
                 parameter("forsoekFerdigstill", true)
-            }.execute()
+            }
             if (httpResponse.status == HttpStatusCode.Created || httpResponse.status == HttpStatusCode.Conflict) {
-                httpResponse.call.response.receive<JournalpostResponse>()
+                return httpResponse.call.response.body<JournalpostResponse>()
             } else {
                 log.error("Mottok uventet statuskode fra dokarkiv: {}, {}", httpResponse.status, fields(loggingMeta))
                 throw RuntimeException("Mottok uventet statuskode fra dokarkiv: ${httpResponse.status}")
