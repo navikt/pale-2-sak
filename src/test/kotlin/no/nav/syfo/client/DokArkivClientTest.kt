@@ -87,7 +87,7 @@ internal class DokArkivClientTest {
 
     @After
     fun after() {
-        mockServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
+        mockServer.stop(TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1))
     }
 
     @Before
@@ -145,7 +145,17 @@ internal class DokArkivClientTest {
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
 
         oppdatertVedlegg shouldNotBeEqualTo gosysVedlegg
-        oppdatertVedlegg.contentType shouldBeEqualTo "application/pdf"
+        oppdatertVedlegg!!.contentType shouldBeEqualTo "application/pdf"
         oppdatertVedlegg.description shouldBeEqualTo vedleggMessage.vedlegg.description
+    }
+
+    @Test
+    internal fun `Ignorerer vedlegg av ugyldig type`() {
+        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_html.json"))
+        val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
+
+        val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
+
+        oppdatertVedlegg shouldBeEqualTo null
     }
 }

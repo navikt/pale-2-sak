@@ -141,7 +141,7 @@ fun leggtilDokument(
         vedleggListe
             .filter { vedlegg -> vedlegg.content.content.isNotEmpty() }
             .map { vedlegg -> toGosysVedlegg(vedlegg) }
-            .map { gosysVedlegg -> vedleggToPDF(gosysVedlegg) }
+            .mapNotNull { gosysVedlegg -> vedleggToPDF(gosysVedlegg) }
             .mapIndexed { index, vedlegg ->
                 listVedleggDokumenter.add(
                     Dokument(
@@ -171,8 +171,13 @@ fun toGosysVedlegg(vedlegg: Vedlegg): GosysVedlegg {
     )
 }
 
-fun vedleggToPDF(vedlegg: GosysVedlegg): GosysVedlegg {
-    if (findFiltype(vedlegg) == "PDFA") return vedlegg
+fun vedleggToPDF(vedlegg: GosysVedlegg): GosysVedlegg? {
+    val filtype = findFiltype(vedlegg)
+    if (filtype == "UKJENT") {
+        return null
+    } else if (filtype == "PDFA") {
+        return vedlegg
+    }
     log.info("Converting vedlegg of type ${vedlegg.contentType} to PDFA")
 
     val image =
@@ -194,7 +199,7 @@ fun findFiltype(vedlegg: GosysVedlegg): String =
         "image/tiff" -> "TIFF"
         "image/png" -> "PNG"
         "image/jpeg" -> "JPEG"
-        else -> throw RuntimeException("Vedlegget er av av ukjent mimeType ${vedlegg.contentType}")
+        else -> "UKJENT".also { log.warn("Vedlegget er av av ukjent mimeType ${vedlegg.contentType}") }
     }
 
 fun createAvsenderMottakerValidFnr(avsenderFnr: String, legeerklaering: Legeerklaering):
