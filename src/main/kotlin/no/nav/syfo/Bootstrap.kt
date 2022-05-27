@@ -69,7 +69,6 @@ fun main() {
     )
 
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
-    applicationServer.start()
 
     DefaultExports.initialize()
 
@@ -132,6 +131,8 @@ fun main() {
     val journalService = JournalService(dokArkivClient, pdfgenClient, paleBucketService)
 
     launchListeners(env, applicationState, paleBucketService, journalService)
+
+    applicationServer.start()
 }
 
 @DelicateCoroutinesApi
@@ -142,6 +143,7 @@ fun createListener(applicationState: ApplicationState, action: suspend Coroutine
         } catch (e: TrackableException) {
             log.error("En uhåndtert feil oppstod, applikasjonen restarter {}", fields(e.loggingMeta), e.cause)
         } finally {
+            applicationState.ready = false
             applicationState.alive = false
         }
     }
@@ -159,8 +161,6 @@ fun launchListeners(
             .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none" }
         val kafkaLegeerklaeringAivenConsumer = KafkaConsumer<String, String>(aivenConsumerProperties)
         kafkaLegeerklaeringAivenConsumer.subscribe(listOf(env.legeerklaringTopic))
-
-        applicationState.ready = true
 
         blockingApplicationLogic(
             kafkaLegeerklaeringAivenConsumer,
