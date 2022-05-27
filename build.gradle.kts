@@ -6,28 +6,26 @@ group = "no.nav.no.nav.syfo"
 version = "1.0.0"
 
 val coroutinesVersion = "1.6.1"
-val jacksonVersion = "2.13.2"
-val kafkaVersion = "2.8.0"
+val jacksonVersion = "2.13.3"
+val kafkaVersion = "3.1.0"
 val kluentVersion = "1.68"
-val ktorVersion = "2.0.0"
+val ktorVersion = "2.0.1"
 val logstashLogbackEncoder = "7.1.1"
 val logbackVersion = "1.2.11"
 val prometheusVersion = "0.15.0"
 val junitPlatformLauncher = "1.6.0"
 val pale2CommonVersion = "1.e4cad79"
 val junitVersion = "5.8.2"
-val ioMockVersion = "1.12.3"
-val kotlinVersion = "1.6.20"
+val ioMockVersion = "1.12.4"
+val kotlinVersion = "1.6.21"
 val googleCloudStorageVersion = "2.6.1"
 val pdfboxVersion = "2.0.26"
-val jacksonPatchVersion = "2.13.2.2"
-val jacksonBomVersion = "2.13.2.20220328"
 
 plugins {
-    kotlin("jvm") version "1.6.20"
-    id("org.jmailen.kotlinter") version "3.6.0"
-    id("com.diffplug.spotless") version "5.16.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("jvm") version "1.6.21"
+    id("org.jmailen.kotlinter") version "3.10.0"
+    id("com.diffplug.spotless") version "6.5.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 val githubUser: String by project
@@ -60,8 +58,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("com.fasterxml.jackson:jackson-bom:$jacksonBomVersion")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonPatchVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
@@ -76,7 +72,7 @@ dependencies {
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-    testImplementation ("io.mockk:mockk:$ioMockVersion")
+    testImplementation("io.mockk:mockk:$ioMockVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
