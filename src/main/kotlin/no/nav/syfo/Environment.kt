@@ -8,7 +8,7 @@ data class Environment(
     val aadAccessTokenUrl: String = getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
     val clientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
     val clientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
-    val pdfgen: String = getEnvVar("PDF_GEN_URL", "http://syfopdfgen.teamsykmelding/api/v1/genpdf/pale-2/pale-2"),
+    val pdfgen: String = getEnvVar("PDF_GEN_URL"),
     val paleVedleggBucketName: String = getEnvVar("PALE_VEDLEGG_BUCKET_NAME"),
     val legeerklaeringBucketName: String = getEnvVar("PALE_BUCKET_NAME"),
     val legeerklaringTopic: String = "teamsykmelding.legeerklaering"

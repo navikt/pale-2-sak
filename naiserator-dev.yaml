@@ -34,19 +34,16 @@ spec:
       cpu: 200m
       memory: 512Mi
   vault:
-    enabled: true
-    paths:
-      - kvPath: /kv/preprod/fss/pale-2-sak/teamsykmelding
-        mountPath: /var/run/secrets/nais.io/vault
-  webproxy: true
+    enabled: false
+  filesFrom:
+    - secret: pale2-google-creds
+  webproxy: false
   kafka:
     pool: nav-dev
   azure:
     application:
       enabled: true
       tenant: trygdeetaten.no
-  ingresses:
-    - "https://pale-2-sak.nais.preprod.local"
   env:
     - name: DOK_ARKIV_URL
       value: https://dokarkiv-q1.dev.intern.nav.no/rest/journalpostapi/v1/journalpost
@@ -56,3 +53,5 @@ spec:
       value: teamsykmelding-pale2-vedlegg-bucket-dev
     - name: PALE_BUCKET_NAME
       value: teamsykmelding-pale2-legeerklaring-bucket-dev
+    - name: PDF_GEN_URL
+      value: https://syfopdfgen.dev.intern.nav.no/api/v1/genpdf/pale-2/pale-2
