@@ -40,14 +40,12 @@ import no.nav.syfo.service.BucketService
 import no.nav.syfo.service.JournalService
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.TrackableException
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.FileInputStream
-import java.net.ProxySelector
 import java.time.Duration
 
 val objectMapper: ObjectMapper = ObjectMapper().apply {
@@ -90,14 +88,6 @@ fun main() {
             }
         }
     }
-    val proxyConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        config()
-        engine {
-            customizeClient {
-                setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault()))
-            }
-        }
-    }
     val defaultConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         config().apply {
             install(HttpRequestRetry) {
@@ -114,13 +104,12 @@ fun main() {
         }
     }
     val httpClient = HttpClient(Apache, defaultConfig)
-    val httpClientWithProxy = HttpClient(Apache, proxyConfig)
 
-    val accessTokenClient = AccessTokenClient(env.aadAccessTokenUrl, env.clientId, env.clientSecret, httpClientWithProxy)
+    val accessTokenClient = AccessTokenClient(env.aadAccessTokenUrl, env.clientId, env.clientSecret, httpClient)
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, accessTokenClient, env.dokArkivScope, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
 
-    val paleVedleggStorageCredentials: Credentials = GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/nais.io/vault/pale2-google-creds.json"))
+    val paleVedleggStorageCredentials: Credentials = GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/pale2-google-creds.json"))
     val paleVedleggStorage: Storage = StorageOptions.newBuilder().setCredentials(paleVedleggStorageCredentials).build().service
     val paleBucketService = BucketService(
         vedleggBucketName = env.paleVedleggBucketName,
