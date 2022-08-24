@@ -5,20 +5,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion = "1.6.2"
+val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.13.3"
 val kafkaVersion = "3.1.0"
 val kluentVersion = "1.68"
-val ktorVersion = "2.0.3"
+val ktorVersion = "2.1.0"
 val logstashLogbackEncoder = "7.2"
 val logbackVersion = "1.2.11"
 val prometheusVersion = "0.16.0"
 val junitPlatformLauncher = "1.6.0"
 val pale2CommonVersion = "1.19e8b45"
-val junitVersion = "5.8.2"
-val ioMockVersion = "1.12.4"
+val junitVersion = "5.9.0"
+val ioMockVersion = "1.12.5"
 val kotlinVersion = "1.7.10"
-val googleCloudStorageVersion = "2.8.1"
+val googleCloudStorageVersion = "2.11.3"
 val pdfboxVersion = "2.0.26"
 
 plugins {
@@ -100,9 +100,10 @@ tasks {
     }
 
     withType<Test> {
-        useJUnit()
+        useJUnitPlatform()
         testLogging {
-            showStandardStreams = true
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
     }
 

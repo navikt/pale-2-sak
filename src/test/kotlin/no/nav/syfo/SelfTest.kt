@@ -8,7 +8,7 @@ import io.ktor.server.testing.handleRequest
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.api.registerNaisApi
 import org.amshove.kluent.shouldBeEqualTo
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 internal class SelfTest {
 

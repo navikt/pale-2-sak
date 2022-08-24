@@ -2,7 +2,7 @@ package no.nav.syfo
 
 import no.nav.syfo.validation.validatePersonAndDNumber
 import org.amshove.kluent.shouldBeEqualTo
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

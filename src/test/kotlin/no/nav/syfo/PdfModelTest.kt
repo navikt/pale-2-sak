@@ -16,7 +16,7 @@ import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 internal class PdfModelTest {

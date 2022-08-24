@@ -29,9 +29,9 @@ import no.nav.syfo.objectMapper
 import no.nav.syfo.util.LoggingMeta
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBeEqualTo
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.net.ServerSocket
 import java.util.concurrent.TimeUnit
 
@@ -85,12 +85,12 @@ internal class DokArkivClientTest {
 
     private val dokArkivClient = DokArkivClient("$mockHttpServerUrl/dokarkiv", accessTokenClient, "scope", httpClient)
 
-    @After
+    @AfterEach
     fun after() {
         mockServer.stop(TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1))
     }
 
-    @Before
+    @BeforeEach
     fun before() {
         coEvery { accessTokenClient.getAccessToken(any()) } returns "token"
     }
