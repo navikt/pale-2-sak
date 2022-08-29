@@ -12,6 +12,9 @@ import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.model.Vedlegg
 import no.nav.syfo.util.LoggingMeta
 import no.nav.syfo.util.wrapExceptions
+import org.slf4j.LoggerFactory
+
+private val sikkerlogg = LoggerFactory.getLogger("securelog")
 
 class JournalService(
     private val dokArkivClient: DokArkivClient,
@@ -26,6 +29,11 @@ class JournalService(
     ) {
         wrapExceptions(loggingMeta) {
             log.info("Mottok en legeerklearing, prover aa lagre i Joark {}", StructuredArguments.fields(loggingMeta))
+            sikkerlogg.info(
+                "Mottok en legeerklearing for fnr {}, prover aa lagre i Joark {}",
+                receivedLegeerklaering.personNrPasient,
+                StructuredArguments.fields(loggingMeta)
+            )
 
             val vedleggListe: List<Vedlegg> = if (vedlegg.isNullOrEmpty()) {
                 emptyList()
