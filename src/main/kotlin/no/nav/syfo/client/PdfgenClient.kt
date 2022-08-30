@@ -25,8 +25,8 @@ class PdfgenClient constructor(
         if (httpResponse.status == HttpStatusCode.OK) {
             return httpResponse.call.response.body<ByteArray>()
         } else {
-            log.error("Mottok feilkode fra syfopdfgen: {}", httpResponse.status)
-            throw RuntimeException("Mottok feilkode fra syfopdfgen: ${httpResponse.status}")
+            log.error("Mottok feilkode fra pale-2-pdfgen: {}", httpResponse.status)
+            throw RuntimeException("Mottok feilkode fra pale-2-pdfgen: ${httpResponse.status}")
         }
     }
 }

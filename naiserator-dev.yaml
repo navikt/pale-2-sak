@@ -44,6 +44,8 @@ spec:
     application:
       enabled: true
       tenant: trygdeetaten.no
+  secureLogs:
+    enabled: true
   env:
     - name: DOK_ARKIV_URL
       value: https://dokarkiv.dev-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
@@ -54,4 +56,4 @@ spec:
     - name: PALE_BUCKET_NAME
       value: teamsykmelding-pale2-legeerklaring-bucket-dev
     - name: PDF_GEN_URL
-      value: https://syfopdfgen.dev.intern.nav.no/api/v1/genpdf/pale-2/pale-2
+      value: https://pale-2-pdfgen.dev.intern.nav.no/api/v1/genpdf/pale-2/pale-2
