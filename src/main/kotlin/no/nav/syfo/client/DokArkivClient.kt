@@ -76,11 +76,16 @@ fun createJournalpostPayload(
     signaturDato: LocalDateTime,
     validationResult: ValidationResult,
     msgId: String,
-    vedlegg: List<Vedlegg>
+    vedlegg: List<Vedlegg>,
+    hprNr: String?
 ) = JournalpostRequest(
-    avsenderMottaker = when (validatePersonAndDNumber(avsenderFnr)) {
-        true -> createAvsenderMottakerValidFnr(avsenderFnr, legeerklaering)
-        else -> createAvsenderMottakerNotValidFnr(legeerklaering)
+    avsenderMottaker = if (hprNr != null) {
+        createAvsenderMottakerValidHpr(hprNr, legeerklaering)
+    } else {
+        when (validatePersonAndDNumber(avsenderFnr)) {
+            true -> createAvsenderMottakerValidFnr(avsenderFnr, legeerklaering)
+            else -> createAvsenderMottakerNotValidFnr(legeerklaering)
+        }
     },
     bruker = Bruker(
         id = legeerklaering.pasient.fnr,
@@ -215,6 +220,13 @@ fun createAvsenderMottakerNotValidFnr(legeerklaering: Legeerklaering): AvsenderM
     navn = legeerklaering.signatur.navn ?: ""
 )
 
+fun createAvsenderMottakerValidHpr(hprNr: String, legeerklaering: Legeerklaering): AvsenderMottaker = AvsenderMottaker(
+    id = hprnummerMedRiktigLengde(hprNr),
+    idType = "HPRNR",
+    land = "Norge",
+    navn = legeerklaering.signatur.navn ?: ""
+)
+
 fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: LocalDateTime): String {
     return if (validationResult.status == Status.INVALID) {
         "Avvist Legeerklaering ${formaterDato(signaturDato)}"
@@ -225,4 +237,11 @@ fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: Lo
 fun formaterDato(dato: LocalDateTime): String {
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     return dato.format(formatter)
+}
+
+private fun hprnummerMedRiktigLengde(hprnummer: String): String {
+    if (hprnummer.length < 9) {
+        return hprnummer.padStart(9, '0')
+    }
+    return hprnummer
 }

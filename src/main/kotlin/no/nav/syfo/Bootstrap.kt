@@ -32,6 +32,7 @@ import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.client.AccessTokenClient
 import no.nav.syfo.client.DokArkivClient
+import no.nav.syfo.client.NorskHelsenettClient
 import no.nav.syfo.client.PdfgenClient
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
@@ -108,6 +109,7 @@ fun main() {
     val accessTokenClient = AccessTokenClient(env.aadAccessTokenUrl, env.clientId, env.clientSecret, httpClient)
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, accessTokenClient, env.dokArkivScope, httpClient)
     val pdfgenClient = PdfgenClient(env.pdfgen, httpClient)
+    val norskHelsenettClient = NorskHelsenettClient(env.norskHelsenettEndpointURL, accessTokenClient, env.helsenettproxyScope, httpClient)
 
     val paleVedleggStorageCredentials: Credentials = GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/pale2-google-creds.json"))
     val paleVedleggStorage: Storage = StorageOptions.newBuilder().setCredentials(paleVedleggStorageCredentials).build().service
@@ -117,7 +119,7 @@ fun main() {
         storage = paleVedleggStorage
     )
 
-    val journalService = JournalService(dokArkivClient, pdfgenClient, paleBucketService)
+    val journalService = JournalService(dokArkivClient, pdfgenClient, paleBucketService, norskHelsenettClient)
 
     launchListeners(env, applicationState, paleBucketService, journalService)
 

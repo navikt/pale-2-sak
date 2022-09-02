@@ -57,3 +57,7 @@ spec:
       value: teamsykmelding-pale2-legeerklaring-bucket-prod
     - name: PDF_GEN_URL
       value: https://pale-2-pdfgen.intern.nav.no/api/v1/genpdf/pale-2/pale-2
+    - name: HELSENETT_ENDPOINT_URL
+      value: https://syfohelsenettproxy.prod-fss-pub.nais.io
+    - name: HELSENETT_SCOPE
+      value: api://prod-fss.teamsykmelding.syfohelsenettproxy/.default
