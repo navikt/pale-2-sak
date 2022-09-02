@@ -50,9 +50,10 @@ class JournalService(
             val pdf = pdfgenClient.createPdf(pdfPayload)
             log.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 
-            val behandlerHprNr = try {
-                norskHelsenettClient.getByFnr(fnr = receivedLegeerklaering.personNrLege, loggingMeta = loggingMeta)?.hprNummer
-            } catch (e: Exception) {
+            val behandler = try {
+                norskHelsenettClient.getByFnr(fnr = receivedLegeerklaering.personNrLege, loggingMeta = loggingMeta)
+            } catch (exception: Exception) {
+                log.warn("Feilet å hente behandler med fnr: ", exception)
                 null
             }
 
@@ -65,7 +66,7 @@ class JournalService(
                 validationResult,
                 receivedLegeerklaering.msgId,
                 vedleggListe,
-                behandlerHprNr
+                behandler?.hprNummer
             )
             val journalpost = dokArkivClient.createJournalpost(journalpostPayload, loggingMeta)
 

@@ -22,44 +22,6 @@ class NorskHelsenettClient(
     private val httpClient: HttpClient
 ) {
 
-    suspend fun getByHpr(hprNummer: String?, loggingMeta: LoggingMeta): Behandler? {
-        val accessToken = accessTokenClient.getAccessToken(resourceId)
-
-        val httpResponse = httpClient.get("$endpointUrl/api/v2/behandlerMedHprNummer") {
-            accept(ContentType.Application.Json)
-            headers {
-                append("Authorization", "Bearer $accessToken")
-                append("Nav-CallId", loggingMeta.msgId)
-                append("hprNummer", hprNummer!!)
-            }
-        }
-        when (httpResponse.status) {
-            InternalServerError -> {
-                log.error(
-                    "Syfohelsenettproxy kastet feilmelding for loggingMeta {} ved henting av behandler for hprNummer",
-                    fields(loggingMeta)
-                )
-                throw IOException("Syfohelsenettproxy kastet feilmelding og svarte status ${httpResponse.status} ved søk på hprNummer")
-            }
-            NotFound -> {
-                log.warn("Fant ikke behandler for hprNummer {}", fields(loggingMeta))
-                return null
-            }
-            Unauthorized -> {
-                log.error("Norsk helsenett returnerte Unauthorized for henting av behandler for hprNummer")
-                throw RuntimeException("Norsk helsenett returnerte Unauthorized ved henting av behandler for hprNummer")
-            }
-            OK -> {
-                log.info("Hentet behandler for hprNummer {}", fields(loggingMeta))
-                return httpResponse.body<Behandler>()
-            }
-            else -> {
-                log.error("Feil ved henting av behandler. Statuskode: ${httpResponse.status}")
-                throw RuntimeException("En ukjent feil oppsto ved ved henting av behandler ved søk på hprNummer. Statuskode: ${httpResponse.status}")
-            }
-        }
-    }
-
     suspend fun getByFnr(fnr: String, loggingMeta: LoggingMeta): Behandler? {
         val accessToken = accessTokenClient.getAccessToken(resourceId)
 
@@ -79,18 +41,22 @@ class NorskHelsenettClient(
                 )
                 throw IOException("Syfohelsenettproxy kastet feilmelding og svarte status ${httpResponse.status} ved søk på fnr")
             }
+
             NotFound -> {
                 log.warn("Fant ikke behandler for fnr {}", fields(loggingMeta))
                 return null
             }
+
             Unauthorized -> {
                 log.error("Norsk helsenett returnerte Unauthorized for henting av behandler")
                 throw RuntimeException("Norsk helsenett returnerte Unauthorized ved henting av behandler")
             }
+
             OK -> {
                 log.info("Hentet behandler for fnr {}", fields(loggingMeta))
                 return httpResponse.body<Behandler>()
             }
+
             else -> {
                 log.error("Feil ved henting av behandler. Statuskode: ${httpResponse.status}")
                 throw RuntimeException("En ukjent feil oppsto ved ved henting av behandler. Statuskode: ${httpResponse.status}")
