@@ -11,7 +11,9 @@ data class Environment(
     val pdfgen: String = getEnvVar("PDF_GEN_URL"),
     val paleVedleggBucketName: String = getEnvVar("PALE_VEDLEGG_BUCKET_NAME"),
     val legeerklaeringBucketName: String = getEnvVar("PALE_BUCKET_NAME"),
-    val legeerklaringTopic: String = "teamsykmelding.legeerklaering"
+    val legeerklaringTopic: String = "teamsykmelding.legeerklaering",
+    val norskHelsenettEndpointURL: String = getEnvVar("HELSENETT_ENDPOINT_URL"),
+    val helsenettproxyScope: String = getEnvVar("HELSENETT_SCOPE"),
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =

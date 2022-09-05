@@ -2,6 +2,7 @@ package no.nav.syfo.service
 
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.client.DokArkivClient
+import no.nav.syfo.client.NorskHelsenettClient
 import no.nav.syfo.client.PdfgenClient
 import no.nav.syfo.client.createJournalpostPayload
 import no.nav.syfo.client.createPdfPayload
@@ -19,7 +20,8 @@ private val sikkerlogg = LoggerFactory.getLogger("securelog")
 class JournalService(
     private val dokArkivClient: DokArkivClient,
     private val pdfgenClient: PdfgenClient,
-    private val bucketService: BucketService
+    private val bucketService: BucketService,
+    private val norskHelsenettClient: NorskHelsenettClient,
 ) {
     suspend fun onJournalRequest(
         receivedLegeerklaering: ReceivedLegeerklaering,
@@ -48,6 +50,13 @@ class JournalService(
             val pdf = pdfgenClient.createPdf(pdfPayload)
             log.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 
+            val behandler = try {
+                norskHelsenettClient.getByFnr(fnr = receivedLegeerklaering.personNrLege, loggingMeta = loggingMeta)
+            } catch (exception: Exception) {
+                log.warn("Feilet å hente behandler med fnr: ", exception)
+                null
+            }
+
             val journalpostPayload = createJournalpostPayload(
                 receivedLegeerklaering.legeerklaering,
                 pdf,
@@ -56,7 +65,8 @@ class JournalService(
                 receivedLegeerklaering.legeerklaering.signaturDato,
                 validationResult,
                 receivedLegeerklaering.msgId,
-                vedleggListe
+                vedleggListe,
+                behandler?.hprNummer
             )
             val journalpost = dokArkivClient.createJournalpost(journalpostPayload, loggingMeta)
 
