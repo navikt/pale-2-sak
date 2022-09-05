@@ -46,7 +46,11 @@ class JournalService(
                 }
             }
 
-            val pdfPayload = createPdfPayload(receivedLegeerklaering.legeerklaering, validationResult)
+            val pdfPayload = createPdfPayload(
+                receivedLegeerklaering.legeerklaering,
+                validationResult,
+                receivedLegeerklaering.mottattDato
+            )
             val pdf = pdfgenClient.createPdf(pdfPayload)
             log.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 

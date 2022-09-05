@@ -151,7 +151,8 @@ internal class PdfModelTest {
                         ruleStatus = Status.INVALID
                     )
                 )
-            )
+            ),
+            mottattDato = LocalDateTime.now()
         )
         println(objectMapper.writeValueAsString(pdfPayload))
     }

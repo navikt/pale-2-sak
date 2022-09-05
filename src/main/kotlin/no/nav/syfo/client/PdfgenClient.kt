@@ -12,6 +12,7 @@ import no.nav.syfo.log
 import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.PdfModel
 import no.nav.syfo.model.ValidationResult
+import java.time.LocalDateTime
 
 class PdfgenClient constructor(
     private val url: String,
@@ -33,8 +34,10 @@ class PdfgenClient constructor(
 
 fun createPdfPayload(
     legeerklaring: Legeerklaering,
-    validationResult: ValidationResult
+    validationResult: ValidationResult,
+    mottattDato: LocalDateTime
 ): PdfModel = PdfModel(
     legeerklaering = legeerklaring,
-    validationResult = validationResult
+    validationResult = validationResult,
+    mottattDato = mottattDato
 )
