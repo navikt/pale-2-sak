@@ -229,9 +229,9 @@ fun createAvsenderMottakerValidHpr(hprNr: String, legeerklaering: Legeerklaering
 
 fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: LocalDateTime): String {
     return if (validationResult.status == Status.INVALID) {
-        "Avvist Legeerklaering ${formaterDato(signaturDato)}"
+        "Avvist Legeerklæring ${formaterDato(signaturDato)}"
     } else {
-        "Legeerklaering ${formaterDato(signaturDato)}"
+        "Legeerklæring ${formaterDato(signaturDato)}"
     }
 }
 fun formaterDato(dato: LocalDateTime): String {
