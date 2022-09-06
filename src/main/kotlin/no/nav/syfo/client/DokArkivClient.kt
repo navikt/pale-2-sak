@@ -80,7 +80,7 @@ fun createJournalpostPayload(
     hprNr: String?
 ) = JournalpostRequest(
     avsenderMottaker = if (hprNr != null) {
-        createAvsenderMottakerValidHpr(hprNr, legeerklaering)
+        createAvsenderMottakerValidHpr(hprNr.trim(), legeerklaering)
     } else {
         when (validatePersonAndDNumber(avsenderFnr)) {
             true -> createAvsenderMottakerValidFnr(avsenderFnr, legeerklaering)
