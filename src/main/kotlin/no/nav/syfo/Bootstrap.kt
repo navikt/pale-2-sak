@@ -12,10 +12,11 @@ import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.cio.CIOEngineConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
@@ -71,7 +72,7 @@ fun main() {
 
     DefaultExports.initialize()
 
-    val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+    val config: HttpClientConfig<CIOEngineConfig>.() -> Unit = {
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -88,23 +89,29 @@ fun main() {
                 }
             }
         }
-    }
-    val defaultConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        config().apply {
-            install(HttpRequestRetry) {
-                maxRetries = 4
-                delayMillis { retry ->
-                    retry * 500L
+        install(HttpTimeout) {
+            socketTimeoutMillis = 120_000
+            connectTimeoutMillis = 40_000
+            requestTimeoutMillis = 40_000
+        }
+        install(HttpRequestRetry) {
+            constantDelay(100, 0, false)
+            retryOnExceptionIf(3) { request, throwable ->
+                log.warn("Caught exception ${throwable.message}, for url ${request.url}")
+                true
+            }
+            retryIf(maxRetries) { request, response ->
+                if (response.status.value.let { it in 500..599 }) {
+                    log.warn("Retrying for statuscode ${response.status.value}, for url ${request.url}")
+                    true
+                } else {
+                    false
                 }
             }
         }
-        engine {
-            socketTimeout = 120_000
-            connectTimeout = 40_000
-            connectionRequestTimeout = 40_000
-        }
     }
-    val httpClient = HttpClient(Apache, defaultConfig)
+
+    val httpClient = HttpClient(CIO, config)
 
     val accessTokenClient = AccessTokenClient(env.aadAccessTokenUrl, env.clientId, env.clientSecret, httpClient)
     val dokArkivClient = DokArkivClient(env.dokArkivUrl, accessTokenClient, env.dokArkivScope, httpClient)
