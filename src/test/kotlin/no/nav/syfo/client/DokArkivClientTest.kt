@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
@@ -22,6 +22,7 @@ import io.ktor.server.routing.routing
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import no.nav.syfo.log
 import no.nav.syfo.model.JournalpostRequest
 import no.nav.syfo.model.JournalpostResponse
 import no.nav.syfo.model.VedleggMessage
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit
 
 internal class DokArkivClientTest {
     private val accessTokenClient = mockk<AccessTokenClient>()
-    private val httpClient = HttpClient(Apache) {
+    private val httpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -47,9 +48,18 @@ internal class DokArkivClientTest {
             }
         }
         install(HttpRequestRetry) {
-            maxRetries = 4
-            delayMillis { retry ->
-                retry * 500L
+            constantDelay(100, 0, false)
+            retryOnExceptionIf(3) { request, throwable ->
+                log.warn("Caught exception ${throwable.message}, for url ${request.url}")
+                true
+            }
+            retryIf(maxRetries) { request, response ->
+                if (response.status.value.let { it in 500..599 }) {
+                    log.warn("Retrying for statuscode ${response.status.value}, for url ${request.url}")
+                    true
+                } else {
+                    false
+                }
             }
         }
         expectSuccess = false
@@ -129,7 +139,7 @@ internal class DokArkivClientTest {
 
     @Test
     internal fun `Returnerer samme vedlegg hvis vedlegget er PDF`() {
-        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_pdf.json"))
+        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_pdf.json")!!)
         val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
 
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
@@ -139,7 +149,7 @@ internal class DokArkivClientTest {
 
     @Test
     internal fun `Konverterer til PDF hvis vedlegget ikke er PDF`() {
-        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_bilde.json"))
+        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_bilde.json")!!)
         val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
 
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
@@ -151,7 +161,7 @@ internal class DokArkivClientTest {
 
     @Test
     internal fun `Ignorerer vedlegg av ugyldig type`() {
-        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_html.json"))
+        val vedleggMessage: VedleggMessage = objectMapper.readValue(DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_html.json")!!)
         val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
 
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
