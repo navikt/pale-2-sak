@@ -180,6 +180,7 @@ suspend fun blockingApplicationLogic(
     while (applicationState.ready) {
         kafkaLegeerklaeringAivenConsumer.poll(Duration.ofSeconds(10))
             .filter { !(it.headers().any { header -> header.value().contentEquals("macgyver".toByteArray()) }) }
+            .filter { it.value() != null }
             .forEach { consumerRecord ->
                 log.info("Offset for topic: ${env.legeerklaringTopic}, offset: ${consumerRecord.offset()}")
                 val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage = objectMapper.readValue(consumerRecord.value())
