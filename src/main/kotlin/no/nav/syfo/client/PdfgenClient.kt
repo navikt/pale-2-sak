@@ -13,6 +13,7 @@ import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.PdfModel
 import no.nav.syfo.model.ValidationResult
 import java.time.LocalDateTime
+import no.nav.syfo.objectMapper
 
 class PdfgenClient constructor(
     private val url: String,
@@ -37,7 +38,13 @@ fun createPdfPayload(
     validationResult: ValidationResult,
     mottattDato: LocalDateTime
 ): PdfModel = PdfModel(
-    legeerklaering = legeerklaring,
+    legeerklaering = mapToLegeerklaringWithoutIllegalCharacters(legeerklaring),
     validationResult = validationResult,
     mottattDato = mottattDato
 )
+
+fun mapToLegeerklaringWithoutIllegalCharacters(legeerklaring: Legeerklaering): Legeerklaering {
+    val legeerklaringAsString = objectMapper.writeValueAsString(legeerklaring)
+    val legeerklaringAsStringWithoutIllegalCharacters = legeerklaringAsString.replace(regex = Regex("\\p{C}"), "")
+    return objectMapper.readValue(legeerklaringAsStringWithoutIllegalCharacters, Legeerklaering::class.java)
+}
