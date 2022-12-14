@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import no.nav.syfo.client.mapToLegeerklaringWithoutIllegalCharacters
 import no.nav.syfo.model.Arbeidsgiver
 import no.nav.syfo.model.Diagnose
 import no.nav.syfo.model.ForslagTilTiltak
@@ -16,10 +17,9 @@ import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import no.nav.syfo.client.mapToLegeerklaringWithoutIllegalCharacters
-import org.amshove.kluent.shouldBeEqualTo
 
 internal class PdfModelTest {
 
@@ -278,7 +278,6 @@ internal class PdfModelTest {
         val mapedLegeerklaringWithoutIllegalCharacters = mapToLegeerklaringWithoutIllegalCharacters(legeerklaering)
 
         mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng shouldBeEqualTo "_ •• l\\iiJr~Svar med skumle tegn"
-
     }
 
     @Test
@@ -400,5 +399,4 @@ internal class PdfModelTest {
 
         mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng shouldBeEqualTo arsakssammenhengWithlegalCharacters
     }
-
 }
