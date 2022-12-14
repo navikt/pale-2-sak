@@ -55,9 +55,9 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
     //This is to override version that is in io.ktor:ktor-server-netty
     //https://www.cve.org/CVERecord?id=CVE-2022-41915
+    implementation("io.netty:netty-codec:$nettyCodecVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
