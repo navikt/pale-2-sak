@@ -9,7 +9,7 @@ val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.14.1"
 val kafkaVersion = "3.3.1"
 val kluentVersion = "1.68"
-val ktorVersion = "2.2.1"
+val ktorVersion = "2.2.2"
 val logstashLogbackEncoder = "7.2"
 val logbackVersion = "1.4.3"
 val prometheusVersion = "0.16.0"
@@ -21,7 +21,6 @@ val kotlinVersion = "1.8.0"
 val googleCloudStorageVersion = "2.13.0"
 val pdfboxVersion = "2.0.27"
 val commonsCodecVersion = "1.15"
-val nettyCodecVersion = "4.1.86.Final"
 
 
 plugins {
@@ -55,9 +54,6 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    //This is to override version that is in io.ktor:ktor-server-netty
-    //https://www.cve.org/CVERecord?id=CVE-2022-41915
-    implementation("io.netty:netty-codec:$nettyCodecVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
