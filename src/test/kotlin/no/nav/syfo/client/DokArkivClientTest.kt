@@ -28,9 +28,9 @@ import no.nav.syfo.model.JournalpostResponse
 import no.nav.syfo.model.VedleggMessage
 import no.nav.syfo.objectMapper
 import no.nav.syfo.util.LoggingMeta
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldNotBeEqualTo
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.net.ServerSocket
@@ -118,7 +118,7 @@ internal class DokArkivClientTest {
             )
         }
 
-        jpResponse?.journalpostId shouldBeEqualTo "nyJpId"
+        assertEquals("nyJpId", jpResponse?.journalpostId)
     }
 
     @Test
@@ -134,7 +134,7 @@ internal class DokArkivClientTest {
             )
         }
 
-        jpResponse?.journalpostId shouldBeEqualTo "eksisterendeJpId"
+        assertEquals("eksisterendeJpId", jpResponse?.journalpostId)
     }
 
     @Test
@@ -144,7 +144,7 @@ internal class DokArkivClientTest {
 
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
 
-        oppdatertVedlegg shouldBeEqualTo gosysVedlegg
+        assertEquals(gosysVedlegg, oppdatertVedlegg)
     }
 
     @Test
@@ -154,9 +154,9 @@ internal class DokArkivClientTest {
 
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
 
-        oppdatertVedlegg shouldNotBeEqualTo gosysVedlegg
-        oppdatertVedlegg!!.contentType shouldBeEqualTo "application/pdf"
-        oppdatertVedlegg.description shouldBeEqualTo vedleggMessage.vedlegg.description
+        assertNotEquals(gosysVedlegg, oppdatertVedlegg)
+        assertEquals("application/pdf", oppdatertVedlegg!!.contentType)
+        assertEquals(vedleggMessage.vedlegg.description, oppdatertVedlegg.description)
     }
 
     @Test
@@ -166,6 +166,6 @@ internal class DokArkivClientTest {
 
         val oppdatertVedlegg = vedleggToPDF(gosysVedlegg)
 
-        oppdatertVedlegg shouldBeEqualTo null
+        assertEquals(null, oppdatertVedlegg)
     }
 }
