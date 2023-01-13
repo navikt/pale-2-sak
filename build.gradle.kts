@@ -8,12 +8,10 @@ version = "1.0.0"
 val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.14.1"
 val kafkaVersion = "3.3.1"
-val kluentVersion = "1.68"
 val ktorVersion = "2.2.2"
 val logstashLogbackEncoder = "7.2"
 val logbackVersion = "1.4.3"
 val prometheusVersion = "0.16.0"
-val junitPlatformLauncher = "1.6.0"
 val pale2CommonVersion = "1.ad083ef"
 val junitVersion = "5.9.0"
 val ioMockVersion = "1.13.2"
@@ -74,7 +72,6 @@ dependencies {
     implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
     implementation("no.nav.syfo:pale-2-common-kafka:$pale2CommonVersion")
 
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     testImplementation("io.mockk:mockk:$ioMockVersion")
