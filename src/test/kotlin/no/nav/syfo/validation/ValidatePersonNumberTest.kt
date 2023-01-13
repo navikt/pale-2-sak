@@ -1,7 +1,6 @@
-package no.nav.syfo
+package no.nav.syfo.validation
 
-import no.nav.syfo.validation.validatePersonAndDNumber
-import org.amshove.kluent.shouldBeEqualTo
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -11,14 +10,16 @@ internal class ValidatePersonNumberTest {
     internal fun `Should check validate as fnr`() {
         val generateFnr = generatePersonNumber(LocalDate.of(1991, 1, 1), false)
         val validFnr = validatePersonAndDNumber(generateFnr)
-        validFnr shouldBeEqualTo true
+
+        assertEquals(true, validFnr)
     }
 
     @Test
     internal fun `Should check validate as d-number`() {
         val generateDnumber = generatePersonNumber(LocalDate.of(1991, 1, 1), true)
         val validdnumber = validatePersonAndDNumber(generateDnumber)
-        validdnumber shouldBeEqualTo true
+
+        assertEquals(true, validdnumber)
     }
 }
 

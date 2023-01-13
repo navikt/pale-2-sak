@@ -1,23 +1,8 @@
-package no.nav.syfo
+package no.nav.syfo.model
 
 import no.nav.syfo.client.mapToLegeerklaringWithoutIllegalCharacters
-import no.nav.syfo.model.Arbeidsgiver
-import no.nav.syfo.model.Diagnose
-import no.nav.syfo.model.ForslagTilTiltak
-import no.nav.syfo.model.FunksjonsOgArbeidsevne
-import no.nav.syfo.model.Henvisning
-import no.nav.syfo.model.Kontakt
-import no.nav.syfo.model.Legeerklaering
-import no.nav.syfo.model.Pasient
-import no.nav.syfo.model.PdfModel
-import no.nav.syfo.model.Plan
-import no.nav.syfo.model.Prognose
-import no.nav.syfo.model.RuleInfo
-import no.nav.syfo.model.Signatur
-import no.nav.syfo.model.Status
-import no.nav.syfo.model.Sykdomsopplysninger
-import no.nav.syfo.model.ValidationResult
-import org.amshove.kluent.shouldBeEqualTo
+import no.nav.syfo.objectMapper
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -277,7 +262,7 @@ internal class PdfModelTest {
 
         val mapedLegeerklaringWithoutIllegalCharacters = mapToLegeerklaringWithoutIllegalCharacters(legeerklaering)
 
-        mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng shouldBeEqualTo "_ •• l\\iiJr~Svar med skumle tegn"
+        assertEquals("_ •• l\\iiJr~Svar med skumle tegn", mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng)
     }
 
     @Test
@@ -397,6 +382,6 @@ internal class PdfModelTest {
 
         val mapedLegeerklaringWithoutIllegalCharacters = mapToLegeerklaringWithoutIllegalCharacters(legeerklaering)
 
-        mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng shouldBeEqualTo arsakssammenhengWithlegalCharacters
+        assertEquals(arsakssammenhengWithlegalCharacters, mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng)
     }
 }
