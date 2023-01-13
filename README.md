@@ -15,6 +15,20 @@ persist it
 
 * JDK 17
 
+## FlowChart
+This the high level flow of the application
+```mermaid
+  flowchart LR
+        
+      A[\teamsykmelding.legeerklaering/] --> pale-2-sak
+      pale-2-sak <--> |Get ReceivedLegeerklaering object| B[GCP Cloud Storage bucket]
+      pale-2-sak <--> |Get Legeerklaering vedleggs| B[GCP Cloud Storage bucket]
+      pale-2-sak <--> pale-2-pdfgen
+      pale-2-sak <--> syfohelsenettproxy
+      pale-2-sak <--> dokakriv
+      dokakriv --> Gosys;
+```
+
 ### Getting github-package-registry packages NAV-IT
 Some packages used in this repo is uploaded to the GitHub Package Registry which requires authentication. It can, for example, be solved like this in Gradle:
 ```
