@@ -6,23 +6,23 @@ group = "no.nav.no.nav.syfo"
 version = "1.0.0"
 
 val coroutinesVersion = "1.6.4"
-val jacksonVersion = "2.14.1"
+val jacksonVersion = "2.14.2"
 val kafkaVersion = "3.3.1"
-val ktorVersion = "2.2.2"
+val ktorVersion = "2.2.3"
 val logstashLogbackEncoder = "7.2"
 val logbackVersion = "1.4.3"
 val prometheusVersion = "0.16.0"
-val pale2CommonVersion = "1.ad083ef"
-val junitVersion = "5.9.0"
+val pale2CommonVersion = "1.a94f960"
+val junitVersion = "5.9.2"
 val ioMockVersion = "1.13.2"
-val kotlinVersion = "1.8.0"
+val kotlinVersion = "1.8.10"
 val googleCloudStorageVersion = "2.13.0"
 val pdfboxVersion = "2.0.27"
 val commonsCodecVersion = "1.15"
 
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
     id("org.jmailen.kotlinter") version "3.10.0"
     id("com.diffplug.spotless") version "6.5.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
@@ -104,6 +104,7 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
         testLogging {
+            events("skipped", "failed")
             showStackTraces = true
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
