@@ -15,17 +15,17 @@ val prometheusVersion = "0.16.0"
 val pale2CommonVersion = "1.a94f960"
 val junitVersion = "5.9.2"
 val ioMockVersion = "1.13.2"
-val kotlinVersion = "1.8.10"
+val kotlinVersion = "1.8.20"
 val googleCloudStorageVersion = "2.13.0"
 val pdfboxVersion = "2.0.27"
 val commonsCodecVersion = "1.15"
 
 
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "1.8.20"
     id("org.jmailen.kotlinter") version "3.10.0"
     id("com.diffplug.spotless") version "6.5.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 val githubUser: String by project
