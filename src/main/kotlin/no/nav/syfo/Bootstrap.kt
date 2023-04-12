@@ -65,7 +65,7 @@ fun main() {
     val applicationState = ApplicationState()
     val applicationEngine = createApplicationEngine(
         env,
-        applicationState
+        applicationState,
     )
 
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
@@ -123,7 +123,7 @@ fun main() {
     val paleBucketService = BucketService(
         vedleggBucketName = env.paleVedleggBucketName,
         legeerklaeringBucketName = env.legeerklaeringBucketName,
-        storage = paleVedleggStorage
+        storage = paleVedleggStorage,
     )
 
     val journalService = JournalService(dokArkivClient, pdfgenClient, paleBucketService, norskHelsenettClient)
@@ -151,7 +151,7 @@ fun launchListeners(
     env: Environment,
     applicationState: ApplicationState,
     bucketService: BucketService,
-    journalService: JournalService
+    journalService: JournalService,
 ) {
     createListener(applicationState) {
         val aivenConsumerProperties = KafkaUtils.getAivenKafkaConfig()
@@ -165,7 +165,7 @@ fun launchListeners(
             bucketService,
             applicationState,
             journalService,
-            env
+            env,
         )
     }
 }
@@ -175,7 +175,7 @@ suspend fun blockingApplicationLogic(
     bucketService: BucketService,
     applicationState: ApplicationState,
     journalService: JournalService,
-    env: Environment
+    env: Environment,
 ) {
     while (applicationState.ready) {
         kafkaLegeerklaeringAivenConsumer.poll(Duration.ofSeconds(10))
@@ -190,14 +190,14 @@ suspend fun blockingApplicationLogic(
                     mottakId = receivedLegeerklaering.navLogId,
                     orgNr = receivedLegeerklaering.legekontorOrgNr,
                     msgId = receivedLegeerklaering.msgId,
-                    legeerklaeringId = receivedLegeerklaering.legeerklaering.id
+                    legeerklaeringId = receivedLegeerklaering.legeerklaering.id,
                 )
 
                 journalService.onJournalRequest(
                     receivedLegeerklaering,
                     legeerklaeringKafkaMessage.validationResult,
                     legeerklaeringKafkaMessage.vedlegg,
-                    loggingMeta
+                    loggingMeta,
                 )
             }
     }

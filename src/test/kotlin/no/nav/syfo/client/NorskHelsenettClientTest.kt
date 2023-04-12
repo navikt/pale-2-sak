@@ -55,7 +55,11 @@ class NorskHelsenettClientTest {
     private val mockHttpServerUrl = "http://localhost:$mockHttpServerPort"
     private val defaultBehandler = Behandler(
         godkjenninger = listOf(Godkjenning()),
-        fnr = fnr, hprNummer = "004133334", fornavn = "Per", mellomnavn = "Jesper", etternavn = "Hansen"
+        fnr = fnr,
+        hprNummer = "004133334",
+        fornavn = "Per",
+        mellomnavn = "Jesper",
+        etternavn = "Hansen",
     )
 
     private val mockServer = embeddedServer(Netty, mockHttpServerPort) {
@@ -73,7 +77,7 @@ class NorskHelsenettClientTest {
                     call.request.headers["behandlerFnr"] == fnr -> call.respond(defaultBehandler)
                     call.request.headers["behandlerFnr"] == "behandlerFinnesIkke" -> call.respond(
                         HttpStatusCode.NotFound,
-                        "Behandler finnes ikke"
+                        "Behandler finnes ikke",
                     )
 
                     else -> call.respond(HttpStatusCode.InternalServerError, "Noe gikk galt")

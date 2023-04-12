@@ -30,38 +30,38 @@ internal class PdfModelTest {
                     navn = "NAV IKT",
                     adresse = "Sannergata 2",
                     postnummer = 557,
-                    poststed = "Oslo"
-                )
+                    poststed = "Oslo",
+                ),
             ),
             sykdomsopplysninger = Sykdomsopplysninger(
                 hoveddiagnose = Diagnose(
                     tekst = "Fysikalsk behandling/rehabilitering",
-                    kode = "-57"
+                    kode = "-57",
                 ),
                 bidiagnose = listOf(
                     Diagnose(
                         tekst = "Engstelig for hjertesykdom",
-                        kode = "K24"
-                    )
+                        kode = "K24",
+                    ),
                 ),
                 arbeidsuforFra = LocalDateTime.now().minusDays(3),
                 sykdomshistorie = "Tekst",
                 statusPresens = "Tekst",
                 borNavKontoretVurdereOmDetErEnYrkesskade = true,
-                yrkesSkadeDato = LocalDateTime.now().minusDays(4)
+                yrkesSkadeDato = LocalDateTime.now().minusDays(4),
             ),
             plan = Plan(
                 utredning = null,
                 behandling = Henvisning(
                     tekst = "2 timer i uken med svømming",
                     dato = LocalDateTime.now(),
-                    antattVentetIUker = 1
+                    antattVentetIUker = 1,
                 ),
                 utredningsplan = "Tekst",
                 behandlingsplan = "Tekst",
                 vurderingAvTidligerePlan = "Tekst",
                 narSporreOmNyeLegeopplysninger = "Tekst",
-                videreBehandlingIkkeAktueltGrunn = "Tekst"
+                videreBehandlingIkkeAktueltGrunn = "Tekst",
             ),
             forslagTilTiltak = ForslagTilTiltak(
                 behov = true,
@@ -73,7 +73,7 @@ internal class PdfModelTest {
                 friskmeldingTilArbeidsformidling = false,
                 andreTiltak = "Trenger taco i lunsjen",
                 naermereOpplysninger = "Tacoen må bestå av ordentlige råvarer",
-                tekst = "Pasienten har store problemer med fordøying av annen mat enn Taco"
+                tekst = "Pasienten har store problemer med fordøying av annen mat enn Taco",
 
             ),
             funksjonsOgArbeidsevne = FunksjonsOgArbeidsevne(
@@ -90,13 +90,13 @@ internal class PdfModelTest {
                 kanTaAnnetArbeidNa = true,
                 kanTaAnnetArbeidEtterBehandling = true,
                 kanIkkeGjenopptaNaverendeArbeid = "Spise annen mat enn Taco",
-                kanIkkeTaAnnetArbeid = "Spise annen mat enn Taco"
+                kanIkkeTaAnnetArbeid = "Spise annen mat enn Taco",
             ),
             prognose = Prognose(
                 vilForbedreArbeidsevne = true,
                 anslattVarighetSykdom = "1 uke",
                 anslattVarighetFunksjonsnedsetting = "2 uker",
-                anslattVarighetNedsattArbeidsevne = "4 uker"
+                anslattVarighetNedsattArbeidsevne = "4 uker",
             ),
             arsakssammenheng = "Funksjonsnedsettelsen har stor betydning for at arbeidsevnen er nedsatt",
             andreOpplysninger = "Tekst",
@@ -105,7 +105,7 @@ internal class PdfModelTest {
                 skalKontakteArbeidsgiver = true,
                 skalKontakteBasisgruppe = false,
                 kontakteAnnenInstans = null,
-                onskesKopiAvVedtak = true
+                onskesKopiAvVedtak = true,
             ),
             tilbakeholdInnhold = false,
             pasientenBurdeIkkeVite = null,
@@ -116,9 +116,9 @@ internal class PdfModelTest {
                 postnummer = "9999",
                 poststed = "Stockholm",
                 signatur = "Lege Legesen",
-                tlfNummer = "98765432"
+                tlfNummer = "98765432",
             ),
-            signaturDato = LocalDateTime.now()
+            signaturDato = LocalDateTime.now(),
         )
         val pdfPayload = PdfModel(
             legeerklaering = legeerklaering,
@@ -129,24 +129,23 @@ internal class PdfModelTest {
                         ruleName = "PASIENT_YNGRE_ENN_13",
                         messageForUser = "Pasienten er under 13 år. Sykmelding kan ikke benyttes.",
                         messageForSender = "Pasienten er under 13 år. Sykmelding kan ikke benyttes.",
-                        ruleStatus = Status.INVALID
+                        ruleStatus = Status.INVALID,
                     ),
                     RuleInfo(
                         ruleName = "PASIENT_ELDRE_ENN_70",
                         messageForUser = "Sykmelding kan ikke benyttes etter at du har fylt 70 år",
                         messageForSender = "Pasienten er over 70 år. Sykmelding kan ikke benyttes.",
-                        ruleStatus = Status.INVALID
-                    )
-                )
+                        ruleStatus = Status.INVALID,
+                    ),
+                ),
             ),
-            mottattDato = LocalDateTime.now()
+            mottattDato = LocalDateTime.now(),
         )
         println(objectMapper.writeValueAsString(pdfPayload))
     }
 
     @Test
     internal fun `map to Legeerklaring without illegal characters remove zwnbsp`() {
-
         val arsakssammenhengWithIllegalCharacters = "\uFEFF_ •• l\\iiJr~Svar med skumle tegn"
 
         val legeerklaering = Legeerklaering(
@@ -169,38 +168,38 @@ internal class PdfModelTest {
                     navn = "NAV IKT",
                     adresse = "Sannergata 2",
                     postnummer = 557,
-                    poststed = "Oslo"
-                )
+                    poststed = "Oslo",
+                ),
             ),
             sykdomsopplysninger = Sykdomsopplysninger(
                 hoveddiagnose = Diagnose(
                     tekst = "Fysikalsk behandling/rehabilitering",
-                    kode = "-57"
+                    kode = "-57",
                 ),
                 bidiagnose = listOf(
                     Diagnose(
                         tekst = "Engstelig for hjertesykdom",
-                        kode = "K24"
-                    )
+                        kode = "K24",
+                    ),
                 ),
                 arbeidsuforFra = LocalDateTime.now().minusDays(3),
                 sykdomshistorie = "Tekst",
                 statusPresens = "Tekst",
                 borNavKontoretVurdereOmDetErEnYrkesskade = true,
-                yrkesSkadeDato = LocalDateTime.now().minusDays(4)
+                yrkesSkadeDato = LocalDateTime.now().minusDays(4),
             ),
             plan = Plan(
                 utredning = null,
                 behandling = Henvisning(
                     tekst = "2 timer i uken med svømming",
                     dato = LocalDateTime.now(),
-                    antattVentetIUker = 1
+                    antattVentetIUker = 1,
                 ),
                 utredningsplan = "Tekst",
                 behandlingsplan = "Tekst",
                 vurderingAvTidligerePlan = "Tekst",
                 narSporreOmNyeLegeopplysninger = "Tekst",
-                videreBehandlingIkkeAktueltGrunn = "Tekst"
+                videreBehandlingIkkeAktueltGrunn = "Tekst",
             ),
             forslagTilTiltak = ForslagTilTiltak(
                 behov = true,
@@ -212,7 +211,7 @@ internal class PdfModelTest {
                 friskmeldingTilArbeidsformidling = false,
                 andreTiltak = "Trenger taco i lunsjen",
                 naermereOpplysninger = "Tacoen må bestå av ordentlige råvarer",
-                tekst = "Pasienten har store problemer med fordøying av annen mat enn Taco"
+                tekst = "Pasienten har store problemer med fordøying av annen mat enn Taco",
 
             ),
             funksjonsOgArbeidsevne = FunksjonsOgArbeidsevne(
@@ -229,13 +228,13 @@ internal class PdfModelTest {
                 kanTaAnnetArbeidNa = true,
                 kanTaAnnetArbeidEtterBehandling = true,
                 kanIkkeGjenopptaNaverendeArbeid = "Spise annen mat enn Taco",
-                kanIkkeTaAnnetArbeid = "Spise annen mat enn Taco"
+                kanIkkeTaAnnetArbeid = "Spise annen mat enn Taco",
             ),
             prognose = Prognose(
                 vilForbedreArbeidsevne = true,
                 anslattVarighetSykdom = "1 uke",
                 anslattVarighetFunksjonsnedsetting = "2 uker",
-                anslattVarighetNedsattArbeidsevne = "4 uker"
+                anslattVarighetNedsattArbeidsevne = "4 uker",
             ),
             arsakssammenheng = arsakssammenhengWithIllegalCharacters,
             andreOpplysninger = "Tekst",
@@ -244,7 +243,7 @@ internal class PdfModelTest {
                 skalKontakteArbeidsgiver = true,
                 skalKontakteBasisgruppe = false,
                 kontakteAnnenInstans = null,
-                onskesKopiAvVedtak = true
+                onskesKopiAvVedtak = true,
             ),
             tilbakeholdInnhold = false,
             pasientenBurdeIkkeVite = null,
@@ -255,9 +254,9 @@ internal class PdfModelTest {
                 postnummer = "9999",
                 poststed = "Stockholm",
                 signatur = "Lege Legesen",
-                tlfNummer = "98765432"
+                tlfNummer = "98765432",
             ),
-            signaturDato = LocalDateTime.now()
+            signaturDato = LocalDateTime.now(),
         )
 
         val mapedLegeerklaringWithoutIllegalCharacters = mapToLegeerklaringWithoutIllegalCharacters(legeerklaering)
@@ -289,38 +288,38 @@ internal class PdfModelTest {
                     navn = "NAV IKT",
                     adresse = "Sannergata 2",
                     postnummer = 557,
-                    poststed = "Oslo"
-                )
+                    poststed = "Oslo",
+                ),
             ),
             sykdomsopplysninger = Sykdomsopplysninger(
                 hoveddiagnose = Diagnose(
                     tekst = "Fysikalsk behandling/rehabilitering",
-                    kode = "-57"
+                    kode = "-57",
                 ),
                 bidiagnose = listOf(
                     Diagnose(
                         tekst = "Engstelig for hjertesykdom",
-                        kode = "K24"
-                    )
+                        kode = "K24",
+                    ),
                 ),
                 arbeidsuforFra = LocalDateTime.now().minusDays(3),
                 sykdomshistorie = "Tekst",
                 statusPresens = "Tekst",
                 borNavKontoretVurdereOmDetErEnYrkesskade = true,
-                yrkesSkadeDato = LocalDateTime.now().minusDays(4)
+                yrkesSkadeDato = LocalDateTime.now().minusDays(4),
             ),
             plan = Plan(
                 utredning = null,
                 behandling = Henvisning(
                     tekst = "2 timer i uken med svømming",
                     dato = LocalDateTime.now(),
-                    antattVentetIUker = 1
+                    antattVentetIUker = 1,
                 ),
                 utredningsplan = "Tekst",
                 behandlingsplan = "Tekst",
                 vurderingAvTidligerePlan = "Tekst",
                 narSporreOmNyeLegeopplysninger = "Tekst",
-                videreBehandlingIkkeAktueltGrunn = "Tekst"
+                videreBehandlingIkkeAktueltGrunn = "Tekst",
             ),
             forslagTilTiltak = ForslagTilTiltak(
                 behov = true,
@@ -332,7 +331,7 @@ internal class PdfModelTest {
                 friskmeldingTilArbeidsformidling = false,
                 andreTiltak = "Trenger taco i lunsjen",
                 naermereOpplysninger = "Tacoen må bestå av ordentlige råvarer",
-                tekst = "Pasienten har store problemer med fordøying av annen mat enn Taco"
+                tekst = "Pasienten har store problemer med fordøying av annen mat enn Taco",
 
             ),
             funksjonsOgArbeidsevne = FunksjonsOgArbeidsevne(
@@ -349,13 +348,13 @@ internal class PdfModelTest {
                 kanTaAnnetArbeidNa = true,
                 kanTaAnnetArbeidEtterBehandling = true,
                 kanIkkeGjenopptaNaverendeArbeid = "Spise annen mat enn Taco",
-                kanIkkeTaAnnetArbeid = "Spise annen mat enn Taco"
+                kanIkkeTaAnnetArbeid = "Spise annen mat enn Taco",
             ),
             prognose = Prognose(
                 vilForbedreArbeidsevne = true,
                 anslattVarighetSykdom = "1 uke",
                 anslattVarighetFunksjonsnedsetting = "2 uker",
-                anslattVarighetNedsattArbeidsevne = "4 uker"
+                anslattVarighetNedsattArbeidsevne = "4 uker",
             ),
             arsakssammenheng = arsakssammenhengWithlegalCharacters,
             andreOpplysninger = "Tekst",
@@ -364,7 +363,7 @@ internal class PdfModelTest {
                 skalKontakteArbeidsgiver = true,
                 skalKontakteBasisgruppe = false,
                 kontakteAnnenInstans = null,
-                onskesKopiAvVedtak = true
+                onskesKopiAvVedtak = true,
             ),
             tilbakeholdInnhold = false,
             pasientenBurdeIkkeVite = null,
@@ -375,9 +374,9 @@ internal class PdfModelTest {
                 postnummer = "9999",
                 poststed = "Stockholm",
                 signatur = "Lege Legesen",
-                tlfNummer = "98765432"
+                tlfNummer = "98765432",
             ),
-            signaturDato = LocalDateTime.now()
+            signaturDato = LocalDateTime.now(),
         )
 
         val mapedLegeerklaringWithoutIllegalCharacters = mapToLegeerklaringWithoutIllegalCharacters(legeerklaering)

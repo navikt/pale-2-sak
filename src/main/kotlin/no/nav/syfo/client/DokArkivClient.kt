@@ -37,16 +37,17 @@ class DokArkivClient(
     private val url: String,
     private val accessTokenClient: AccessTokenClient,
     private val scope: String,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) {
     suspend fun createJournalpost(
         journalpostRequest: JournalpostRequest,
-        loggingMeta: LoggingMeta
+        loggingMeta: LoggingMeta,
     ): JournalpostResponse {
         try {
             log.info(
-                "Kall til dokarkiv Nav-Callid {}, {}", journalpostRequest.eksternReferanseId,
-                fields(loggingMeta)
+                "Kall til dokarkiv Nav-Callid {}, {}",
+                journalpostRequest.eksternReferanseId,
+                fields(loggingMeta),
             )
             val httpResponse: HttpResponse = httpClient.post(url) {
                 contentType(ContentType.Application.Json)
@@ -77,7 +78,7 @@ fun createJournalpostPayload(
     validationResult: ValidationResult,
     msgId: String,
     vedlegg: List<Vedlegg>,
-    hprNr: String?
+    hprNr: String?,
 ) = JournalpostRequest(
     avsenderMottaker = if (hprNr != null) {
         createAvsenderMottakerValidHpr(hprNr.trim(), legeerklaering)
@@ -89,7 +90,7 @@ fun createJournalpostPayload(
     },
     bruker = Bruker(
         id = legeerklaering.pasient.fnr,
-        idType = "FNR"
+        idType = "FNR",
     ),
     dokumenter = leggtilDokument(
         msgId = msgId,
@@ -98,17 +99,17 @@ fun createJournalpostPayload(
         validationResult = validationResult,
         ediLoggId = ediLoggId,
         signaturDato = signaturDato,
-        vedleggListe = vedlegg
+        vedleggListe = vedlegg,
     ),
     eksternReferanseId = ediLoggId,
     journalfoerendeEnhet = "9999",
     journalpostType = "INNGAAENDE",
     kanal = "HELSENETTET",
     sak = Sak(
-        sakstype = "GENERELL_SAK"
+        sakstype = "GENERELL_SAK",
     ),
     tema = "OPP",
-    tittel = createTittleJournalpost(validationResult, signaturDato)
+    tittel = createTittleJournalpost(validationResult, signaturDato),
 )
 
 fun leggtilDokument(
@@ -118,7 +119,7 @@ fun leggtilDokument(
     validationResult: ValidationResult,
     ediLoggId: String,
     signaturDato: LocalDateTime,
-    vedleggListe: List<Vedlegg>?
+    vedleggListe: List<Vedlegg>?,
 ): List<Dokument> {
     val listDokument = ArrayList<Dokument>()
     listDokument.add(
@@ -128,18 +129,18 @@ fun leggtilDokument(
                     filnavn = "$ediLoggId.pdf",
                     filtype = "PDFA",
                     variantformat = "ARKIV",
-                    fysiskDokument = pdf
+                    fysiskDokument = pdf,
                 ),
                 Dokumentvarianter(
                     filnavn = "Legeerklæring Original",
                     filtype = "JSON",
                     variantformat = "ORIGINAL",
-                    fysiskDokument = objectMapper.writeValueAsBytes(legeerklaering)
-                )
+                    fysiskDokument = objectMapper.writeValueAsBytes(legeerklaering),
+                ),
             ),
             tittel = createTittleJournalpost(validationResult, signaturDato),
-            brevkode = "NAV 08-07.08"
-        )
+            brevkode = "NAV 08-07.08",
+        ),
     )
     if (!vedleggListe.isNullOrEmpty()) {
         val listVedleggDokumenter = ArrayList<Dokument>()
@@ -155,11 +156,11 @@ fun leggtilDokument(
                                 filtype = findFiltype(vedlegg),
                                 filnavn = "Vedlegg_nr_${index}_Legeerklaering_$msgId",
                                 variantformat = "ARKIV",
-                                fysiskDokument = vedlegg.content
-                            )
+                                fysiskDokument = vedlegg.content,
+                            ),
                         ),
-                        tittel = "Vedlegg til legeerklæring ${formaterDato(signaturDato)}"
-                    )
+                        tittel = "Vedlegg til legeerklæring ${formaterDato(signaturDato)}",
+                    ),
                 )
             }
         listVedleggDokumenter.map { vedlegg ->
@@ -172,7 +173,7 @@ fun toGosysVedlegg(vedlegg: Vedlegg): GosysVedlegg {
     return GosysVedlegg(
         contentType = vedlegg.type,
         content = Base64.getMimeDecoder().decode(vedlegg.content.content),
-        description = vedlegg.description
+        description = vedlegg.description,
     )
 }
 
@@ -194,7 +195,7 @@ fun vedleggToPDF(vedlegg: GosysVedlegg): GosysVedlegg? {
     return GosysVedlegg(
         content = image,
         contentType = "application/pdf",
-        description = vedlegg.description
+        description = vedlegg.description,
     )
 }
 
@@ -212,19 +213,19 @@ fun createAvsenderMottakerValidFnr(avsenderFnr: String, legeerklaering: Legeerkl
     id = avsenderFnr,
     idType = "FNR",
     land = "Norge",
-    navn = legeerklaering.signatur.navn ?: ""
+    navn = legeerklaering.signatur.navn ?: "",
 )
 
 fun createAvsenderMottakerNotValidFnr(legeerklaering: Legeerklaering): AvsenderMottaker = AvsenderMottaker(
     land = "Norge",
-    navn = legeerklaering.signatur.navn ?: ""
+    navn = legeerklaering.signatur.navn ?: "",
 )
 
 fun createAvsenderMottakerValidHpr(hprNr: String, legeerklaering: Legeerklaering): AvsenderMottaker = AvsenderMottaker(
     id = hprnummerMedRiktigLengde(hprNr),
     idType = "HPRNR",
     land = "Norge",
-    navn = legeerklaering.signatur.navn ?: ""
+    navn = legeerklaering.signatur.navn ?: "",
 )
 
 fun createTittleJournalpost(validationResult: ValidationResult, signaturDato: LocalDateTime): String {

@@ -78,14 +78,22 @@ internal class DokArkivClientTest {
                     call.request.header("Nav-Callid") == "NY" -> call.respond(
                         HttpStatusCode.Created,
                         JournalpostResponse(
-                            emptyList(), "nyJpId", true, null, null
-                        )
+                            emptyList(),
+                            "nyJpId",
+                            true,
+                            null,
+                            null,
+                        ),
                     )
                     call.request.header("Nav-Callid") == "DUPLIKAT" -> call.respond(
                         HttpStatusCode.Conflict,
                         JournalpostResponse(
-                            emptyList(), "eksisterendeJpId", true, null, null
-                        )
+                            emptyList(),
+                            "eksisterendeJpId",
+                            true,
+                            null,
+                            null,
+                        ),
                     )
                     else -> call.respond(HttpStatusCode.InternalServerError)
                 }
@@ -112,9 +120,9 @@ internal class DokArkivClientTest {
             jpResponse = dokArkivClient.createJournalpost(
                 JournalpostRequest(
                     dokumenter = emptyList(),
-                    eksternReferanseId = "NY"
+                    eksternReferanseId = "NY",
                 ),
-                loggingMetadata
+                loggingMetadata,
             )
         }
 
@@ -128,9 +136,9 @@ internal class DokArkivClientTest {
             jpResponse = dokArkivClient.createJournalpost(
                 JournalpostRequest(
                     dokumenter = emptyList(),
-                    eksternReferanseId = "DUPLIKAT"
+                    eksternReferanseId = "DUPLIKAT",
                 ),
-                loggingMetadata
+                loggingMetadata,
             )
         }
 

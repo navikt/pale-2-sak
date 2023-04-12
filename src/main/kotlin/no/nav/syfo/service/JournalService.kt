@@ -27,14 +27,14 @@ class JournalService(
         receivedLegeerklaering: ReceivedLegeerklaering,
         validationResult: ValidationResult,
         vedlegg: List<String>?,
-        loggingMeta: LoggingMeta
+        loggingMeta: LoggingMeta,
     ) {
         wrapExceptions(loggingMeta) {
             log.info("Mottok en legeerklearing, prover aa lagre i Joark {}", StructuredArguments.fields(loggingMeta))
             sikkerlogg.info(
                 "Mottok en legeerklearing for fnr {}, prover aa lagre i Joark {}",
                 receivedLegeerklaering.personNrPasient,
-                StructuredArguments.fields(loggingMeta)
+                StructuredArguments.fields(loggingMeta),
             )
 
             val vedleggListe: List<Vedlegg> = if (vedlegg.isNullOrEmpty()) {
@@ -49,7 +49,7 @@ class JournalService(
             val pdfPayload = createPdfPayload(
                 receivedLegeerklaering.legeerklaering,
                 validationResult,
-                receivedLegeerklaering.mottattDato
+                receivedLegeerklaering.mottattDato,
             )
             val pdf = pdfgenClient.createPdf(pdfPayload)
             log.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
@@ -70,7 +70,7 @@ class JournalService(
                 validationResult,
                 receivedLegeerklaering.msgId,
                 vedleggListe,
-                behandler?.hprNummer
+                behandler?.hprNummer,
             )
             val journalpost = dokArkivClient.createJournalpost(journalpostPayload, loggingMeta)
 
@@ -78,7 +78,7 @@ class JournalService(
             log.info(
                 "Melding lagret i Joark med journalpostId {}, {}",
                 journalpost.journalpostId,
-                StructuredArguments.fields(loggingMeta)
+                StructuredArguments.fields(loggingMeta),
             )
         }
     }

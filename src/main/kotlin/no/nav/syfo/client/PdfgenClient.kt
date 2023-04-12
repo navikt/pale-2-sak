@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 
 class PdfgenClient constructor(
     private val url: String,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) {
     suspend fun createPdf(payload: PdfModel): ByteArray {
         val httpResponse: HttpResponse = httpClient.post(url) {
@@ -36,11 +36,11 @@ class PdfgenClient constructor(
 fun createPdfPayload(
     legeerklaring: Legeerklaering,
     validationResult: ValidationResult,
-    mottattDato: LocalDateTime
+    mottattDato: LocalDateTime,
 ): PdfModel = PdfModel(
     legeerklaering = mapToLegeerklaringWithoutIllegalCharacters(legeerklaring),
     validationResult = validationResult,
-    mottattDato = mottattDato
+    mottattDato = mottattDato,
 )
 
 fun mapToLegeerklaringWithoutIllegalCharacters(legeerklaring: Legeerklaering): Legeerklaering {
