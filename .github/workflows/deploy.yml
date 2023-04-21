@@ -7,3 +7,8 @@ jobs:
     secrets: inherit
     with:
       app: pale-2-sak
+      dockerfile_path: Dockerfile
+      docker_context: .
+      subprojects: false
+      naiserator_dev: naiserator-dev.yaml
+      naiserator_prod: naiserator-prod.yaml
