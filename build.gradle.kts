@@ -16,7 +16,7 @@ val pale2CommonVersion = "1.a94f960"
 val junitVersion = "5.9.2"
 val ioMockVersion = "1.13.5"
 val kotlinVersion = "1.8.21"
-val googleCloudStorageVersion = "2.22.0"
+val googleCloudStorageVersion = "2.22.1"
 val pdfboxVersion = "2.0.28"
 val commonsCodecVersion = "1.15"
 
