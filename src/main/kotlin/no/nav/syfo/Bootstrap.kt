@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import com.fasterxml.jackson.core.StreamReadConstraints
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -55,6 +56,7 @@ val objectMapper: ObjectMapper = ObjectMapper().apply {
     registerModule(JavaTimeModule())
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    factory.setStreamReadConstraints(StreamReadConstraints.builder().maxStringLength(10_000_000).build())
 }
 
 val log: Logger = LoggerFactory.getLogger("no.nav.no.nav.syfo.pale2sak")
