@@ -23,7 +23,7 @@ class NorskHelsenettClient(
 ) {
 
     suspend fun getByFnr(fnr: String, loggingMeta: LoggingMeta): Behandler? {
-        val accessToken = accessTokenClient.getAccessToken(resourceId)
+        val accessToken = accessTokenClient.getAccessToken(resourceId, loggingMeta)
 
         val httpResponse = httpClient.get("$endpointUrl/api/v2/behandler") {
             accept(ContentType.Application.Json)

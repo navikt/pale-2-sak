@@ -110,7 +110,7 @@ internal class DokArkivClientTest {
 
     @BeforeEach
     fun before() {
-        coEvery { accessTokenClient.getAccessToken(any()) } returns "token"
+        coEvery { accessTokenClient.getAccessToken(any(), any()) } returns "token"
     }
 
     @Test

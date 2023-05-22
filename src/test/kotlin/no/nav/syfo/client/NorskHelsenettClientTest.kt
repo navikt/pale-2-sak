@@ -91,7 +91,7 @@ class NorskHelsenettClientTest {
 
     @BeforeAll
     internal fun beforeAll() {
-        coEvery { accessTokenClient.getAccessToken(any()) } returns "token"
+        coEvery { accessTokenClient.getAccessToken(any(), any()) } returns "token"
     }
 
     @AfterAll
