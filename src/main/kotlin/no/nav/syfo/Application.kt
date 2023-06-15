@@ -58,7 +58,7 @@ val objectMapper: ObjectMapper =
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         factory.setStreamReadConstraints(
-            StreamReadConstraints.builder().maxStringLength(50_000_000).build()
+            StreamReadConstraints.builder().maxStringLength(50_000_000).build(),
         )
     }
 
@@ -68,16 +68,16 @@ val secureLogger: Logger = LoggerFactory.getLogger("securelog")
 fun main() {
     val embeddedServer =
         embeddedServer(
-                Netty,
-                module = Application::module,
-            )
-            .start(wait = true)
+            Netty,
+            module = Application::module,
+        )
     Runtime.getRuntime()
         .addShutdownHook(
             Thread {
                 embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
             },
         )
+    embeddedServer.start(true)
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -130,7 +130,7 @@ fun Application.module() {
             retryIf(maxRetries) { request, response ->
                 if (response.status.value.let { it in 500..599 }) {
                     secureLogger.warn(
-                        "Retrying for statuscode ${response.status.value}, for url ${request.url}"
+                        "Retrying for statuscode ${response.status.value}, for url ${request.url}",
                     )
                     true
                 } else {
@@ -147,14 +147,14 @@ fun Application.module() {
             environmentVariables.aadAccessTokenUrl,
             environmentVariables.clientId,
             environmentVariables.clientSecret,
-            httpClient
+            httpClient,
         )
     val dokArkivClient =
         DokArkivClient(
             environmentVariables.dokArkivUrl,
             accessTokenClient,
             environmentVariables.dokArkivScope,
-            httpClient
+            httpClient,
         )
     val pdfgenClient = PdfgenClient(environmentVariables.pdfgen, httpClient)
     val norskHelsenettClient =
@@ -162,7 +162,7 @@ fun Application.module() {
             environmentVariables.norskHelsenettEndpointURL,
             accessTokenClient,
             environmentVariables.helsenettproxyScope,
-            httpClient
+            httpClient,
         )
 
     val paleVedleggStorageCredentials: Credentials =
@@ -178,7 +178,7 @@ fun Application.module() {
         dokArkivClient,
         pdfgenClient,
         environmentVariables.paleVedleggBucketName,
-        norskHelsenettClient
+        norskHelsenettClient,
     )
 }
 
@@ -207,7 +207,7 @@ fun createListener(
             logger.error(
                 "En uhåndtert feil oppstod, applikasjonen restarter {}",
                 StructuredArguments.fields(e.loggingMeta),
-                e.cause
+                e.cause,
             )
         } finally {
             applicationState.ready = false
@@ -231,7 +231,7 @@ fun launchListeners(
             KafkaUtils.getAivenKafkaConfig()
                 .toConsumerConfig(
                     "${environmentVariables.applicationName}-consumer",
-                    valueDeserializer = StringDeserializer::class
+                    valueDeserializer = StringDeserializer::class,
                 )
                 .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none" }
         val kafkaLegeerklaeringAivenConsumer =
@@ -274,7 +274,7 @@ suspend fun blockingApplicationLogic(
             .filter { it.value() != null }
             .forEach { consumerRecord ->
                 logger.info(
-                    "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}"
+                    "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}",
                 )
                 val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage =
                     objectMapper.readValue(consumerRecord.value())
@@ -282,7 +282,7 @@ suspend fun blockingApplicationLogic(
                     getLegeerklaering(
                         legeerklaeringBucketName,
                         storage,
-                        legeerklaeringKafkaMessage.legeerklaeringObjectId
+                        legeerklaeringKafkaMessage.legeerklaeringObjectId,
                     )
 
                 val loggingMeta =
