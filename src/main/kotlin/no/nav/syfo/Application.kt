@@ -69,6 +69,7 @@ fun main() {
     val embeddedServer =
         embeddedServer(
             Netty,
+            port = EnvironmentVariables().applicationPort,
             module = Application::module,
         )
     Runtime.getRuntime()
