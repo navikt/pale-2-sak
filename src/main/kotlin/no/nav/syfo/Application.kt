@@ -86,10 +86,6 @@ fun Application.module() {
     val environmentVariables = EnvironmentVariables()
     val applicationState = ApplicationState()
 
-    environment.monitor.subscribe(ApplicationStarting) { applicationState.alive = true }
-
-    environment.monitor.subscribe(ApplicationStarted) { applicationState.ready = true }
-
     environment.monitor.subscribe(ApplicationStopped) {
         applicationState.ready = false
         applicationState.alive = false
@@ -192,8 +188,8 @@ fun Application.configureRouting(applicationState: ApplicationState) {
 }
 
 data class ApplicationState(
-    var alive: Boolean = false,
-    var ready: Boolean = false,
+    var alive: Boolean = true,
+    var ready: Boolean = true,
 )
 
 @DelicateCoroutinesApi
