@@ -23,7 +23,7 @@ import java.net.ServerSocket
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.accessToken.AccessTokenClient
-import no.nav.syfo.util.LoggingMeta
+import no.nav.syfo.loggingMeta.LoggingMeta
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll

@@ -29,8 +29,8 @@ import no.nav.syfo.journalpost.createJournalPost.JournalpostRequest
 import no.nav.syfo.journalpost.createJournalPost.JournalpostResponse
 import no.nav.syfo.journalpost.createJournalPost.VedleggMessage
 import no.nav.syfo.logger
+import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.objectMapper
-import no.nav.syfo.util.LoggingMeta
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals

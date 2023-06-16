@@ -9,12 +9,12 @@ import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgen.PdfgenClient
 import no.nav.syfo.client.pdfgen.createPdfPayload
 import no.nav.syfo.logger
+import no.nav.syfo.loggingMeta.LoggingMeta
+import no.nav.syfo.loggingMeta.wrapExceptions
 import no.nav.syfo.metrics.MELDING_LAGER_I_JOARK
 import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.secureLogger
-import no.nav.syfo.util.LoggingMeta
-import no.nav.syfo.util.wrapExceptions
 
 suspend fun onJournalRequest(
     dokArkivClient: DokArkivClient,

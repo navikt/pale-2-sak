@@ -6,8 +6,8 @@ import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.journalpost.createJournalPost.Vedlegg
 import no.nav.syfo.journalpost.createJournalPost.VedleggMessage
 import no.nav.syfo.logger
+import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.objectMapper
-import no.nav.syfo.util.LoggingMeta
 
 fun getLegeerklaeringVedlegg(
     bucketName: String,

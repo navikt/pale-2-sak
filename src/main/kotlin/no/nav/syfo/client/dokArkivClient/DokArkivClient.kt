@@ -26,12 +26,11 @@ import no.nav.syfo.journalpost.createJournalPost.JournalpostResponse
 import no.nav.syfo.journalpost.createJournalPost.Sak
 import no.nav.syfo.journalpost.createJournalPost.Vedlegg
 import no.nav.syfo.logger
+import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.objectMapper
-import no.nav.syfo.util.LoggingMeta
-import no.nav.syfo.util.imageToPDF
 
 class DokArkivClient(
     private val url: String,

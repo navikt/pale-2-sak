@@ -1,4 +1,4 @@
-package no.nav.syfo.util
+package no.nav.syfo.client.dokArkivClient
 
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp

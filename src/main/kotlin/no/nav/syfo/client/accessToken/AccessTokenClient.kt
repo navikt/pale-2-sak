@@ -15,7 +15,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.logger
-import no.nav.syfo.util.LoggingMeta
+import no.nav.syfo.loggingMeta.LoggingMeta
 
 class AccessTokenClient(
     private val aadAccessTokenUrl: String,

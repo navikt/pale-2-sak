@@ -14,7 +14,7 @@ import java.io.IOException
 import net.logstash.logback.argument.StructuredArguments.fields
 import no.nav.syfo.client.accessToken.AccessTokenClient
 import no.nav.syfo.logger
-import no.nav.syfo.util.LoggingMeta
+import no.nav.syfo.loggingMeta.LoggingMeta
 
 class NorskHelsenettClient(
     private val endpointUrl: String,

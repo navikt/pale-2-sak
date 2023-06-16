@@ -14,8 +14,7 @@ import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.objectMapper
 
-class PdfgenClient
-constructor(
+class PdfgenClient(
     private val url: String,
     private val httpClient: HttpClient,
 ) {

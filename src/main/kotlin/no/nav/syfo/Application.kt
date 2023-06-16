@@ -39,12 +39,12 @@ import no.nav.syfo.client.pdfgen.PdfgenClient
 import no.nav.syfo.journalpost.createJournalPost.onJournalRequest
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
+import no.nav.syfo.loggingMeta.LoggingMeta
+import no.nav.syfo.loggingMeta.TrackableException
 import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
 import no.nav.syfo.nais.isalive.naisIsAliveRoute
 import no.nav.syfo.nais.isready.naisIsReadyRoute
 import no.nav.syfo.nais.prometheus.naisPrometheusRoute
-import no.nav.syfo.util.LoggingMeta
-import no.nav.syfo.util.TrackableException
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
