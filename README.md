@@ -75,17 +75,6 @@ To build locally and run the integration tests you can simply run
 or on windows 
 `gradlew.bat shadowJar`
 
-#### Creating a docker image
-Creating a docker image should be as simple as
-``` bash
-docker build -t pale-2-sak .
- ```
-
-#### Running a docker image
-``` bash
-docker run --rm -it -p 8080:8080 pale-2-sak
-```
-
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 
