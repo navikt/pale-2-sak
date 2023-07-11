@@ -30,7 +30,7 @@ spec:
     limits:
       memory: 1Gi
     requests:
-      cpu: 20m
+      cpu: 100m
       memory: 400Mi
   vault:
     enabled: false
