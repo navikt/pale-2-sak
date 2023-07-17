@@ -37,7 +37,6 @@ class DokArkivClient(
     private val accessTokenClient: AccessTokenClient,
     private val scope: String,
     private val httpClient: HttpClient,
-    private val cluster: String,
 ) {
     suspend fun createJournalpost(
         journalpostRequest: JournalpostRequest,
@@ -77,9 +76,7 @@ class DokArkivClient(
             }
         } catch (e: Exception) {
             logger.error("Oppretting av journalpost feilet: ${e.message}, {}", fields(loggingMeta))
-            if (cluster != "dev-gcp") {
-                throw e
-            }
+            throw e
         }
     }
 }

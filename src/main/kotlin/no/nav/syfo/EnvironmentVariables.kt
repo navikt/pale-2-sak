@@ -15,6 +15,7 @@ data class EnvironmentVariables(
     val legeerklaringTopic: String = "teamsykmelding.legeerklaering",
     val norskHelsenettEndpointURL: String = getEnvVar("HELSENETT_ENDPOINT_URL"),
     val helsenettproxyScope: String = getEnvVar("HELSENETT_SCOPE"),
+    val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
