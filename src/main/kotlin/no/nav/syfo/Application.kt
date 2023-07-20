@@ -300,6 +300,7 @@ suspend fun blockingApplicationLogic(
                     legeerklaeringKafkaMessage.validationResult,
                     legeerklaeringKafkaMessage.vedlegg,
                     loggingMeta,
+                    environmentVariables.cluster
                 )
             }
     }

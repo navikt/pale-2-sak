@@ -10,10 +10,12 @@ data class LoggingMeta(
 class TrackableException(override val cause: Throwable, val loggingMeta: LoggingMeta) :
     RuntimeException()
 
-suspend fun <O> wrapExceptions(loggingMeta: LoggingMeta, block: suspend () -> O): O {
+suspend fun <O> wrapExceptions(loggingMeta: LoggingMeta, cluster: String, block: suspend () -> O) {
     try {
-        return block()
+        block()
     } catch (e: Exception) {
-        throw TrackableException(e, loggingMeta)
+        if (cluster != "dev-gcp") {
+            throw TrackableException(e, loggingMeta)
+        }
     }
 }

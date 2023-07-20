@@ -26,8 +26,9 @@ suspend fun onJournalRequest(
     validationResult: ValidationResult,
     vedlegg: List<String>?,
     loggingMeta: LoggingMeta,
+    cluster: String,
 ) {
-    wrapExceptions(loggingMeta) {
+    wrapExceptions(loggingMeta, cluster) {
         logger.info(
             "Mottok en legeerklearing, prover aa lagre i Joark {}",
             StructuredArguments.fields(loggingMeta),
