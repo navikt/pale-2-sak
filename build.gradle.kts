@@ -16,7 +16,7 @@ val ioMockVersion="1.13.5"
 val kotlinVersion="1.9.0"
 val googleCloudStorageVersion="2.22.4"
 val pdfboxVersion="2.0.28"
-val commonsCodecVersion="1.15"
+val commonsCodecVersion="1.16.0"
 val ktfmtVersion="0.44"
 val jvmVersion="17"
 
