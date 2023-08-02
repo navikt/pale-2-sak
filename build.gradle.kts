@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val coroutinesVersion="1.7.3"
 val jacksonVersion="2.15.2"
-val kafkaVersion="3.3.1"
+val kafkaVersion="7.4.1-ce"
 val ktorVersion="2.3.3"
 val logstashLogbackEncoder="7.4"
 val logbackVersion="1.4.8"
