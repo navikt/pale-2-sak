@@ -2,23 +2,23 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val coroutinesVersion: String by project
-val jacksonVersion: String by project
-val kafkaVersion: String by project
-val ktorVersion: String by project
-val logstashLogbackEncoder: String by project
-val logbackVersion: String by project
-val prometheusVersion: String by project
-val pale2CommonVersion: String by project
-val junitVersion: String by project
-val ioMockVersion: String by project
-val kotlinVersion: String by project
-val googleCloudStorageVersion: String by project
-val pdfboxVersion: String by project
-val commonsCodecVersion: String by project
-val jvmVersion: String by project
-val ktfmtVersion: String by project
 
+val coroutinesVersion="1.7.3"
+val jacksonVersion="2.15.2"
+val kafkaVersion="3.3.1"
+val ktorVersion="2.3.3"
+val logstashLogbackEncoder="7.4"
+val logbackVersion="1.4.8"
+val prometheusVersion="0.16.0"
+val pale2CommonVersion="1.0.6"
+val junitVersion="5.9.3"
+val ioMockVersion="1.13.5"
+val kotlinVersion="1.9.0"
+val googleCloudStorageVersion="2.22.4"
+val pdfboxVersion="2.0.28"
+val commonsCodecVersion="1.15"
+val ktfmtVersion="0.44"
+val jvmVersion="17"
 
 group = "no.nav.syfo"
 version = "1.0.0"
@@ -33,8 +33,8 @@ application {
 
 plugins {
     kotlin("jvm") version "1.9.0"
-    id("io.ktor.plugin") version "2.3.2"
-    id("com.diffplug.spotless") version "6.20.0"
+    id("io.ktor.plugin") version "2.3.3"
+    id("com.diffplug.spotless") version "6.19.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.cyclonedx.bom") version "1.7.4"
 }
