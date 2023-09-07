@@ -1,5 +1,12 @@
-name: Deploy to dev and prod
+name: Deploy app to dev and prod
 on: push
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  packages: write
+  id-token: write
 
 jobs:
   jar-app:
