@@ -1,22 +1,17 @@
 version: 2
-registries:
-  pale-2-common:
-    type: maven-repository
-    url: https://maven.pkg.github.com/navikt/pale-2-common
-    username: x-access-token
-    password: ${{ secrets.GITHUB_TOKEN }}
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 15
+    ignore:
+      - dependency-name: "org.apache.kafka:kafka_2.12"
+        update-types: ["version-update:semver-major"]
     groups:
       update-dependencies:
         patterns:
           - "*"
-    registries:
-      - pale-2-common
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
