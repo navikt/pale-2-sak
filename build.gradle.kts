@@ -1,8 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-
 val coroutinesVersion="1.7.3"
 val jacksonVersion="2.15.2"
 val kafkaVersion="3.5.1"
@@ -10,7 +5,7 @@ val ktorVersion="2.3.4"
 val logstashLogbackEncoder="7.4"
 val logbackVersion="1.4.11"
 val prometheusVersion="0.16.0"
-val pale2CommonVersion="1.0.6"
+val pale2CommonVersion="2.0.0"
 val junitVersion="5.10.0"
 val ioMockVersion="1.13.7"
 val kotlinVersion="1.9.10"
@@ -24,19 +19,19 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 
+
+plugins {
+    id("application")
+    kotlin("jvm") version "1.9.10"
+    id("com.diffplug.spotless") version "6.21.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+}
+
 application {
     mainClass.set("no.nav.syfo.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
-
-plugins {
-    kotlin("jvm") version "1.9.10"
-    id("io.ktor.plugin") version "2.3.4"
-    id("com.diffplug.spotless") version "6.21.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.cyclonedx.bom") version "1.7.4"
 }
 
 val githubUser: String by project
@@ -46,11 +41,7 @@ repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven/")
     maven {
-        url = uri("https://maven.pkg.github.com/navikt/pale-2-common")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
+        url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     }
 }
 
@@ -68,9 +59,11 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
-    implementation("commons-codec:commons-codec:$commonsCodecVersion")
-    // override transient version 1.10 from io.ktor:ktor-client-apache
-
+    constraints {
+        implementation("commons-codec:commons-codec:$commonsCodecVersion") {
+            because("override transient from io.ktor:ktor-client-apache")
+        }
+    }
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -90,29 +83,26 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 
 tasks {
-    withType<Jar> {
-        manifest.attributes["Main-Class"] = "no.nav.syfo.ApplicationKt"
-    }
 
-    create("printVersion") {
-        doLast {
-            println(project.version)
+    shadowJar {
+        archiveBaseName.set("app")
+        archiveClassifier.set("")
+        isZip64 = true
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to "no.nav.syfo.ApplicationKt",
+                ),
+            )
         }
     }
 
-    withType<ShadowJar> {
-        transform(ServiceFileTransformer::class.java) {
-            setPath("META-INF/cxf")
-            include("bus-extensions.txt")
-        }
-    }
-
-    withType<Test> {
+    test {
         useJUnitPlatform()
         testLogging {
             events("skipped", "failed")
@@ -121,9 +111,6 @@ tasks {
         }
     }
 
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = jvmVersion
-    }
 
     spotless {
         kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }

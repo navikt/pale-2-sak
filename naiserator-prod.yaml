@@ -32,11 +32,8 @@ spec:
     requests:
       cpu: 100m
       memory: 600Mi
-  vault:
-    enabled: false
   filesFrom:
     - secret: pale2-google-creds
-  webproxy: false
   kafka:
     pool: nav-prod
   azure:
