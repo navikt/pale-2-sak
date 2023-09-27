@@ -17,7 +17,7 @@ val pdfboxVersion="2.0.29"
 val commonsCodecVersion="1.16.0"
 val ktfmtVersion="0.44"
 val jvmVersion="17"
-val snappyJavaVersion = "1.1.10.4"
+val snappyJavaVersion = "1.1.10.5"
 
 
 plugins {
