@@ -1,3 +1,6 @@
+group = "no.nav.syfo"
+version = "1.0.0"
+
 val coroutinesVersion="1.7.3"
 val jacksonVersion="2.15.2"
 val kafkaVersion="3.5.1"
@@ -14,10 +17,7 @@ val pdfboxVersion="2.0.29"
 val commonsCodecVersion="1.16.0"
 val ktfmtVersion="0.44"
 val jvmVersion="17"
-
-group = "no.nav.syfo"
-version = "1.0.0"
-
+val snappyJavaVersion = "1.1.10.4"
 
 
 plugins {
@@ -70,6 +70,12 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
 
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    constraints {
+        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
+            because("override transient from org.apache.kafka:kafka_2.12")
+        }
+    }
+
     implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
