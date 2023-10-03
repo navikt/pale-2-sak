@@ -48,9 +48,9 @@ spec:
         - application: pale-2-pdfgen
           namespace: teamsykmelding
           cluster: prod-gcp
+        - application: syfohelsenettproxy
       external:
         - host: dokarkiv.prod-fss-pub.nais.io
-        - host: syfohelsenettproxy.prod-fss-pub.nais.io
   env:
     - name: DOK_ARKIV_URL
       value: https://dokarkiv.prod-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
@@ -60,7 +60,5 @@ spec:
       value: teamsykmelding-pale2-vedlegg-bucket-prod
     - name: PALE_BUCKET_NAME
       value: teamsykmelding-pale2-legeerklaring-bucket-prod
-    - name: HELSENETT_ENDPOINT_URL
-      value: https://syfohelsenettproxy.prod-fss-pub.nais.io
     - name: HELSENETT_SCOPE
-      value: api://prod-fss.teamsykmelding.syfohelsenettproxy/.default
+      value: api://prod-gcp.teamsykmelding.syfohelsenettproxy/.default

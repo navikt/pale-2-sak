@@ -13,7 +13,7 @@ data class EnvironmentVariables(
     val paleVedleggBucketName: String = getEnvVar("PALE_VEDLEGG_BUCKET_NAME"),
     val legeerklaeringBucketName: String = getEnvVar("PALE_BUCKET_NAME"),
     val legeerklaringTopic: String = "teamsykmelding.legeerklaering",
-    val norskHelsenettEndpointURL: String = getEnvVar("HELSENETT_ENDPOINT_URL"),
+    val norskHelsenettEndpointURL: String = "http://syfohelsenettproxy",
     val helsenettproxyScope: String = getEnvVar("HELSENETT_SCOPE"),
     val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
 )
