@@ -51,11 +51,6 @@ spec:
         - application: syfohelsenettproxy
       external:
         - host: dokarkiv.dev-fss-pub.nais.io
-    inbound:
-      rules:
-        - application: pale-2-pdfgen
-          namespace: teamsykmelding
-          cluster: dev-gcp
   env:
     - name: DOK_ARKIV_URL
       value: https://dokarkiv.dev-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
