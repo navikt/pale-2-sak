@@ -27,7 +27,6 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -198,7 +197,7 @@ fun createListener(
     applicationState: ApplicationState,
     action: suspend CoroutineScope.() -> Unit
 ): Job =
-    GlobalScope.launch(Dispatchers.IO) {
+    GlobalScope.launch {
         try {
             action()
         } catch (e: TrackableException) {
@@ -224,33 +223,6 @@ fun launchListeners(
     legeerklaeringVedleggBucketName: String,
     norskHelsenettClient: NorskHelsenettClient,
 ) {
-    createListener(applicationState) {
-        logger.info("Starting listener for rerun")
-        val aivenConsumerProperties =
-            KafkaUtils.getAivenKafkaConfig()
-                .toConsumerConfig(
-                    "${environmentVariables.applicationName}-rerun-consumer",
-                    valueDeserializer = StringDeserializer::class,
-                )
-                .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest" }
-        val kafkaLegeerklaeringAivenConsumer =
-            KafkaConsumer<String, String>(aivenConsumerProperties)
-        kafkaLegeerklaeringAivenConsumer.subscribe(listOf(environmentVariables.rerunTopic))
-
-        blockingApplicationLogic(
-            kafkaLegeerklaeringAivenConsumer,
-            applicationState,
-            environmentVariables,
-            legeerklaeringBucketName,
-            storage,
-            dokArkivClient,
-            pdfgenClient,
-            legeerklaeringVedleggBucketName,
-            norskHelsenettClient,
-            rerun = true,
-        )
-    }
-
     createListener(applicationState) {
         val aivenConsumerProperties =
             KafkaUtils.getAivenKafkaConfig()
@@ -287,7 +259,6 @@ suspend fun blockingApplicationLogic(
     pdfgenClient: PdfgenClient,
     legeerklaeringVedleggBucketName: String,
     norskHelsenettClient: NorskHelsenettClient,
-    rerun: Boolean = false
 ) {
     while (applicationState.ready) {
         kafkaLegeerklaeringAivenConsumer
@@ -329,8 +300,7 @@ suspend fun blockingApplicationLogic(
                     legeerklaeringKafkaMessage.validationResult,
                     legeerklaeringKafkaMessage.vedlegg,
                     loggingMeta,
-                    environmentVariables.cluster,
-                    rerun,
+                    environmentVariables.cluster
                 )
             }
     }

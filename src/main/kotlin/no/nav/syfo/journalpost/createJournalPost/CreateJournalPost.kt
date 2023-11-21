@@ -27,7 +27,6 @@ suspend fun onJournalRequest(
     vedlegg: List<String>?,
     loggingMeta: LoggingMeta,
     cluster: String,
-    rerun: Boolean,
 ) {
     wrapExceptions(loggingMeta, cluster) {
         logger.info(
@@ -89,7 +88,6 @@ suspend fun onJournalRequest(
                 receivedLegeerklaering.msgId,
                 vedleggListe,
                 behandler?.hprNummer,
-                rerun,
             )
         val journalpost = dokArkivClient.createJournalpost(journalpostPayload, loggingMeta)
 

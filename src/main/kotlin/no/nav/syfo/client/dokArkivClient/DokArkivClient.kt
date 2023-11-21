@@ -91,7 +91,6 @@ fun createJournalpostPayload(
     msgId: String,
     vedlegg: List<Vedlegg>,
     hprNr: String?,
-    rerun: Boolean,
 ) =
     JournalpostRequest(
         avsenderMottaker =
@@ -118,11 +117,7 @@ fun createJournalpostPayload(
                 signaturDato = signaturDato,
                 vedleggListe = vedlegg,
             ),
-        eksternReferanseId =
-            when (rerun) {
-                true -> legeerklaering.id
-                else -> ediLoggId
-            },
+        eksternReferanseId = ediLoggId,
         journalfoerendeEnhet = "9999",
         journalpostType = "INNGAAENDE",
         kanal = "HELSENETTET",

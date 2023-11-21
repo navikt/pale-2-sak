@@ -16,7 +16,6 @@ data class EnvironmentVariables(
     val norskHelsenettEndpointURL: String = "http://syfohelsenettproxy",
     val helsenettproxyScope: String = getEnvVar("HELSENETT_SCOPE"),
     val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
-    val rerunTopic: String = "teamsykmelding.legeerklaering-rerun",
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
