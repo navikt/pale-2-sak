@@ -28,10 +28,10 @@ spec:
     path: /internal/prometheus
   resources:
     limits:
-      memory: 1Gi
+      memory: 2Gi
     requests:
       cpu: 100m
-      memory: 600Mi
+      memory: 800Mi
   filesFrom:
     - secret: pale2-google-creds
   kafka:
