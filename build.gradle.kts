@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = "no.nav.syfo"
 version = "1.0.0"
 
@@ -16,7 +18,7 @@ val googleCloudStorageVersion="2.39.0"
 val pdfboxVersion="2.0.31"
 val commonsCodecVersion="1.17.0"
 val ktfmtVersion="0.44"
-val jvmVersion="17"
+val javaVersion = JvmTarget.JVM_21
 val snappyJavaVersion = "1.1.10.5"
 
 
@@ -90,6 +92,12 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = javaVersion
+    }
 }
 
 
