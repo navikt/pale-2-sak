@@ -10,7 +10,6 @@ val ktorVersion="2.3.12"
 val logstashLogbackEncoder="8.0"
 val logbackVersion="1.5.7"
 val prometheusVersion="0.16.0"
-val pale2CommonVersion="2.0.9"
 val junitVersion="5.11.0"
 val ioMockVersion="1.13.12"
 val kotlinVersion="2.0.10"
@@ -26,7 +25,7 @@ plugins {
     id("application")
     kotlin("jvm") version "2.0.10"
     id("com.diffplug.spotless") version "6.25.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 application {
@@ -42,9 +41,6 @@ val githubPassword: String by project
 repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven/")
-    maven {
-        url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
-    }
 }
 
 dependencies {
@@ -81,8 +77,12 @@ dependencies {
     implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
-    implementation("no.nav.syfo:pale-2-common-models:$pale2CommonVersion")
-    implementation("no.nav.syfo:pale-2-common-kafka:$pale2CommonVersion")
+    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    constraints {
+        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
+            because("override transient from org.apache.kafka:kafka_2.12")
+        }
+    }
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
