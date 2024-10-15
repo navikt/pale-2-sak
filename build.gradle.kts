@@ -6,7 +6,7 @@ version = "1.0.0"
 val coroutinesVersion="1.9.0"
 val jacksonVersion="2.18.0"
 val kafkaVersion="3.8.0"
-val ktorVersion="2.3.12"
+val ktorVersion="3.0.0"
 val logstashLogbackEncoder="8.0"
 val logbackVersion="1.5.8"
 val prometheusVersion="0.16.0"
@@ -17,7 +17,9 @@ val googleCloudStorageVersion="2.43.1"
 val pdfboxVersion="2.0.32"
 val commonsCodecVersion="1.17.1"
 val ktfmtVersion="0.44"
+
 val javaVersion = JvmTarget.JVM_21
+
 val snappyJavaVersion = "1.1.10.7"
 
 
@@ -35,12 +37,13 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-val githubUser: String by project
-val githubPassword: String by project
 
 repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven/")
+    maven {
+        url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+    }
 }
 
 dependencies {

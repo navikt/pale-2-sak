@@ -86,7 +86,7 @@ fun Application.module() {
     val environmentVariables = EnvironmentVariables()
     val applicationState = ApplicationState()
 
-    environment.monitor.subscribe(ApplicationStopped) {
+    monitor.subscribe(ApplicationStopped) {
         applicationState.ready = false
         applicationState.alive = false
     }
