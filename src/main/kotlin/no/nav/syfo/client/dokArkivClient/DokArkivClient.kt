@@ -23,7 +23,6 @@ import no.nav.syfo.journalpost.createJournalPost.Dokumentvarianter
 import no.nav.syfo.journalpost.createJournalPost.GosysVedlegg
 import no.nav.syfo.journalpost.createJournalPost.JournalpostRequest
 import no.nav.syfo.journalpost.createJournalPost.JournalpostResponse
-import no.nav.syfo.journalpost.createJournalPost.Sak
 import no.nav.syfo.journalpost.createJournalPost.Vedlegg
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
@@ -57,7 +56,7 @@ class DokArkivClient(
                     )
                     header("Nav-Callid", journalpostRequest.eksternReferanseId)
                     setBody(journalpostRequest)
-                    parameter("forsoekFerdigstill", true)
+                    parameter("forsoekFerdigstill", false)
                 }
             if (
                 httpResponse.status == HttpStatusCode.Created ||
@@ -121,11 +120,7 @@ fun createJournalpostPayload(
         journalfoerendeEnhet = "9999",
         journalpostType = "INNGAAENDE",
         kanal = "HELSENETTET",
-        sak =
-            Sak(
-                sakstype = "GENERELL_SAK",
-            ),
-        tema = "OPP",
+        tema = "AAP",
         tittel = createTittleJournalpost(validationResult, signaturDato),
     )
 
