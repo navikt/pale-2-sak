@@ -13,7 +13,6 @@ import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.loggingMeta.wrapExceptions
 import no.nav.syfo.metrics.MELDING_LAGER_I_JOARK
 import no.nav.syfo.model.ReceivedLegeerklaering
-import no.nav.syfo.journalpost.createJournalPost.Sak
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.secureLogger
 
