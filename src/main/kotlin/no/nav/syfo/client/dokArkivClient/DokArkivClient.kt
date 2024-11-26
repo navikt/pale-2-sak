@@ -121,10 +121,6 @@ fun createJournalpostPayload(
         journalfoerendeEnhet = "9999",
         journalpostType = "INNGAAENDE",
         kanal = "HELSENETTET",
-        sak = 
-             Sak( 
-                 sakstype = "GENERELL_SAK", 
-             ),
         tema = "AAP",
         tittel = createTittleJournalpost(validationResult, signaturDato),
     )
