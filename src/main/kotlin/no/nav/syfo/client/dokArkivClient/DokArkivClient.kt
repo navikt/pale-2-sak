@@ -118,7 +118,6 @@ fun createJournalpostPayload(
                 vedleggListe = vedlegg,
             ),
         eksternReferanseId = ediLoggId,
-        journalfoerendeEnhet = "9999",
         journalpostType = "INNGAAENDE",
         kanal = "HELSENETTET",
         tema = "AAP",
