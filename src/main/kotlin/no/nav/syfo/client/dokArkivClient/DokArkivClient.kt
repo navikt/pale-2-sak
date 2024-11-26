@@ -21,6 +21,7 @@ import no.nav.syfo.journalpost.createJournalPost.Bruker
 import no.nav.syfo.journalpost.createJournalPost.Dokument
 import no.nav.syfo.journalpost.createJournalPost.Dokumentvarianter
 import no.nav.syfo.journalpost.createJournalPost.GosysVedlegg
+import no.nav.syfo.journalpost.createJournalPost.Sak
 import no.nav.syfo.journalpost.createJournalPost.JournalpostRequest
 import no.nav.syfo.journalpost.createJournalPost.JournalpostResponse
 import no.nav.syfo.journalpost.createJournalPost.Vedlegg
@@ -120,6 +121,10 @@ fun createJournalpostPayload(
         journalfoerendeEnhet = "9999",
         journalpostType = "INNGAAENDE",
         kanal = "HELSENETTET",
+        sak = 
+             Sak( 
+                 sakstype = "GENERELL_SAK", 
+             ),
         tema = "AAP",
         tittel = createTittleJournalpost(validationResult, signaturDato),
     )
