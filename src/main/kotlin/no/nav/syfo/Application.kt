@@ -7,24 +7,32 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.google.auth.Credentials
-import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.network.sockets.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.routing.*
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.network.sockets.SocketTimeoutException
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationStopped
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
-import java.io.FileInputStream
 import java.time.Duration
 import java.util.concurrent.TimeUnit
+import kotlin.collections.any
+import kotlin.collections.contentEquals
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.listOf
+import kotlin.collections.set
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -162,10 +170,7 @@ fun Application.module() {
             httpClient,
         )
 
-    val paleVedleggStorageCredentials: Credentials =
-        GoogleCredentials.fromStream(FileInputStream("/var/run/secrets/pale2-google-creds.json"))
-    val paleVedleggStorage: Storage =
-        StorageOptions.newBuilder().setCredentials(paleVedleggStorageCredentials).build().service
+    val paleVedleggStorage: Storage = StorageOptions.newBuilder().build().service
 
     launchListeners(
         environmentVariables,

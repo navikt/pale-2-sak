@@ -59,14 +59,12 @@ spec:
         - application: syfohelsenettproxy
       external:
         - host: dokarkiv.prod-fss-pub.nais.io
+  envFrom:
+    - secret: pale-2-secret
   env:
     - name: DOK_ARKIV_URL
       value: https://dokarkiv.prod-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
     - name: DOK_ARKIV_SCOPE
       value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
-    - name: PALE_VEDLEGG_BUCKET_NAME
-      value: teamsykmelding-pale2-vedlegg-bucket-prod
-    - name: PALE_BUCKET_NAME
-      value: teamsykmelding-pale2-legeerklaring-bucket-prod
     - name: HELSENETT_SCOPE
       value: api://prod-gcp.teamsykmelding.syfohelsenettproxy/.default
