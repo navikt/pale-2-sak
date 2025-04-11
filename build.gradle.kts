@@ -3,16 +3,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion="1.10.1"
+val coroutinesVersion="1.10.2"
 val jacksonVersion="2.18.3"
 val kafkaVersion="3.9.0"
-val ktorVersion="3.1.1"
-val logstashLogbackEncoder="8.0"
-val logbackVersion="1.5.17"
+val ktorVersion="3.1.2"
+val logstashLogbackEncoder="8.1"
+val logbackVersion="1.5.18"
 val prometheusVersion="0.16.0"
-val junitVersion="5.12.1"
-val ioMockVersion="1.13.17"
-val kotlinVersion="2.1.10"
+val junitVersion="5.12.2"
+val ioMockVersion="1.14.0"
+val kotlinVersion="2.1.20"
 val googleCloudStorageVersion="2.50.0"
 val pdfboxVersion="2.0.33"
 val commonsCodecVersion="1.18.0"
@@ -25,8 +25,8 @@ val snappyJavaVersion = "1.1.10.7"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.1.10"
-    id("com.diffplug.spotless") version "7.0.2"
+    kotlin("jvm") version "2.1.20"
+    id("com.diffplug.spotless") version "7.0.3"
     id("com.gradleup.shadow") version "8.3.6"
 }
 
