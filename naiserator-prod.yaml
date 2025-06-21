@@ -10,7 +10,7 @@ spec:
   replicas:
     min: 2
     max: 4
-    cpuThresholdPercentage: 90
+    cpuThresholdPercentage: 95
   port: 8080
   liveness:
     path: /internal/is_alive
@@ -38,7 +38,7 @@ spec:
     limits:
       memory: 2Gi
     requests:
-      cpu: 50m
+      cpu: 30m
       memory: 700Mi
   filesFrom:
     - secret: pale2-google-creds
