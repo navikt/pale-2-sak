@@ -13,7 +13,7 @@ val prometheusVersion="0.16.0"
 val junitVersion="5.13.3"
 val ioMockVersion="1.14.4"
 val kotlinVersion="2.2.0"
-val googleCloudStorageVersion="2.53.2"
+val googleCloudStorageVersion="2.53.3"
 val pdfboxVersion="2.0.34"
 val commonsCodecVersion="1.18.0"
 val ktfmtVersion="0.44"
@@ -26,7 +26,7 @@ val snappyJavaVersion = "1.1.10.7"
 plugins {
     id("application")
     kotlin("jvm") version "2.2.0"
-    id("com.diffplug.spotless") version "7.0.4"
+    id("com.diffplug.spotless") version "7.1.0"
     id("com.gradleup.shadow") version "8.3.8"
 }
 
