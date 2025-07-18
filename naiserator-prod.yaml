@@ -10,7 +10,11 @@ spec:
   replicas:
     min: 2
     max: 4
-    cpuThresholdPercentage: 95
+    scalingStrategy:
+      kafka:
+        consumerGroup: pale-2-sak-consumer
+        threshold: 100
+        topic: teamsykmelding.legeerklaering
   port: 8080
   liveness:
     path: /internal/is_alive
