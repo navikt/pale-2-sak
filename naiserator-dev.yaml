@@ -13,7 +13,7 @@ spec:
     scalingStrategy:
       kafka:
         consumerGroup: pale-2-sak-consumer
-        threshold: 00
+        threshold: 100
         topic: teamsykmelding.legeerklaering
   port: 8080
   liveness:
