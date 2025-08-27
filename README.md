@@ -35,10 +35,10 @@ This the high level flow of the application
 #### Build and run tests
 To build locally and run the integration tests you can simply run
 ``` bash
-./gradlew shadowJar
+./gradlew installDist
  ```
 or on windows 
-`gradlew.bat shadowJar`
+`gradlew.bat installDist`
 
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
