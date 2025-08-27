@@ -18,16 +18,16 @@ val pdfboxVersion="2.0.34"
 val commonsCodecVersion="1.18.0"
 val ktfmtVersion="0.44"
 
+val snappyJavaVersion = "1.1.10.7"
+
 val javaVersion = JvmTarget.JVM_21
 
-val snappyJavaVersion = "1.1.10.7"
 
 
 plugins {
     id("application")
     kotlin("jvm") version "2.2.0"
     id("com.diffplug.spotless") version "7.0.4"
-    id("com.gradleup.shadow") version "8.3.8"
 }
 
 application {
@@ -105,20 +105,6 @@ kotlin {
 
 
 tasks {
-
-    shadowJar {
-        archiveBaseName.set("app")
-        archiveClassifier.set("")
-        isZip64 = true
-        manifest {
-            attributes(
-                mapOf(
-                    "Main-Class" to "no.nav.syfo.ApplicationKt",
-                ),
-            )
-        }
-    }
-
     test {
         useJUnitPlatform()
         testLogging {
