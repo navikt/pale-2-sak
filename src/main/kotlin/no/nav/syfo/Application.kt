@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
@@ -20,36 +19,26 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationStopped
+import io.ktor.server.application.ApplicationStarted
+import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
-import java.time.Duration
 import java.util.concurrent.TimeUnit
-import kotlin.collections.any
-import kotlin.collections.contentEquals
-import kotlin.collections.filter
-import kotlin.collections.forEach
+import kotlin.String
 import kotlin.collections.listOf
 import kotlin.collections.set
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.logstash.logback.argument.StructuredArguments
-import no.nav.syfo.bucket.getLegeerklaering.getLegeerklaering
+import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.accessToken.AccessTokenClient
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgen.PdfgenClient
-import no.nav.syfo.journalpost.createJournalPost.onJournalRequest
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
-import no.nav.syfo.loggingMeta.LoggingMeta
-import no.nav.syfo.loggingMeta.TrackableException
-import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
+import no.nav.syfo.legeerklaring.LegeerklaringConsumerService
 import no.nav.syfo.nais.isalive.naisIsAliveRoute
 import no.nav.syfo.nais.isready.naisIsReadyRoute
 import no.nav.syfo.nais.prometheus.naisPrometheusRoute
@@ -93,11 +82,6 @@ fun main() {
 fun Application.module() {
     val environmentVariables = EnvironmentVariables()
     val applicationState = ApplicationState()
-
-    monitor.subscribe(ApplicationStopped) {
-        applicationState.ready = false
-        applicationState.alive = false
-    }
 
     configureRouting(applicationState = applicationState)
 
@@ -172,16 +156,40 @@ fun Application.module() {
 
     val paleVedleggStorage: Storage = StorageOptions.newBuilder().build().service
 
-    launchListeners(
-        environmentVariables,
-        applicationState,
-        environmentVariables.legeerklaeringBucketName,
-        paleVedleggStorage,
-        dokArkivClient,
-        pdfgenClient,
-        environmentVariables.paleVedleggBucketName,
-        norskHelsenettClient,
-    )
+    val aivenConsumerProperties =
+        KafkaUtils.getAivenKafkaConfig()
+            .toConsumerConfig(
+                "${environmentVariables.applicationName}-consumer",
+                valueDeserializer = StringDeserializer::class,
+            )
+            .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none" }
+    val kafkaLegeerklaeringAivenConsumer = KafkaConsumer<String, String>(aivenConsumerProperties)
+    kafkaLegeerklaeringAivenConsumer.subscribe(listOf(environmentVariables.legeerklaringTopic))
+
+    val legeerklaringConsumerService =
+        LegeerklaringConsumerService(
+            kafkaLegeerklaeringAivenConsumer,
+            applicationState,
+            environmentVariables,
+            environmentVariables.legeerklaeringBucketName,
+            storage = paleVedleggStorage,
+            dokArkivClient,
+            pdfgenClient,
+            environmentVariables.paleVedleggBucketName,
+            norskHelsenettClient,
+            60_000,
+        )
+    monitor.subscribe(ApplicationStarted) {
+        applicationState.ready = true
+        applicationState.alive = true
+        launch { legeerklaringConsumerService.start() }
+    }
+
+    monitor.subscribe(ApplicationStopping) {
+        runBlocking { legeerklaringConsumerService.stop() }
+        applicationState.ready = false
+        applicationState.alive = false
+    }
 }
 
 fun Application.configureRouting(applicationState: ApplicationState) {
@@ -196,119 +204,5 @@ data class ApplicationState(
     var alive: Boolean = true,
     var ready: Boolean = true,
 )
-
-@DelicateCoroutinesApi
-fun createListener(
-    applicationState: ApplicationState,
-    action: suspend CoroutineScope.() -> Unit
-): Job =
-    GlobalScope.launch {
-        try {
-            action()
-        } catch (e: TrackableException) {
-            logger.error(
-                "En uhåndtert feil oppstod, applikasjonen restarter {}",
-                StructuredArguments.fields(e.loggingMeta),
-                e.cause,
-            )
-        } finally {
-            applicationState.ready = false
-            applicationState.alive = false
-        }
-    }
-
-@DelicateCoroutinesApi
-fun launchListeners(
-    environmentVariables: EnvironmentVariables,
-    applicationState: ApplicationState,
-    legeerklaeringBucketName: String,
-    storage: Storage,
-    dokArkivClient: DokArkivClient,
-    pdfgenClient: PdfgenClient,
-    legeerklaeringVedleggBucketName: String,
-    norskHelsenettClient: NorskHelsenettClient,
-) {
-    createListener(applicationState) {
-        val aivenConsumerProperties =
-            KafkaUtils.getAivenKafkaConfig()
-                .toConsumerConfig(
-                    "${environmentVariables.applicationName}-consumer",
-                    valueDeserializer = StringDeserializer::class,
-                )
-                .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none" }
-        val kafkaLegeerklaeringAivenConsumer =
-            KafkaConsumer<String, String>(aivenConsumerProperties)
-        kafkaLegeerklaeringAivenConsumer.subscribe(listOf(environmentVariables.legeerklaringTopic))
-
-        blockingApplicationLogic(
-            kafkaLegeerklaeringAivenConsumer,
-            applicationState,
-            environmentVariables,
-            legeerklaeringBucketName,
-            storage,
-            dokArkivClient,
-            pdfgenClient,
-            legeerklaeringVedleggBucketName,
-            norskHelsenettClient,
-        )
-    }
-}
-
-suspend fun blockingApplicationLogic(
-    kafkaLegeerklaeringAivenConsumer: KafkaConsumer<String, String>,
-    applicationState: ApplicationState,
-    environmentVariables: EnvironmentVariables,
-    legeerklaeringBucketName: String,
-    storage: Storage,
-    dokArkivClient: DokArkivClient,
-    pdfgenClient: PdfgenClient,
-    legeerklaeringVedleggBucketName: String,
-    norskHelsenettClient: NorskHelsenettClient,
-) {
-    while (applicationState.ready) {
-        kafkaLegeerklaeringAivenConsumer
-            .poll(Duration.ofSeconds(10))
-            .filter {
-                !(it.headers().any { header ->
-                    header.value().contentEquals("macgyver".toByteArray())
-                })
-            }
-            .filter { it.value() != null }
-            .forEach { consumerRecord ->
-                logger.info(
-                    "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}",
-                )
-                val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage =
-                    objectMapper.readValue(consumerRecord.value())
-                val receivedLegeerklaering =
-                    getLegeerklaering(
-                        legeerklaeringBucketName,
-                        storage,
-                        legeerklaeringKafkaMessage.legeerklaeringObjectId,
-                    )
-
-                val loggingMeta =
-                    LoggingMeta(
-                        mottakId = receivedLegeerklaering.navLogId,
-                        orgNr = receivedLegeerklaering.legekontorOrgNr,
-                        msgId = receivedLegeerklaering.msgId,
-                        legeerklaeringId = receivedLegeerklaering.legeerklaering.id,
-                    )
-
-                onJournalRequest(
-                    dokArkivClient,
-                    pdfgenClient,
-                    legeerklaeringVedleggBucketName,
-                    storage,
-                    norskHelsenettClient,
-                    receivedLegeerklaering,
-                    legeerklaeringKafkaMessage.validationResult,
-                    legeerklaeringKafkaMessage.vedlegg,
-                    loggingMeta,
-                    environmentVariables.cluster
-                )
-            }
-    }
-}
 
 class ServiceUnavailableException(message: String?) : Exception(message)
