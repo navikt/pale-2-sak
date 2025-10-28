@@ -164,7 +164,6 @@ fun Application.module() {
             )
             .also { it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none" }
     val kafkaLegeerklaeringAivenConsumer = KafkaConsumer<String, String>(aivenConsumerProperties)
-    kafkaLegeerklaeringAivenConsumer.subscribe(listOf(environmentVariables.legeerklaringTopic))
 
     val legeerklaringConsumerService =
         LegeerklaringConsumerService(

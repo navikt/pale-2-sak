@@ -60,6 +60,7 @@ class LegeerklaringConsumerService(
                 scope.launch {
                     while (applicationState.ready && isActive) {
                         try {
+                            kafkaLegeerklaeringAivenConsumer.subscribe(listOf(environmentVariables.legeerklaringTopic))
                             runConsumer()
                         } catch (trackableExepction: TrackableException) {
                             logger.error(
