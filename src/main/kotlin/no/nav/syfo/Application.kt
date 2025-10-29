@@ -14,8 +14,8 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
-import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
@@ -27,7 +27,6 @@ import io.ktor.server.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
 import java.util.concurrent.TimeUnit
 import kotlin.String
-import kotlin.collections.listOf
 import kotlin.collections.set
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
@@ -105,27 +104,13 @@ fun Application.module() {
                 }
             }
         }
-        install(HttpTimeout) {
-            socketTimeoutMillis = 120_000
-            connectTimeoutMillis = 40_000
-            requestTimeoutMillis = 40_000
-        }
         install(HttpRequestRetry) {
-            constantDelay(100, 0, false)
-            retryOnExceptionIf(3) { request, throwable ->
+            exponentialDelay(2.0, baseDelayMs = 1000, maxDelayMs = 20_000)
+            retryOnExceptionIf(5) { request, throwable ->
                 secureLogger.warn("Caught exception ${throwable.message}, for url ${request.url}")
                 true
             }
-            retryIf(maxRetries) { request, response ->
-                if (response.status.value.let { it in 500..599 }) {
-                    secureLogger.warn(
-                        "Retrying for statuscode ${response.status.value}, for url ${request.url}",
-                    )
-                    true
-                } else {
-                    false
-                }
-            }
+            retryIf(5) { request, response -> !response.status.isSuccess() }
         }
     }
 
