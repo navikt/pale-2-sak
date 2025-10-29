@@ -28,6 +28,7 @@ import no.nav.syfo.loggingMeta.TrackableException
 import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
 import no.nav.syfo.objectMapper
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.errors.WakeupException
 import org.slf4j.LoggerFactory
 
 class LegeerklaringConsumerService(
@@ -64,6 +65,8 @@ class LegeerklaringConsumerService(
                                 listOf(environmentVariables.legeerklaringTopic)
                             )
                             runConsumer()
+                        } catch (wakeup: WakeupException) {
+                            log.info("received wakeup invocation, shutting down kafka consumer")
                         } catch (trackableExepction: TrackableException) {
                             logger.error(
                                 "Error running kafka consumer, unsubscribing and waiting 60 seconds for retry",
