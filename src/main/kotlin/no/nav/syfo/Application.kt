@@ -14,6 +14,7 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
@@ -87,6 +88,11 @@ fun Application.module() {
     DefaultExports.initialize()
 
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+        install(HttpTimeout) {
+            connectTimeoutMillis = 40000
+            requestTimeoutMillis = 40000
+            socketTimeoutMillis = 40000
+        }
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
