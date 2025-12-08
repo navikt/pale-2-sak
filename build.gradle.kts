@@ -21,8 +21,8 @@ val ktfmtVersion="0.44"
 val snappyJavaVersion = "1.1.10.8"
 
 val javaVersion = JvmTarget.JVM_21
-
-
+val otelAnnotationsVersion = "2.21.0"
+val otelVersion = "1.56.0"
 
 plugins {
     id("application")
@@ -59,7 +59,8 @@ dependencies {
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
-
+    implementation("io.opentelemetry:opentelemetry-api:${otelVersion}")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:${otelAnnotationsVersion}")
     constraints {
         implementation("commons-codec:commons-codec:$commonsCodecVersion") {
             because("override transient from io.ktor:ktor-client-apache")

@@ -2,6 +2,7 @@ package no.nav.syfo.legeerklaring
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.cloud.storage.Storage
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,7 @@ import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.loggingMeta.TrackableException
 import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
 import no.nav.syfo.objectMapper
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.errors.WakeupException
 import org.slf4j.LoggerFactory
@@ -58,7 +60,7 @@ class LegeerklaringConsumerService(
                 return
             }
             job =
-                scope.launch {
+                scope.launch(Dispatchers.IO) {
                     while (applicationState.ready && isActive) {
                         try {
                             kafkaLegeerklaeringAivenConsumer.subscribe(
@@ -96,42 +98,45 @@ class LegeerklaringConsumerService(
                         header.value().contentEquals("macgyver".toByteArray())
                     })
                 }
-                .filter { it.value() != null }
-                .forEach { consumerRecord ->
-                    logger.info(
-                        "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}",
-                    )
-                    val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage =
-                        objectMapper.readValue(consumerRecord.value())
-                    val receivedLegeerklaering =
-                        getLegeerklaering(
-                            legeerklaeringBucketName,
-                            storage,
-                            legeerklaeringKafkaMessage.legeerklaeringObjectId,
-                        )
-
-                    val loggingMeta =
-                        LoggingMeta(
-                            mottakId = receivedLegeerklaering.navLogId,
-                            orgNr = receivedLegeerklaering.legekontorOrgNr,
-                            msgId = receivedLegeerklaering.msgId,
-                            legeerklaeringId = receivedLegeerklaering.legeerklaering.id,
-                        )
-
-                    onJournalRequest(
-                        dokArkivClient,
-                        pdfgenClient,
-                        legeerklaeringVedleggBucketName,
-                        storage,
-                        norskHelsenettClient,
-                        receivedLegeerklaering,
-                        legeerklaeringKafkaMessage.validationResult,
-                        legeerklaeringKafkaMessage.vedlegg,
-                        loggingMeta,
-                        environmentVariables.cluster
-                    )
-                }
+                .mapNotNull { consumerRecord -> consumerRecord.value()?.let { consumerRecord } }
+                .forEach { consumerRecord -> handleConsumerRecord(consumerRecord) }
         }
+    }
+
+    @WithSpan
+    private suspend fun handleConsumerRecord(consumerRecord: ConsumerRecord<String, String>) {
+        logger.info(
+            "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}",
+        )
+        val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage =
+            objectMapper.readValue(consumerRecord.value())
+        val receivedLegeerklaering =
+            getLegeerklaering(
+                legeerklaeringBucketName,
+                storage,
+                legeerklaeringKafkaMessage.legeerklaeringObjectId,
+            )
+
+        val loggingMeta =
+            LoggingMeta(
+                mottakId = receivedLegeerklaering.navLogId,
+                orgNr = receivedLegeerklaering.legekontorOrgNr,
+                msgId = receivedLegeerklaering.msgId,
+                legeerklaeringId = receivedLegeerklaering.legeerklaering.id,
+            )
+
+        onJournalRequest(
+            dokArkivClient,
+            pdfgenClient,
+            legeerklaeringVedleggBucketName,
+            storage,
+            norskHelsenettClient,
+            receivedLegeerklaering,
+            legeerklaeringKafkaMessage.validationResult,
+            legeerklaeringKafkaMessage.vedlegg,
+            loggingMeta,
+            environmentVariables.cluster,
+        )
     }
 
     suspend fun stop() =
