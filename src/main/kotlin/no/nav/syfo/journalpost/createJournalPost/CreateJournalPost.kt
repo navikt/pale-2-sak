@@ -1,6 +1,7 @@
 package no.nav.syfo.journalpost.createJournalPost
 
 import com.google.cloud.storage.Storage
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.bucket.getVedlegg.getLegeerklaeringVedlegg
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
@@ -16,6 +17,7 @@ import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.secureLogger
 
+@WithSpan
 suspend fun onJournalRequest(
     dokArkivClient: DokArkivClient,
     pdfgenClient: PdfgenClient,

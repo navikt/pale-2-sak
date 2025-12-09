@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode.Companion.InternalServerError
 import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.io.IOException
 import net.logstash.logback.argument.StructuredArguments.fields
 import no.nav.syfo.client.accessToken.AccessTokenClient
@@ -23,6 +24,7 @@ class NorskHelsenettClient(
     private val httpClient: HttpClient,
 ) {
 
+    @WithSpan
     suspend fun getByFnr(fnr: String, loggingMeta: LoggingMeta): Behandler? {
         val accessToken = accessTokenClient.getAccessToken(resourceId, loggingMeta)
 
