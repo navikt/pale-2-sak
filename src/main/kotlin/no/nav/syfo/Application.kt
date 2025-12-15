@@ -16,6 +16,7 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
@@ -88,11 +89,6 @@ fun Application.module() {
     DefaultExports.initialize()
 
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        install(HttpTimeout) {
-            connectTimeoutMillis = 40000
-            requestTimeoutMillis = 40000
-            socketTimeoutMillis = 40000
-        }
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -116,7 +112,19 @@ fun Application.module() {
                 secureLogger.warn("Caught exception ${throwable.message}, for url ${request.url}")
                 true
             }
-            retryIf(5) { request, response -> !response.status.isSuccess() }
+            retryIf(5) { _, response ->
+                when {
+                    response.status == HttpStatusCode.Conflict -> false
+                    response.status.isSuccess() -> false
+                    else -> true
+                }
+            }
+        }
+
+        install(HttpTimeout) {
+            connectTimeoutMillis = 40000
+            requestTimeoutMillis = 40000
+            socketTimeoutMillis = 40000
         }
     }
 
