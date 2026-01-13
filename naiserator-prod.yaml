@@ -52,11 +52,11 @@ spec:
     application:
       enabled: true
       tenant: nav.no
-  secureLogs:
-    enabled: true
   accessPolicy:
     outbound:
       rules:
+        - application: logging
+          namespace: nais-system
         - application: pale-2-pdfgen
           namespace: teamsykmelding
           cluster: prod-gcp
