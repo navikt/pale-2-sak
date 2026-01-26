@@ -6,14 +6,14 @@ version = "1.0.0"
 val coroutinesVersion="1.10.2"
 val jacksonVersion="2.20.1"
 val kafkaVersion="3.9.1"
-val ktorVersion="3.3.1"
+val ktorVersion="3.3.3"
 val logstashLogbackEncoder="9.0"
-val logbackVersion="1.5.20"
+val logbackVersion="1.5.25"
 val prometheusVersion="0.16.0"
-val junitVersion="6.0.1"
-val ioMockVersion="1.14.6"
-val kotlinVersion="2.2.21"
-val googleCloudStorageVersion="2.59.0"
+val junitVersion="6.0.2"
+val ioMockVersion="1.14.7"
+val kotlinVersion="2.3.0"
+val googleCloudStorageVersion="2.62.0"
 val pdfboxVersion="2.0.35"
 val commonsCodecVersion="1.19.0"
 val ktfmtVersion="0.44"
@@ -21,12 +21,12 @@ val ktfmtVersion="0.44"
 val snappyJavaVersion = "1.1.10.8"
 
 val javaVersion = JvmTarget.JVM_21
-val otelAnnotationsVersion = "2.21.0"
-val otelVersion = "1.56.0"
+val otelAnnotationsVersion = "2.24.0"
+val otelVersion = "1.58.0"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     id("com.diffplug.spotless") version "8.0.0"
 }
 
