@@ -8,7 +8,7 @@ val jacksonVersion="2.20.1"
 val kafkaVersion="3.9.1"
 val ktorVersion="3.3.1"
 val logstashLogbackEncoder="9.0"
-val logbackVersion="1.5.20"
+val logbackVersion = "1.5.26"
 val prometheusVersion="0.16.0"
 val junitVersion="6.0.1"
 val ioMockVersion="1.14.6"
@@ -18,7 +18,6 @@ val pdfboxVersion="2.0.35"
 val commonsCodecVersion="1.19.0"
 val ktfmtVersion="0.44"
 
-val snappyJavaVersion = "1.1.10.8"
 
 val javaVersion = JvmTarget.JVM_21
 val otelAnnotationsVersion = "2.21.0"
@@ -71,22 +70,12 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
 
-    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
-    constraints {
-        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
-            because("override transient from org.apache.kafka:kafka_2.12")
-        }
-    }
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
-    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
-    constraints {
-        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
-            because("override transient from org.apache.kafka:kafka_2.12")
-        }
-    }
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
