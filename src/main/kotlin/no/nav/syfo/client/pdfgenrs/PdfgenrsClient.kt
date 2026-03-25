@@ -27,8 +27,8 @@ class PdfgenrsClient(
         if (httpResponse.status == HttpStatusCode.OK) {
             return httpResponse.call.response.body<ByteArray>()
         } else {
-            logger.error("Mottok feilkode fra pale-2-pdfgen: {}", httpResponse.status)
-            throw RuntimeException("Mottok feilkode fra pale-2-pdfgen: ${httpResponse.status}")
+            logger.error("Mottok feilkode fra pale-2-pdfgenrs: {}", httpResponse.status)
+            throw RuntimeException("Mottok feilkode fra pale-2-pdfgenrs: ${httpResponse.status}")
         }
     }
 }
