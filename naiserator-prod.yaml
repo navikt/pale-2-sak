@@ -59,6 +59,7 @@ spec:
         - application: pale-2-pdfgen
           namespace: teamsykmelding
           cluster: prod-gcp
+        - application: pale-2-pdfgenrs
         - application: syfohelsenettproxy
       external:
         - host: dokarkiv.prod-fss-pub.nais.io

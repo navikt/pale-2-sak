@@ -9,6 +9,8 @@ import no.nav.syfo.client.dokArkivClient.createJournalpostPayload
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgen.PdfgenClient
 import no.nav.syfo.client.pdfgen.createPdfPayload
+import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
+import no.nav.syfo.client.pdfgenrs.createPdfrsPayload
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.loggingMeta.wrapExceptions
@@ -21,6 +23,7 @@ import no.nav.syfo.secureLogger
 suspend fun onJournalRequest(
     dokArkivClient: DokArkivClient,
     pdfgenClient: PdfgenClient,
+    pdfgenrsClient: PdfgenrsClient,
     legeerklaeringVedleggBucketName: String,
     storage: Storage,
     norskHelsenettClient: NorskHelsenettClient,
@@ -67,6 +70,20 @@ suspend fun onJournalRequest(
             )
         val pdf = pdfgenClient.createPdf(pdfPayload)
         logger.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
+
+        try {
+            val pdfrsPayload =
+                createPdfrsPayload(
+                    receivedLegeerklaering.legeerklaering,
+                    validationResult,
+                    receivedLegeerklaering.mottattDato,
+                )
+            val pdfrs = pdfgenrsClient.creatersPdf((pdfrsPayload))
+            logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
+        } catch (exception: Exception) {
+            logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
+            logger.info(exception.message, exception)
+        }
 
         val behandler =
             try {
