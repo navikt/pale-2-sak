@@ -37,6 +37,7 @@ import no.nav.syfo.client.accessToken.AccessTokenClient
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgen.PdfgenClient
+import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.legeerklaring.LegeerklaringConsumerService
@@ -145,6 +146,8 @@ fun Application.module() {
             httpClient,
         )
     val pdfgenClient = PdfgenClient(environmentVariables.pdfgen, httpClient)
+    val pdfgenrsClient = PdfgenrsClient(environmentVariables.pdfgenrs, httpClient)
+
     val norskHelsenettClient =
         NorskHelsenettClient(
             environmentVariables.norskHelsenettEndpointURL,
@@ -173,6 +176,7 @@ fun Application.module() {
             storage = paleVedleggStorage,
             dokArkivClient,
             pdfgenClient,
+            pdfgenrsClient,
             environmentVariables.paleVedleggBucketName,
             norskHelsenettClient,
             60_000,
