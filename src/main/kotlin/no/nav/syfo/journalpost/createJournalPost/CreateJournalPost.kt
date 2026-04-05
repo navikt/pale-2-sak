@@ -78,7 +78,7 @@ suspend fun onJournalRequest(
                     validationResult,
                     receivedLegeerklaering.mottattDato,
                 )
-            val pdfrs = pdfgenrsClient.creatersPdf((pdfrsPayload))
+            val pdfrs = pdfgenrsClient.creatersPdf(pdfrsPayload)
             logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
             secureLogger.info("PDFRS created this pdf: ${pdfrs.toString(Charsets.UTF_8)}")
         } catch (exception: Exception) {
