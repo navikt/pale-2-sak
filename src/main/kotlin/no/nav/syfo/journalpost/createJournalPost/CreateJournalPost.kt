@@ -80,6 +80,7 @@ suspend fun onJournalRequest(
                 )
             val pdfrs = pdfgenrsClient.creatersPdf(pdfrsPayload)
             logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
+            secureLogger.info("This is correct?")
             secureLogger.info("PDFRS created this pdf: ${pdfrs.toString(Charsets.UTF_8)}")
         } catch (exception: Exception) {
             logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
