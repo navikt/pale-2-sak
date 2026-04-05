@@ -47,7 +47,7 @@ fun createPdfrsPayload(
 fun mapToLegeerklaringWithoutIllegalCharacters(legeerklaring: Legeerklaering): Legeerklaering {
     val legeerklaringAsString = objectMapper.writeValueAsString(legeerklaring)
     val legeerklaringAsStringWithoutIllegalCharacters =
-        legeerklaringAsString.replace(regex = Regex("\\p{C}"), "")
+        legeerklaringAsString.replace(regex = Regex("[^\\x00-\\x7F]"), "")
     return objectMapper.readValue(
         legeerklaringAsStringWithoutIllegalCharacters,
         Legeerklaering::class.java
