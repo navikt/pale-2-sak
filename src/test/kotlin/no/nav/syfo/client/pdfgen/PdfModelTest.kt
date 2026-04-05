@@ -309,7 +309,7 @@ internal class PdfModelTest {
             mapToLegeerklaringWithoutIllegalCharacters(legeerklaering)
 
         assertEquals(
-            "_ •• l\\iiJr~Svar med skumle tegn",
+            "_  l\\iiJr~Svar med skumle tegn",
             mapedLegeerklaringWithoutIllegalCharacters.arsakssammenheng
         )
     }
