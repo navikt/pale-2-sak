@@ -36,7 +36,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.accessToken.AccessTokenClient
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
-import no.nav.syfo.client.pdfgen.PdfgenClient
 import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
@@ -145,7 +144,6 @@ fun Application.module() {
             environmentVariables.dokArkivScope,
             httpClient,
         )
-    val pdfgenClient = PdfgenClient(environmentVariables.pdfgen, httpClient)
     val pdfgenrsClient = PdfgenrsClient(environmentVariables.pdfgenrs, httpClient)
 
     val norskHelsenettClient =
@@ -175,7 +173,6 @@ fun Application.module() {
             environmentVariables.legeerklaeringBucketName,
             storage = paleVedleggStorage,
             dokArkivClient,
-            pdfgenClient,
             pdfgenrsClient,
             environmentVariables.paleVedleggBucketName,
             norskHelsenettClient,
