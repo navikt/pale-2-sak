@@ -21,7 +21,6 @@ import no.nav.syfo.EnvironmentVariables
 import no.nav.syfo.bucket.getLegeerklaering.getLegeerklaering
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
-import no.nav.syfo.client.pdfgen.PdfgenClient
 import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
 import no.nav.syfo.journalpost.createJournalPost.onJournalRequest
 import no.nav.syfo.logger
@@ -129,7 +128,6 @@ class LegeerklaringConsumerService(
 
         onJournalRequest(
             dokArkivClient,
-            pdfgenClient,
             pdfgenrsClient,
             legeerklaeringVedleggBucketName,
             storage,
