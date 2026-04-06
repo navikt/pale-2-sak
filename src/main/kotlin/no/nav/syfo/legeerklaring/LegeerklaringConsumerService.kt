@@ -40,7 +40,6 @@ class LegeerklaringConsumerService(
     private val legeerklaeringBucketName: String,
     private val storage: Storage,
     private val dokArkivClient: DokArkivClient,
-    private val pdfgenClient: PdfgenClient,
     private val pdfgenrsClient: PdfgenrsClient,
     private val legeerklaeringVedleggBucketName: String,
     private val norskHelsenettClient: NorskHelsenettClient,
