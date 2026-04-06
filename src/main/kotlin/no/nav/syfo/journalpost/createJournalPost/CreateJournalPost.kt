@@ -18,6 +18,7 @@ import no.nav.syfo.metrics.MELDING_LAGER_I_JOARK
 import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.secureLogger
+import no.nav.syfo.objectMapper
 
 @WithSpan
 suspend fun onJournalRequest(
@@ -80,6 +81,7 @@ suspend fun onJournalRequest(
                 )
             val pdfrs = pdfgenrsClient.creatersPdf(pdfrsPayload)
             logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
+            secureLogger.info("receivedLegeerklaering.legeerklaering: {}", objectMapper.writeValueAsString(receivedLegeerklaering.legeerklaering))
         } catch (exception: Exception) {
             logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
             logger.info(exception.message, exception)
