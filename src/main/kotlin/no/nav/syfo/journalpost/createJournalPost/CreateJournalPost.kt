@@ -7,8 +7,6 @@ import no.nav.syfo.bucket.getVedlegg.getLegeerklaeringVedlegg
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.dokArkivClient.createJournalpostPayload
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
-import no.nav.syfo.client.pdfgen.PdfgenClient
-import no.nav.syfo.client.pdfgen.createPdfPayload
 import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
 import no.nav.syfo.client.pdfgenrs.createPdfrsPayload
 import no.nav.syfo.logger
@@ -23,7 +21,6 @@ import no.nav.syfo.objectMapper
 @WithSpan
 suspend fun onJournalRequest(
     dokArkivClient: DokArkivClient,
-    pdfgenClient: PdfgenClient,
     pdfgenrsClient: PdfgenrsClient,
     legeerklaeringVedleggBucketName: String,
     storage: Storage,
@@ -63,16 +60,7 @@ suspend fun onJournalRequest(
                 }
             }
 
-        val pdfPayload =
-            createPdfPayload(
-                receivedLegeerklaering.legeerklaering,
-                validationResult,
-                receivedLegeerklaering.mottattDato,
-            )
-        val pdf = pdfgenClient.createPdf(pdfPayload)
-        logger.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
-
-        try {
+        
             val pdfrsPayload =
                 createPdfrsPayload(
                     receivedLegeerklaering.legeerklaering,
@@ -82,10 +70,7 @@ suspend fun onJournalRequest(
             val pdfrs = pdfgenrsClient.creatersPdf(pdfrsPayload)
             logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
             secureLogger.info("receivedLegeerklaering.legeerklaering: {}", objectMapper.writeValueAsString(receivedLegeerklaering.legeerklaering))
-        } catch (exception: Exception) {
-            logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
-            logger.info(exception.message, exception)
-        }
+
 
         val behandler =
             try {
@@ -101,7 +86,7 @@ suspend fun onJournalRequest(
         val journalpostPayload =
             createJournalpostPayload(
                 receivedLegeerklaering.legeerklaering,
-                pdf,
+                pdfrs,
                 receivedLegeerklaering.personNrLege,
                 receivedLegeerklaering.navLogId,
                 receivedLegeerklaering.legeerklaering.signaturDato,
