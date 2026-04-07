@@ -22,7 +22,7 @@ import no.nav.syfo.bucket.getLegeerklaering.getLegeerklaering
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgen.PdfgenClient
-import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
+import no.nav.syfo.client.pdfgenrs.TypstClient
 import no.nav.syfo.journalpost.createJournalPost.onJournalRequest
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
@@ -42,7 +42,7 @@ class LegeerklaringConsumerService(
     private val storage: Storage,
     private val dokArkivClient: DokArkivClient,
     private val pdfgenClient: PdfgenClient,
-    private val pdfgenrsClient: PdfgenrsClient,
+    private val typstClient: TypstClient,
     private val legeerklaeringVedleggBucketName: String,
     private val norskHelsenettClient: NorskHelsenettClient,
     val delayTime: Long,
@@ -130,7 +130,7 @@ class LegeerklaringConsumerService(
         onJournalRequest(
             dokArkivClient,
             pdfgenClient,
-            pdfgenrsClient,
+            typstClient,
             legeerklaeringVedleggBucketName,
             storage,
             norskHelsenettClient,
