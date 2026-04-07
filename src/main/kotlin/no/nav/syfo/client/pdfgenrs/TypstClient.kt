@@ -27,8 +27,11 @@ class TypstClient(
                 .redirectError(ProcessBuilder.Redirect.PIPE)
                 .start()
 
+        var stderr = ""
+        val stderrThread = Thread { stderr = process.errorStream.bufferedReader().readText() }
+        stderrThread.start()
         val pdfBytes = process.inputStream.readBytes()
-        val stderr = process.errorStream.bufferedReader().readText()
+        stderrThread.join()
         val exitCode = process.waitFor()
 
         if (exitCode != 0) {
