@@ -72,13 +72,13 @@ suspend fun onJournalRequest(
         logger.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 
         try {
-            val pdfrsPayload =
-                createPdfrsPayload(
+            val typstPayload =
+                createTypstPayload(
                     receivedLegeerklaering.legeerklaering,
                     validationResult,
                     receivedLegeerklaering.mottattDato,
                 )
-            val pdfrs = typstClient.createTypstPayload(pdfrsPayload)
+            val pdfrs = typstClient.createPdf(typstPayload)
             logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
         } catch (exception: Exception) {
             logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
