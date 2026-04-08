@@ -1,0 +1,5 @@
+# The binary, don't check this in
+typst
+
+# The development output PDF
+pale2.pdf

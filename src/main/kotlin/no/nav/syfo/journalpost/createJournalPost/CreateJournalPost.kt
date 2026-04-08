@@ -9,8 +9,8 @@ import no.nav.syfo.client.dokArkivClient.createJournalpostPayload
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgen.PdfgenClient
 import no.nav.syfo.client.pdfgen.createPdfPayload
-import no.nav.syfo.client.pdfgenrs.PdfgenrsClient
-import no.nav.syfo.client.pdfgenrs.createPdfrsPayload
+import no.nav.syfo.client.pdfgenrs.TypstClient
+import no.nav.syfo.client.pdfgenrs.createTypstPayload
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.loggingMeta.wrapExceptions
@@ -18,13 +18,12 @@ import no.nav.syfo.metrics.MELDING_LAGER_I_JOARK
 import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.secureLogger
-import no.nav.syfo.objectMapper
 
 @WithSpan
 suspend fun onJournalRequest(
     dokArkivClient: DokArkivClient,
     pdfgenClient: PdfgenClient,
-    pdfgenrsClient: PdfgenrsClient,
+    typstClient: TypstClient,
     legeerklaeringVedleggBucketName: String,
     storage: Storage,
     norskHelsenettClient: NorskHelsenettClient,
@@ -73,15 +72,14 @@ suspend fun onJournalRequest(
         logger.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 
         try {
-            val pdfrsPayload =
-                createPdfrsPayload(
+            val typstPayload =
+                createTypstPayload(
                     receivedLegeerklaering.legeerklaering,
                     validationResult,
                     receivedLegeerklaering.mottattDato,
                 )
-            val pdfrs = pdfgenrsClient.creatersPdf(pdfrsPayload)
+            val pdfrs = typstClient.createPdf(typstPayload)
             logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
-            secureLogger.info("receivedLegeerklaering.legeerklaering: {}", objectMapper.writeValueAsString(receivedLegeerklaering.legeerklaering))
         } catch (exception: Exception) {
             logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
             logger.info(exception.message, exception)
