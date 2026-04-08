@@ -36,7 +36,9 @@ This the high level flow of the application
 
 [pdf](pale-2.pdf)
 
-[![Preview](pale-2.png)](pale-2.png)
+[![Page 1](pale-2-page1.png)](pale-2-page1.png)
+[![Page 2](pale-2-page2.png)](pale-2-page2.png)
+[![Page 3](pale-2-page3.png)](pale-2-page3.png)
 
 #### Build and run tests
 To build locally and run the integration tests you can simply run
