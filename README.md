@@ -32,6 +32,12 @@ This the high level flow of the application
       dokakriv --> Gosys;
 ```
 
+### Example PDF output
+
+[pdf](pale-2.pdf)
+
+[![Preview](pale-2.png)](pale-2.png)
+
 #### Build and run tests
 To build locally and run the integration tests you can simply run
 ``` bash
