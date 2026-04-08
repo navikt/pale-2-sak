@@ -10,8 +10,6 @@ data class EnvironmentVariables(
     val clientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
     val pdfgen: String =
         getEnvVar("PDF_GEN_URL", "http://pale-2-pdfgen/api/v1/genpdf/pale-2/pale-2"),
-    val pdfgenrs: String =
-        getEnvVar("PDF_GEN_RS_URL", "http://pale-2-pdfgenrs/api/v1/genpdf/pale-2/pale-2"),
     val paleVedleggBucketName: String = getEnvVar("PALE_VEDLEGG_BUCKET_NAME"),
     val legeerklaeringBucketName: String = getEnvVar("PALE_BUCKET_NAME"),
     val legeerklaringTopic: String = "teamsykmelding.legeerklaering",
