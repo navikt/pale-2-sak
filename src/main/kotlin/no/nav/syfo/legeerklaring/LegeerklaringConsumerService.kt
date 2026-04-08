@@ -42,7 +42,7 @@ class LegeerklaringConsumerService(
     private val storage: Storage,
     private val dokArkivClient: DokArkivClient,
     private val pdfgenClient: PdfgenClient,
-    private val typstClient = TypstClient,
+    private val typstClient: TypstClient,
     private val legeerklaeringVedleggBucketName: String,
     private val norskHelsenettClient: NorskHelsenettClient,
     val delayTime: Long,
