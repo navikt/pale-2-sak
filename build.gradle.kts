@@ -13,6 +13,7 @@ val prometheusVersion="0.16.0"
 val junitVersion="6.0.1"
 val ioMockVersion="1.14.6"
 val kotlinVersion="2.2.21"
+val testcontainersVersion="1.20.4"
 val googleCloudStorageVersion = "2.62.1"
 val pdfboxVersion="2.0.35"
 val commonsCodecVersion="1.19.0"
@@ -85,6 +86,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
 }
 
 kotlin {
