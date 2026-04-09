@@ -68,7 +68,9 @@ suspend fun onJournalRequest(
                 validationResult,
                 receivedLegeerklaering.mottattDato,
             )
+        val startTime = System.currentTimeMillis()
         val pdf = pdfgenClient.createPdf(pdfPayload)
+        logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         logger.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
 
         try {
@@ -78,10 +80,12 @@ suspend fun onJournalRequest(
                     validationResult,
                     receivedLegeerklaering.mottattDato,
                 )
+            val startTime = System.currentTimeMillis()
             val pdfrs = typstClient.createPdf(typstPayload)
-            logger.info("PDFRS generert {}", StructuredArguments.fields(loggingMeta))
+            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTime}ms")
+            logger.info("Typst pdf generert {}", StructuredArguments.fields(loggingMeta))
         } catch (exception: Exception) {
-            logger.info("PDFRS feilet {}", StructuredArguments.fields(loggingMeta))
+            logger.info("Typst fail {}", StructuredArguments.fields(loggingMeta))
             logger.info(exception.message, exception)
         }
 
