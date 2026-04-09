@@ -22,7 +22,7 @@ val ktfmtVersion="0.44"
 val javaVersion = JvmTarget.JVM_21
 val otelAnnotationsVersion = "2.21.0"
 val otelVersion = "1.56.0"
-val typstVersion = "0.14.2"
+val testcontainersVersion = "1.20.4"
 
 plugins {
     id("application")
@@ -81,6 +81,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     testImplementation("io.mockk:mockk:$ioMockVersion")
+    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
@@ -95,26 +96,8 @@ kotlin {
 }
 
 
-val downloadTypst by tasks.registering(Exec::class) {
-    val typstFile = layout.buildDirectory.file("typst/typst").get().asFile
-    outputs.file(typstFile)
-    onlyIf { !typstFile.exists() }
-    commandLine(
-        "bash", "-c",
-        "mkdir -p '${typstFile.parentFile.absolutePath}' && " +
-            "wget -q 'https://github.com/typst/typst/releases/download/v${typstVersion}/typst-x86_64-unknown-linux-musl.tar.xz'" +
-            " -O /tmp/typst-dl.tar.xz && " +
-            "tar -xf /tmp/typst-dl.tar.xz --strip-components=1 -C '${typstFile.parentFile.absolutePath}'" +
-            " typst-x86_64-unknown-linux-musl/typst && " +
-            "chmod +x '${typstFile.absolutePath}' && " +
-            "rm -f /tmp/typst-dl.tar.xz",
-    )
-}
-
 tasks {
     test {
-        dependsOn(downloadTypst)
-        systemProperty("typst.binary.path", layout.buildDirectory.file("typst/typst").get().asFile.absolutePath)
         systemProperty("project.dir", rootDir.absolutePath)
         useJUnitPlatform()
         testLogging {

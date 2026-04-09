@@ -2,6 +2,8 @@ package no.nav.syfo.client.pdfgenrs
 
 import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.file.Files
+import java.time.Duration
 import java.time.LocalDateTime
 import javax.imageio.ImageIO
 import no.nav.syfo.model.Arbeidsgiver
@@ -21,19 +23,64 @@ import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.testcontainers.containers.GenericContainer
 
 internal class TypstClientTest {
 
-    private val typstBinaryPath: String = System.getProperty("typst.binary.path", "")
-    private val projectDir: String = System.getProperty("project.dir", "")
+    companion object {
+        private const val TYPST_VERSION = "0.14.2"
+        private val projectDir: String = System.getProperty("project.dir", "")
+        private lateinit var typstBinaryFile: File
+        private lateinit var typstContainer: GenericContainer<Nothing>
+
+        @JvmStatic
+        @BeforeAll
+        fun setupTypst() {
+            typstBinaryFile = Files.createTempFile("typst-", "").toFile()
+            typstContainer =
+                GenericContainer<Nothing>("alpine:3.19")
+                    .withCommand(
+                        "sh",
+                        "-c",
+                        "apk add --no-cache xz wget -q && " +
+                            "wget -q 'https://github.com/typst/typst/releases/download/" +
+                            "v$TYPST_VERSION/typst-x86_64-unknown-linux-musl.tar.xz'" +
+                            " -O /tmp/t.tar.xz && " +
+                            "tar -xJf /tmp/t.tar.xz -C /tmp/ && " +
+                            "sleep infinity",
+                    )
+                    .waitingFor(
+                        org.testcontainers.containers.wait.strategy.Wait.forSuccessfulCommand(
+                            "test -f /tmp/typst-x86_64-unknown-linux-musl/typst"
+                        )
+                    )
+                    .withStartupTimeout(Duration.ofSeconds(120))
+            typstContainer.start()
+            typstContainer.copyFileFromContainer(
+                "/tmp/typst-x86_64-unknown-linux-musl/typst",
+                typstBinaryFile.absolutePath,
+            )
+            typstBinaryFile.setExecutable(true)
+        }
+
+        @JvmStatic
+        @AfterAll
+        fun tearDown() {
+            if (::typstContainer.isInitialized) {
+                typstContainer.stop()
+            }
+            typstBinaryFile.delete()
+        }
+    }
 
     private fun buildTypstClient() =
         TypstClient(
-            typstBinaryPath = typstBinaryPath,
+            typstBinaryPath = typstBinaryFile.absolutePath,
             templatePath = "$projectDir/typst-pdf/pale-2.typ",
             fontPath = "$projectDir/typst-pdf/fonts",
         )
@@ -178,11 +225,6 @@ internal class TypstClientTest {
 
     @Test
     fun `creates a valid pdf for an OK legeerklaering`() {
-        assumeTrue(
-            File(typstBinaryPath).exists(),
-            "Typst binary not available at '$typstBinaryPath', skipping test",
-        )
-
         val payload =
             PdfrsModel(
                 legeerklaering = buildLegeerklaering(),
@@ -202,11 +244,6 @@ internal class TypstClientTest {
 
     @Test
     fun `creates a valid pdf for an INVALID legeerklaering with rule hits`() {
-        assumeTrue(
-            File(typstBinaryPath).exists(),
-            "Typst binary not available at '$typstBinaryPath', skipping test",
-        )
-
         val payload =
             PdfrsModel(
                 legeerklaering = buildLegeerklaering(),
