@@ -80,9 +80,9 @@ suspend fun onJournalRequest(
                     validationResult,
                     receivedLegeerklaering.mottattDato,
                 )
-            val startTime = System.currentTimeMillis()
-            val pdfrs = typstClient.createPdf(typstPayload)
-            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTime}ms")
+            val startTimeTypst = System.currentTimeMillis()
+            val typstPdf = typstClient.createPdf(typstPayload)
+            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTimeTypst}ms")
             logger.info("Typst pdf generert {}", StructuredArguments.fields(loggingMeta))
         } catch (exception: Exception) {
             logger.info("Typst fail {}", StructuredArguments.fields(loggingMeta))
