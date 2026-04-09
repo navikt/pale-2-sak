@@ -10,6 +10,7 @@ persist it
 * Ktor
 * Jackson
 * Junit
+* Typst
 
 ### Prerequisites
 Make sure you have the Java JDK 21 installed
