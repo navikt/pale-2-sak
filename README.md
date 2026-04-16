@@ -41,6 +41,21 @@ This the high level flow of the application
 [![Page 2](pale-2-page2.png)](pale-2-page2.png)
 [![Page 3](pale-2-page3.png)](pale-2-page3.png)
 
+### Local development with JetBrains IDE
+
+When editing the Typst template (`typst-pdf/pale-2.typ`) in a JetBrains IDE (IntelliJ IDEA, Rider, etc.), install the [Typst Pro](https://plugins.jetbrains.com/plugin/30231-typst-pro) plugin to get a full editing experience:
+
+1. Open **Settings / Preferences → Plugins → Marketplace**, search for **Typst Pro** and install it (or install it directly from the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/30231-typst-pro)).
+2. Restart the IDE. The required [Tinymist](https://github.com/Myriad-Dreamin/tinymist) language server is downloaded automatically on first use.
+3. Open `typst-pdf/pale-2.typ`. You will get:
+   - Syntax highlighting and code completion
+   - Inline error diagnostics and quick-fixes
+   - A **live preview** panel (open it with the preview icon in the editor toolbar) that re-renders the document as you type, with bidirectional scroll sync
+4. To render the template locally with repository test data, run:
+```bash
+typst compile --pdf-standard=a-2a --font-path=typst-pdf/fonts --input=data="$(cat typst-pdf/test-data/pale-2.json)" typst-pdf/pale-2.typ pale-2-local.pdf
+```
+
 #### Build and run tests
 To build locally and run the integration tests you can simply run
 ``` bash
