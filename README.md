@@ -46,7 +46,7 @@ Download and install typst: https://typst.app/open-source/#download
 
 To render the template locally with repository test data, run:
 ```bash
-typst compile --pdf-standard=a-2a --font-path=typst-pdf/fonts --input=data="$(cat typst-pdf/test-data/pale-2.json)" typst-pdf/pale-2.typ pale-2-local.pdf
+typst watch --pdf-standard=a-2a --font-path=typst-pdf/fonts --input=data="$(cat typst-pdf/test-data/pale-2.json)" typst-pdf/pale-2.typ pale-2-local.pdf
 ```
 
 #### Build and run tests
