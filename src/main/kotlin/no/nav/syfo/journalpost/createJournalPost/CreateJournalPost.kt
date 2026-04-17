@@ -7,8 +7,6 @@ import no.nav.syfo.bucket.getVedlegg.getLegeerklaeringVedlegg
 import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.dokArkivClient.createJournalpostPayload
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
-import no.nav.syfo.client.pdfgen.PdfgenClient
-import no.nav.syfo.client.pdfgen.createPdfPayload
 import no.nav.syfo.client.pdfgenrs.TypstClient
 import no.nav.syfo.client.pdfgenrs.createTypstPayload
 import no.nav.syfo.logger
@@ -22,7 +20,6 @@ import no.nav.syfo.secureLogger
 @WithSpan
 suspend fun onJournalRequest(
     dokArkivClient: DokArkivClient,
-    pdfgenClient: PdfgenClient,
     typstClient: TypstClient,
     legeerklaeringVedleggBucketName: String,
     storage: Storage,
@@ -62,32 +59,16 @@ suspend fun onJournalRequest(
                 }
             }
 
-        val pdfPayload =
-            createPdfPayload(
+        val typstPayload =
+            createTypstPayload(
                 receivedLegeerklaering.legeerklaering,
                 validationResult,
                 receivedLegeerklaering.mottattDato,
             )
         val startTime = System.currentTimeMillis()
-        val pdf = pdfgenClient.createPdf(pdfPayload)
+        val pdf = typstClient.createPdf(typstPayload)
         logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         logger.info("PDF generert {}", StructuredArguments.fields(loggingMeta))
-
-        try {
-            val typstPayload =
-                createTypstPayload(
-                    receivedLegeerklaering.legeerklaering,
-                    validationResult,
-                    receivedLegeerklaering.mottattDato,
-                )
-            val startTimeTypst = System.currentTimeMillis()
-            val typstPdf = typstClient.createPdf(typstPayload)
-            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTimeTypst}ms")
-            logger.info("Typst pdf generert {}", StructuredArguments.fields(loggingMeta))
-        } catch (exception: Exception) {
-            logger.info("Typst fail {}", StructuredArguments.fields(loggingMeta))
-            logger.info(exception.message, exception)
-        }
 
         val behandler =
             try {

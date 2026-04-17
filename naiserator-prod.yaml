@@ -56,9 +56,6 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
-        - application: pale-2-pdfgen
-          namespace: teamsykmelding
-          cluster: prod-gcp
         - application: syfohelsenettproxy
       external:
         - host: dokarkiv.prod-fss-pub.nais.io
