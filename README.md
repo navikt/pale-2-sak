@@ -27,7 +27,6 @@ This the high level flow of the application
       A[\teamsykmelding.legeerklaering/] --> pale-2-sak
       pale-2-sak <--> |Get ReceivedLegeerklaering object| B[GCP Cloud Storage bucket]
       pale-2-sak <--> |Get Legeerklaering vedleggs| B[GCP Cloud Storage bucket]
-      pale-2-sak <--> pale-2-pdfgen
       pale-2-sak <--> syfohelsenettproxy
       pale-2-sak <--> dokakriv
       dokakriv --> Gosys;
