@@ -2,15 +2,83 @@ name: Deploy app to dev and prod
 on: push
 
 permissions:
-  actions: read
-  contents: write
-  security-events: write
-  packages: write
+  contents: read
   id-token: write
 
+env:
+  TYPST_VERSION: 0.14.2
+
 jobs:
-  jar-app:
-    uses: navikt/teamsykmelding-github-actions-workflows/.github/workflows/typst-jar-app-21.yaml@main
-    secrets: inherit
-    with:
-      app: pale-2-sak
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup typst
+        uses: navikt/tsm-workflows/actions/typst@main
+        with:
+          typst-version: ${{ env.TYPST_VERSION }}
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Test
+        run: ./gradlew test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup typst
+        uses: navikt/tsm-workflows/actions/typst@main
+        with:
+          typst-version: ${{ env.TYPST_VERSION }}
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build jar
+        run: ./gradlew shadowJar
+
+      - name: Push docker image to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: "teamsykmelding"
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v6
+      - name: Deploy to Nais
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: "dev-gcp"
+          RESOURCE: naiserator-dev.yaml
+          WORKLOAD_IMAGE: ${{ needs.build.outputs.image }}
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.ref_name == 'main' }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Deploy to Nais
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: "prod-gcp"
+          RESOURCE: naiserator-prod.yaml
+          WORKLOAD_IMAGE: ${{ needs.build.outputs.image }}
