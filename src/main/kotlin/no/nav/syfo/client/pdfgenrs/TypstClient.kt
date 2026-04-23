@@ -57,7 +57,7 @@ fun createTypstPayload(
 fun mapToLegeerklaringWithoutIllegalCharacters(legeerklaring: Legeerklaering): Legeerklaering {
     val legeerklaringAsString = objectMapper.writeValueAsString(legeerklaring)
     val legeerklaringAsStringWithoutIllegalCharacters =
-        legeerklaringAsString.replace(regex = Regex("[^\\x00-\\x7F]"), "")
+        legeerklaringAsString.replace(regex = Regex("[^\\x00-\\x7FæøåÆØÅ]"), "")
     return objectMapper.readValue(
         legeerklaringAsStringWithoutIllegalCharacters,
         Legeerklaering::class.java,

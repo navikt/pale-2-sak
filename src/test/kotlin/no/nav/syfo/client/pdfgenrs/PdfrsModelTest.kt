@@ -316,7 +316,7 @@ internal class PdfrsModelTest {
 
     @Test
     internal fun `map to Legeerklaring without illegal characters no change`() {
-        val arsakssammenhengWithlegalCharacters = "Svar uten skumle tegn"
+        val arsakssammenhengWithlegalCharacters = "Svar uten skumle tegn æøå ÆØÅ"
 
         val legeerklaering =
             Legeerklaering(
