@@ -49,17 +49,7 @@ fun createTypstPayload(
     mottattDato: LocalDateTime,
 ): PdfrsModel =
     PdfrsModel(
-        legeerklaering = mapToLegeerklaringWithoutIllegalCharacters(legeerklaring),
+        legeerklaering = legeerklaring,
         validationResult = validationResult,
         mottattDato = mottattDato,
     )
-
-fun mapToLegeerklaringWithoutIllegalCharacters(legeerklaring: Legeerklaering): Legeerklaering {
-    val legeerklaringAsString = objectMapper.writeValueAsString(legeerklaring)
-    val legeerklaringAsStringWithoutIllegalCharacters =
-        legeerklaringAsString.replace(regex = Regex("[^\\x00-\\x7F]"), "")
-    return objectMapper.readValue(
-        legeerklaringAsStringWithoutIllegalCharacters,
-        Legeerklaering::class.java,
-    )
-}

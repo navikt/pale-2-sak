@@ -1,6 +1,5 @@
 package no.nav.syfo.client.pdfgenrs
 
-import java.nio.file.Files
 import java.time.LocalDateTime
 import no.nav.syfo.model.Arbeidsgiver
 import no.nav.syfo.model.Diagnose
@@ -16,63 +15,22 @@ import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.utility.DockerImageName
 
 internal class TypstClientTest {
 
-    companion object {
-        private const val MAX_DIRECTORY_TRAVERSAL_DEPTH = 6
+    private val typstPdfDir = "typst-pdf"
+    private val templatePath = "$typstPdfDir/pale-2.typ"
+    private val fontPath = "$typstPdfDir/fonts"
+    private val typstBinaryPath: String
 
-        private val typstContainer =
-            GenericContainer(DockerImageName.parse("ghcr.io/typst/typst:latest"))
-                .withCommand("--version")
-
-        private lateinit var typstBinaryPath: String
-        private lateinit var templatePath: String
-        private lateinit var fontPath: String
-        private lateinit var tempDir: java.io.File
-
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            typstContainer.start()
-
-            tempDir = Files.createTempDirectory("typst-test").toFile()
-
-            val binaryFile = tempDir.resolve("typst")
-            typstContainer.copyFileFromContainer("/bin/typst", binaryFile.absolutePath)
-            binaryFile.setExecutable(true)
-            typstBinaryPath = binaryFile.absolutePath
-
-            val typstPdfDir = findTypstPdfDir()
-            fontPath = "$typstPdfDir/fonts"
-            templatePath = "$typstPdfDir/pale-2.typ"
-        }
-
-        private fun findTypstPdfDir(): String {
-            var dir: java.io.File? = java.io.File("").absoluteFile
-            var depth = 0
-            while (dir != null && depth < MAX_DIRECTORY_TRAVERSAL_DEPTH) {
-                val candidate = dir.resolve("typst-pdf")
-                if (candidate.isDirectory && candidate.resolve("pale-2.typ").exists()) {
-                    return candidate.absolutePath
-                }
-                dir = dir.parentFile
-                depth++
-            }
-            error("Could not find typst-pdf directory containing pale-2.typ")
-        }
-
-        @AfterAll
-        @JvmStatic
-        fun teardown() {
-            typstContainer.stop()
-            tempDir.deleteRecursively()
+    init {
+        val typst = java.io.File("$typstPdfDir/typst")
+        if (typst.isFile && typst.canExecute()) {
+            typstBinaryPath = typst.absolutePath
+        } else {
+            typstBinaryPath = "typst"
         }
     }
 
@@ -88,7 +46,6 @@ internal class TypstClientTest {
         val payload = buildPdfrsModel()
 
         val pdfBytes = typstClient.createPdf(payload)
-
         assertTrue(pdfBytes.isNotEmpty(), "PDF output should not be empty")
         assertTrue(
             pdfBytes.size >= 5 && String(pdfBytes, 0, 5).startsWith("%PDF"),
@@ -170,7 +127,7 @@ internal class TypstClientTest {
                             friskmeldingTilArbeidsformidling = false,
                             andreTiltak = "Trenger taco i lunsjen",
                             naermereOpplysninger = "Tacoen maa bestaa av ordentlige raavarer",
-                            tekst = "Pasienten har store problemer med fordoyelse",
+                            tekst = "Pasienten har store problemer med fordøyelse",
                         ),
                     funksjonsOgArbeidsevne =
                         FunksjonsOgArbeidsevne(

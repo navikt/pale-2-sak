@@ -1,0 +1,3 @@
+[tools]
+typst = "0.14.2"
+java = "openjdk-21"
