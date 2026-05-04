@@ -1,5 +1,6 @@
 package no.nav.syfo.client.pdfgenrs
 
+import java.nio.file.Files
 import java.time.LocalDateTime
 import no.nav.syfo.logger
 import no.nav.syfo.model.Legeerklaering
@@ -13,33 +14,40 @@ class TypstClient(
 ) {
     fun createPdf(payload: PdfrsModel): ByteArray {
         val jsonData = objectMapper.writeValueAsString(payload)
+        val dataFile = Files.createTempFile(payload.legeerklaering.id, ".json")
+        try {
+            Files.writeString(dataFile, jsonData)
 
-        val process =
-            ProcessBuilder(
-                    typstBinaryPath,
-                    "compile",
-                    "--pdf-standard=a-2a",
-                    "--font-path=$fontPath",
-                    "--input=data=$jsonData",
-                    templatePath,
-                    "-",
-                )
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
+            val process =
+                ProcessBuilder(
+                        typstBinaryPath,
+                        "compile",
+                        "--pdf-standard=a-2a",
+                        "--root=/",
+                        "--font-path=$fontPath",
+                        "--input=data-path=${dataFile}",
+                        templatePath,
+                        "-",
+                    )
+                    .redirectError(ProcessBuilder.Redirect.PIPE)
+                    .start()
 
-        var stderr = ""
-        val stderrThread = Thread { stderr = process.errorStream.bufferedReader().readText() }
-        stderrThread.start()
-        val pdfBytes = process.inputStream.readBytes()
-        stderrThread.join()
-        val exitCode = process.waitFor()
+            var stderr = ""
+            val stderrThread = Thread { stderr = process.errorStream.bufferedReader().readText() }
+            stderrThread.start()
+            val pdfBytes = process.inputStream.readBytes()
+            stderrThread.join()
+            val exitCode = process.waitFor()
 
-        if (exitCode != 0) {
-            logger.error("Typst compilation failed with exit code $exitCode: $stderr")
-            throw RuntimeException("Typst compilation failed: $stderr")
+            if (exitCode != 0) {
+                logger.error("Typst compilation failed with exit code $exitCode: $stderr")
+                throw RuntimeException("Typst compilation failed: $stderr")
+            }
+
+            return pdfBytes
+        } finally {
+            Files.deleteIfExists(dataFile)
         }
-
-        return pdfBytes
     }
 }
 
