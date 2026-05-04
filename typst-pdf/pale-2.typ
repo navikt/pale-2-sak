@@ -1,4 +1,4 @@
-#let data = json(bytes(sys.inputs.at("data")))
+#let data = json(sys.inputs.at("data-path"))
 #let legeerklaering = data.legeerklaering
 #let validationResult = data.validationResult
 #let mottattDato = data.at("mottattDato", default: "")
