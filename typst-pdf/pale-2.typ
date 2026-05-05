@@ -146,7 +146,7 @@
   [*3.3*], table.cell(colspan: 3)[*Utredningsplan. Oppgi planlagte undersøkelser og tidspunkt/varighet* \ #breaklines(plan.utredningsplan)],
   [*3.4*], table.cell(colspan: 3)[*Behandlingsplan. Oppgi planlagt behandling og tidspunkt/varighet* \ #breaklines(plan.behandlingsplan)],
   [*3.5*], table.cell(colspan: 3)[*Ny vurdering av tidligere utrednings-/behandlingsplan* \ #breaklines(plan.vurderingAvTidligerePlan)],
-  [*3.6*], table.cell(colspan: 3)[*Når er det hensiktsmessig, i henhold til utrednings og behandlingsopplegget at NAV-kontoret ber om nye legeopplysninger?* \ #breaklines(plan.narSporreOmNyeLegeopplysninger)],
+  [*3.6*], table.cell(colspan: 3)[*Når er det hensiktsmessig, i henhold til utrednings og behandlingsopplegget at Nav-kontoret ber om nye legeopplysninger?* \ #breaklines(plan.narSporreOmNyeLegeopplysninger)],
   [*3.7*], table.cell(colspan: 3)[*Hvis videre behandling ikke er aktuelt, gi begrunnelse* \ #breaklines(plan.videreBehandlingIkkeAktueltGrunn)],
 )
 
@@ -158,7 +158,7 @@
   if tiltak.at("reisetilskudd", default: false) == true { items.push([b. Reisetilskott i stedet for sykepenger/ arbeidsavklaringspenger]) }
   if tiltak.at("aktivSykmelding", default: false) == true { items.push([c. Aktiv syk-melding]) }
   if tiltak.at("hjelpemidlerArbeidsplassen", default: false) == true { items.push([d. Hjelpemidler på arbeidsplassen]) }
-  if tiltak.at("arbeidsavklaringspenger", default: false) == true { items.push([e. Arbeidsavklarings-penger]) }
+  if tiltak.at("arbeidsavklaringspenger", default: false) == true { items.push([e. Arbeidsavklaringspenger]) }
   if tiltak.at("friskmeldingTilArbeidsformidling", default: false) == true { items.push([f. Friskemelding til arbeidsformidling]) }
   let andreTiltak = tiltak.at("andreTiltak", default: none)
   if andreTiltak != none and str(andreTiltak) != "" { items.push([g. Andre (hvilke?) #andreTiltak]) }
@@ -261,7 +261,7 @@
   columns: (50%, 50%),
   fill: tf,
   [*9*], [*Samarbeid/kontakt*],
-  [*9.1 Kryss av for den du ønsker NAV-kontoret skal ta kontakt med*],
+  [*9.1 Kryss av for den du ønsker Nav-kontoret skal ta kontakt med*],
   [#if kontakt_items.len() > 0 { list(..kontakt_items) }],
 )
 
@@ -301,5 +301,5 @@
 #table(
   columns: (50%, 50%),
   [Teknisk sporingsinformasjon for denne legeerklæringen: #legeerklaering.id],
-  [Mottatt dato NAV: #iso_to_nor_date(mottattDato)],
+  [Mottatt dato Nav: #iso_to_nor_date(mottattDato)],
 )
