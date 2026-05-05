@@ -1,5 +1,6 @@
 package no.nav.syfo.client.pdfgenrs
 
+import java.io.File
 import java.time.LocalDateTime
 import no.nav.syfo.model.Arbeidsgiver
 import no.nav.syfo.model.Diagnose
@@ -24,24 +25,25 @@ internal class TypstClientTest {
     private val templatePath = "$typstPdfDir/pale-2.typ"
     private val fontPath = "$typstPdfDir/fonts"
     private val typstBinaryPath: String
+    private val typstClient: TypstClient
 
     init {
-        val typst = java.io.File("$typstPdfDir/typst")
+        val typst = File("$typstPdfDir/typst")
         if (typst.isFile && typst.canExecute()) {
             typstBinaryPath = typst.absolutePath
         } else {
             typstBinaryPath = "typst"
         }
-    }
-
-    @Test
-    fun `createPdf generates valid PDF bytes`() {
-        val typstClient =
+        typstClient =
             TypstClient(
                 typstBinaryPath = typstBinaryPath,
                 templatePath = templatePath,
                 fontPath = fontPath,
             )
+    }
+
+    @Test
+    fun `createPdf generates valid PDF bytes`() {
 
         val payload = buildPdfrsModel()
 
@@ -51,6 +53,20 @@ internal class TypstClientTest {
             pdfBytes.size >= 5 && String(pdfBytes, 0, 5).startsWith("%PDF"),
             "Output should start with %PDF header",
         )
+    }
+
+    @Test
+    fun `with private use area`() {
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7"
+                    )
+            )
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
     }
 
     private fun buildPdfrsModel(): PdfrsModel =
