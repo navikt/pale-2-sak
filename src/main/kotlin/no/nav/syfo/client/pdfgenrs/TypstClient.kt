@@ -13,7 +13,10 @@ class TypstClient(
     private val fontPath: String = "/app/typst-pdf/fonts",
 ) {
     fun createPdf(payload: PdfrsModel): ByteArray {
-        val jsonData = objectMapper.writeValueAsString(payload)
+        val jsonData =
+            objectMapper.writeValueAsString(payload).filterNot {
+                it.category == CharCategory.PRIVATE_USE
+            }
         val dataFile = Files.createTempFile(payload.legeerklaering.id, ".json")
         try {
             Files.writeString(dataFile, jsonData)
