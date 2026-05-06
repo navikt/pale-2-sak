@@ -62,9 +62,25 @@ internal class TypstClientTest {
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7"
-                    )
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7",
+                    ),
             )
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
+    @Test
+    fun `with emojis`() {
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger =
+                            "\u2011" + "\u2642" + "\u2640" + "\uD83E\uDE7A" + "\uD83D\uDD39",
+                    ),
+            )
+
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
     }
