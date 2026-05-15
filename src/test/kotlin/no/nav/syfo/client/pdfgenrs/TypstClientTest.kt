@@ -12,10 +12,12 @@ import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.Pasient
 import no.nav.syfo.model.Plan
 import no.nav.syfo.model.Prognose
+import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
+import no.nav.syfo.objectMapper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -70,7 +72,7 @@ internal class TypstClientTest {
     }
 
     @Test
-    fun `unexpexed chars`() {
+    fun `unexpected chars`() {
         val pdfrsModel = buildPdfrsModel()
         val pdfModelWithPrivateUseArea =
             pdfrsModel.copy(
@@ -98,6 +100,26 @@ internal class TypstClientTest {
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
     }
+
+    @Test
+    fun `with OTHER_SYMBOLS`() {
+
+
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger =
+                            "�",
+                    ),
+            )
+
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+
+    }
+
 
     private fun buildPdfrsModel(): PdfrsModel =
         PdfrsModel(
