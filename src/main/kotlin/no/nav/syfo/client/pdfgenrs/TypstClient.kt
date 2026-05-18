@@ -6,6 +6,7 @@ import no.nav.syfo.logger
 import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.ValidationResult
 import no.nav.syfo.objectMapper
+import no.nav.syfo.secureLogger
 
 class TypstClient(
     private val typstBinaryPath: String = "/app/typst-pdf/typst",
@@ -13,10 +14,22 @@ class TypstClient(
     private val fontPath: String = "/app/typst-pdf/fonts",
 ) {
     fun createPdf(payload: PdfrsModel): ByteArray {
+        val illegals = mutableListOf<Char>()
         val jsonData =
             objectMapper.writeValueAsString(payload).filterNot {
-                it.category == CharCategory.PRIVATE_USE
+                val illegal =
+                    (it.category == CharCategory.PRIVATE_USE ||
+                        it.category == CharCategory.OTHER_LETTER)
+                if (illegal) {
+                    illegals.add(it)
+                }
+                illegal
             }
+        if (illegals.isNotEmpty()) {
+            secureLogger.warn(
+                "Illegal chars found in legeerklæring id: ${payload.legeerklaering.id}. chars: $illegals"
+            )
+        }
         val dataFile = Files.createTempFile(payload.legeerklaering.id, ".json")
         try {
             Files.writeString(dataFile, jsonData)

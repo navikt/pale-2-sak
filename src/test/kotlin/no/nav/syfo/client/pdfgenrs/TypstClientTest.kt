@@ -12,10 +12,12 @@ import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.Pasient
 import no.nav.syfo.model.Plan
 import no.nav.syfo.model.Prognose
+import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
+import no.nav.syfo.objectMapper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -62,12 +64,76 @@ internal class TypstClientTest {
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7"
-                    )
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7",
+                    ),
             )
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
     }
+
+    @Test
+    fun `unexpected chars`() {
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "이",
+                    ),
+            )
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
+    @Test
+    fun `unexpected ⦁`() {
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "⦁",
+                    ),
+            )
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
+    @Test
+    fun `with emojis`() {
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger =
+                            "\u2011" + "\u2642" + "\u2640" + "\uD83E\uDE7A" + "\uD83D\uDD39",
+                    ),
+            )
+
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
+    @Test
+    fun `with OTHER_SYMBOLS`() {
+
+
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger =
+                            "�",
+                    ),
+            )
+
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+
+    }
+
 
     private fun buildPdfrsModel(): PdfrsModel =
         PdfrsModel(
