@@ -86,6 +86,20 @@ internal class TypstClientTest {
     }
 
     @Test
+    fun `unexpected ⦁`() {
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "⦁",
+                    ),
+            )
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
+    @Test
     fun `with emojis`() {
         val pdfrsModel = buildPdfrsModel()
         val pdfModelWithPrivateUseArea =
