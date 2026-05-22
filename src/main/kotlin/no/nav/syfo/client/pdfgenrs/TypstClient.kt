@@ -1,5 +1,7 @@
 package no.nav.syfo.client.pdfgenrs
 
+import java.awt.Font
+import java.io.File
 import java.nio.file.Files
 import java.time.LocalDateTime
 import no.nav.syfo.logger
@@ -13,24 +15,50 @@ class TypstClient(
     private val templatePath: String = "/app/typst-pdf/pale-2.typ",
     private val fontPath: String = "/app/typst-pdf/fonts",
 ) {
-    fun createPdf(payload: PdfrsModel): ByteArray {
-        val illegals = mutableListOf<Char>()
-        val jsonData =
-            objectMapper.writeValueAsString(payload).filterNot {
-                val illegal =
-                    (it.category == CharCategory.PRIVATE_USE ||
-                        it.category == CharCategory.OTHER_LETTER)
-                if (illegal) {
-                    illegals.add(it)
-                }
-                illegal
+    private val fonts: List<Font> by lazy {
+        File(fontPath)
+            .listFiles { _, name -> name.endsWith(".ttf", ignoreCase = true) }
+            ?.mapNotNull { file ->
+                runCatching { Font.createFont(Font.TRUETYPE_FONT, file) }
+                    .onFailure { logger.warn("Could not load font ${file.name}: ${it.message}") }
+                    .getOrNull()
             }
-        if (illegals.isNotEmpty()) {
+            ?: emptyList()
+    }
+
+    fun createPdf(payload: PdfrsModel): ByteArray {
+        val jsonData = objectMapper.writeValueAsString(payload)
+
+        return try {
+            runTypst(payload.legeerklaering.id, jsonData)
+        } catch (e: TypstCompilationException) {
+            val dropped = mutableListOf<String>()
+            val filtered = filterUndisplayable(jsonData, dropped)
+            logger.warn("Error during typst, retrying by removing invalid codepoints")
             secureLogger.warn(
-                "Illegal chars found in legeerklæring id: ${payload.legeerklaering.id}. chars: $illegals"
+                "Typst failed for legeerklæring id ${payload.legeerklaering.id}; " +
+                    "retrying after dropping undisplayable chars: $dropped. " +
+                    "Original error: ${e.message}"
             )
+            runTypst(payload.legeerklaering.id, filtered)
         }
-        val dataFile = Files.createTempFile(payload.legeerklaering.id, ".json")
+    }
+
+    private fun canDisplay(codePoint: Int): Boolean = fonts.any { it.canDisplay(codePoint) }
+
+    private fun filterUndisplayable(input: String, dropped: MutableList<String>): String =
+        input
+            .codePoints()
+            .filter { cp ->
+                val ok = cp < 0x80 || canDisplay(cp)
+                if (!ok) dropped.add("U+%04X".format(cp))
+                ok
+            }
+            .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
+            .toString()
+
+    private fun runTypst(id: String, jsonData: String): ByteArray {
+        val dataFile = Files.createTempFile(id, ".json")
         try {
             Files.writeString(dataFile, jsonData)
 
@@ -56,8 +84,9 @@ class TypstClient(
             val exitCode = process.waitFor()
 
             if (exitCode != 0) {
-                logger.error("Typst compilation failed with exit code $exitCode: $stderr")
-                throw RuntimeException("Typst compilation failed: $stderr")
+                logger.error("Typst compilation failed with exit code $exitCode")
+                secureLogger.error("Typst compilation failed with exit code $exitCode: $stderr")
+                throw TypstCompilationException("Typst compilation failed: $stderr")
             }
 
             return pdfBytes
@@ -66,6 +95,8 @@ class TypstClient(
         }
     }
 }
+
+class TypstCompilationException(message: String) : RuntimeException(message)
 
 fun createTypstPayload(
     legeerklaring: Legeerklaering,
