@@ -12,12 +12,10 @@ import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.Pasient
 import no.nav.syfo.model.Plan
 import no.nav.syfo.model.Prognose
-import no.nav.syfo.model.ReceivedLegeerklaering
 import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
-import no.nav.syfo.objectMapper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -118,22 +116,34 @@ internal class TypstClientTest {
     @Test
     fun `with OTHER_SYMBOLS`() {
 
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger = "�",
+                    ),
+            )
+
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
+    @Test
+    fun `with OTHER_SYMBOLS a`() {
 
         val pdfrsModel = buildPdfrsModel()
         val pdfModelWithPrivateUseArea =
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger =
-                            "�",
+                        andreOpplysninger = String(Character.toChars(0x1001AF)),
                     ),
             )
 
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
-
     }
-
 
     private fun buildPdfrsModel(): PdfrsModel =
         PdfrsModel(
@@ -208,7 +218,7 @@ internal class TypstClientTest {
                             arbeidsavklaringspenger = true,
                             friskmeldingTilArbeidsformidling = false,
                             andreTiltak = "Trenger taco i lunsjen",
-                            naermereOpplysninger = "Tacoen maa bestaa av ordentlige raavarer",
+                            naermereOpplysninger = "Tacoen må bestaa av ordentlige råvarer",
                             tekst = "Pasienten har store problemer med fordøyelse",
                         ),
                     funksjonsOgArbeidsevne =
