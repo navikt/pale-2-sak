@@ -41,7 +41,7 @@ spec:
       memory: 2Gi
     requests:
       cpu: 170m
-      memory: 950Mi
+      memory: 1250Mi
   filesFrom:
     - secret: pale2-google-creds
   kafka:
