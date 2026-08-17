@@ -145,6 +145,21 @@ internal class TypstClientTest {
         assertTrue(pdf.isNotEmpty())
     }
 
+    @Test
+    fun `with FORMAT symbol U+200B`() {
+
+        val pdfrsModel = buildPdfrsModel()
+        val pdfModelWithPrivateUseArea =
+            pdfrsModel.copy(
+                legeerklaering =
+                    pdfrsModel.legeerklaering.copy(
+                        andreOpplysninger = "\r\u200B\r",
+                    ),
+            )
+        val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
+        assertTrue(pdf.isNotEmpty())
+    }
+
     private fun buildPdfrsModel(): PdfrsModel =
         PdfrsModel(
             legeerklaering =

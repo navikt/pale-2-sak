@@ -46,12 +46,17 @@ class TypstClient(
 
     private fun canDisplay(codePoint: Int): Boolean = fonts.any { it.canDisplay(codePoint) }
 
+    private fun isFormatChar(codePoint: Int): Boolean =
+        codePoint.toChar().category == CharCategory.FORMAT
+
     private fun filterUndisplayable(input: String, dropped: MutableList<String>): String =
         input
             .codePoints()
             .filter { cp ->
-                val ok = cp < 0x80 || canDisplay(cp)
-                if (!ok) dropped.add("U+%04X".format(cp))
+
+                val ok = !isFormatChar(cp) && (cp < 0x80 || canDisplay(cp))
+                if (!ok)
+                    dropped.add("U+%04X".format(cp))
                 ok
             }
             .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
