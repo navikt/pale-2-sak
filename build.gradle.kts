@@ -3,32 +3,32 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion="1.10.2"
-val jacksonVersion="2.20.1"
-val kafkaVersion="3.9.1"
-val ktorVersion="3.3.1"
+val coroutinesVersion="1.11.0"
+val jacksonVersion="2.22.2"
+val kafkaVersion="4.3.1"
+val ktorVersion="3.5.2"
 val logstashLogbackEncoder="9.0"
-val logbackVersion = "1.5.26"
+val logbackVersion = "1.6.3"
 val prometheusVersion="0.16.0"
-val junitVersion="6.0.1"
-val ioMockVersion="1.14.6"
-val kotlinVersion="2.2.21"
-val testcontainersVersion="1.20.4"
-val googleCloudStorageVersion = "2.62.1"
-val pdfboxVersion="2.0.35"
-val commonsCodecVersion="1.19.0"
+val junitVersion="6.1.3"
+val ioMockVersion="1.14.11"
+val kotlinVersion="2.4.10"
+val testcontainersVersion="2.0.5"
+val googleCloudStorageVersion = "2.71.0"
+val pdfboxVersion="2.0.37"
+val commonsCodecVersion="1.22.1"
 val ktfmtVersion="0.44"
 
 
 val javaVersion = JvmTarget.JVM_21
-val otelAnnotationsVersion = "2.21.0"
-val otelVersion = "1.56.0"
+val otelAnnotationsVersion = "2.30.0"
+val otelVersion = "1.65.0"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.2.21"
-    id("com.diffplug.spotless") version "8.0.0"
-    id("com.gradleup.shadow") version "8.3.8"
+    kotlin("jvm") version "2.4.10"
+    id("com.diffplug.spotless") version "8.10.0"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 application {
