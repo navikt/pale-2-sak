@@ -27,6 +27,7 @@
 #let header_fill = rgb("#add8e6")
 #let tf(_, y) = if y == 0 { header_fill } else { none }
 
+#set document(title: "Legeerklæring ved arbeidsuforhet")
 #set page(margin: 1cm)
 #set text(font: ("Source Sans 3", "Noto Color Emoji", "DejaVu Sans"), lang: "nb", size: 10pt)
 #set table(stroke: 1pt + black, inset: 4pt)
