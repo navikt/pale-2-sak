@@ -6,7 +6,7 @@ permissions:
   id-token: write
 
 env:
-  TYPST_VERSION: 0.14.2
+  TYPST_VERSION: 0.15.1
 
 jobs:
   test:
