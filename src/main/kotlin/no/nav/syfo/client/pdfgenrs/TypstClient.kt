@@ -72,6 +72,7 @@ class TypstClient(
                         typstBinaryPath,
                         "compile",
                         "--pdf-standard=a-2a",
+                        "--pdf-standard=ua-1",
                         "--root=/",
                         "--font-path=$fontPath",
                         "--input=data-path=${dataFile}",
