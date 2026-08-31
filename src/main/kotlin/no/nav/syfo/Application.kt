@@ -42,19 +42,12 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import tools.jackson.core.StreamReadConstraints
-import tools.jackson.core.json.JsonFactory
 import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 
-val jsonMapper: JsonMapper =
-    JsonMapper.builder(
-            JsonFactory.builder()
-                .streamReadConstraints(
-                    StreamReadConstraints.builder().maxStringLength(50_000_000).build()
-                )
-                .build()
-        )
-        .build()
+
+val jsonMapper: JsonMapper = jacksonMapperBuilder().build()
+
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.syfo.pale2sak")
 val secureLogger: Logger = LoggerFactory.getLogger("securelog")
