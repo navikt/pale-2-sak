@@ -49,10 +49,12 @@ class TypstClient(
     private fun isFormatChar(codePoint: Int): Boolean =
         codePoint.toChar().category == CharCategory.FORMAT
 
-    private fun filterFormatChars(input: String): String =
+    private fun filterFormatChars(input: String): String = filterChars(input) { !isFormatChar(it) }
+
+    private fun filterChars(input: String, keep: (Int) -> Boolean): String =
         input
             .codePoints()
-            .filter { codePoint -> !isFormatChar(codePoint) }
+            .filter(keep)
             .sequential()
             .collect(::StringBuilder, StringBuilder::appendCodePoint) { first, second ->
                 first.append(second)
@@ -60,15 +62,11 @@ class TypstClient(
             .toString()
 
     private fun filterUndisplayable(input: String, dropped: MutableList<String>): String =
-        input
-            .codePoints()
-            .filter { cp ->
-                val ok = !isFormatChar(cp) && (cp < 0x80 || canDisplay(cp))
-                if (!ok) dropped.add("U+%04X".format(cp))
-                ok
-            }
-            .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
-            .toString()
+        filterChars(input) { cp ->
+            val ok = !isFormatChar(cp) && (cp < 0x80 || canDisplay(cp))
+            if (!ok) dropped.add("U+%04X".format(cp))
+            ok
+        }
 
     private fun runTypst(id: String, jsonData: String): ByteArray {
         val dataFile = Files.createTempFile(id, ".json")
