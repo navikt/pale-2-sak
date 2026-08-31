@@ -53,6 +53,7 @@ class TypstClient(
         input
             .codePoints()
             .filter { codePoint -> !isFormatChar(codePoint) }
+            .sequential()
             .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
             .toString()
 
