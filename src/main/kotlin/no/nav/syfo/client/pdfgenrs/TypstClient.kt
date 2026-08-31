@@ -27,7 +27,7 @@ class TypstClient(
     }
 
     fun createPdf(payload: PdfrsModel): ByteArray {
-        val jsonData = objectMapper.writeValueAsString(payload)
+        val jsonData = filterFormatChars(objectMapper.writeValueAsString(payload))
 
         return try {
             runTypst(payload.legeerklaering.id, jsonData)
@@ -48,6 +48,13 @@ class TypstClient(
 
     private fun isFormatChar(codePoint: Int): Boolean =
         codePoint.toChar().category == CharCategory.FORMAT
+
+    private fun filterFormatChars(input: String): String =
+        input
+            .codePoints()
+            .filter { codePoint -> !isFormatChar(codePoint) }
+            .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
+            .toString()
 
     private fun filterUndisplayable(input: String, dropped: MutableList<String>): String =
         input
