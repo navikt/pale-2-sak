@@ -4,30 +4,29 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val coroutinesVersion="1.10.2"
-val jacksonVersion="2.20.1"
-val kafkaVersion="3.9.1"
-val ktorVersion="3.3.1"
+val jacksonVersion="3.2.2"
+val kafkaVersion="4.3.1"
+val ktorVersion="3.5.2"
 val logstashLogbackEncoder="9.0"
-val logbackVersion = "1.5.26"
+val logbackVersion="1.6.3"
 val prometheusVersion="0.16.0"
-val junitVersion="6.0.1"
+val junitVersion="6.1.3"
 val ioMockVersion="1.14.6"
-val kotlinVersion="2.2.21"
 val testcontainersVersion="1.20.4"
-val googleCloudStorageVersion = "2.62.1"
+val googleCloudStorageVersion="2.62.1"
 val pdfboxVersion="2.0.35"
 val commonsCodecVersion="1.19.0"
-val ktfmtVersion="0.44"
+val ktfmtVersion="0.56"
 
 
-val javaVersion = JvmTarget.JVM_21
+val javaVersion = JvmTarget.JVM_25
 val otelAnnotationsVersion = "2.21.0"
 val otelVersion = "1.56.0"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.2.21"
-    id("com.diffplug.spotless") version "8.0.0"
+    kotlin("jvm") version "2.4.10"
+    id("com.diffplug.spotless") version "8.10.1"
     id("com.gradleup.shadow") version "8.3.8"
 }
 
@@ -48,8 +47,6 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
@@ -57,9 +54,9 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation("io.ktor:ktor-client-apache5:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson3:$ktorVersion")
     implementation("io.opentelemetry:opentelemetry-api:${otelVersion}")
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:${otelAnnotationsVersion}")
     constraints {
@@ -67,7 +64,7 @@ dependencies {
             because("override transient from io.ktor:ktor-client-apache")
         }
     }
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("tools.jackson.module:jackson-module-kotlin:${jacksonVersion}")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
@@ -77,7 +74,6 @@ dependencies {
     implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
-    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")

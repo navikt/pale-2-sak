@@ -80,13 +80,6 @@ data class Behandler(
     val etternavn: String?,
 )
 
-data class Godkjenning(
-    val helsepersonellkategori: Kode? = null,
-    val autorisasjon: Kode? = null,
-)
+data class Godkjenning(val helsepersonellkategori: Kode? = null, val autorisasjon: Kode? = null)
 
-data class Kode(
-    val aktiv: Boolean,
-    val oid: Int,
-    val verdi: String?,
-)
+data class Kode(val aktiv: Boolean, val oid: Int, val verdi: String?)

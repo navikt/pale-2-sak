@@ -22,7 +22,7 @@ data class ReceivedLegeerklaering(
     val fellesformat: String,
     /** TSS-ident, this is only used for infotrygd compat and should be removed in thefuture */
     val tssid: String?,
-    val conversationRef: ConversationRef?
+    val conversationRef: ConversationRef?,
 )
 
 data class ConversationRef(val refToParent: String?, val refToConversation: String?)

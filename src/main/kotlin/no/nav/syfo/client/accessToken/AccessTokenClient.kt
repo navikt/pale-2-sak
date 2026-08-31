@@ -30,7 +30,7 @@ class AccessTokenClient(
     suspend fun getAccessToken(resource: String, loggingMeta: LoggingMeta): String {
         logger.info(
             "Forsøker å hente nytt token fra Azure {}",
-            StructuredArguments.fields(loggingMeta)
+            StructuredArguments.fields(loggingMeta),
         )
         val omToMinutter = Instant.now().plusSeconds(120L)
         return mutex.withLock {
@@ -38,7 +38,7 @@ class AccessTokenClient(
                     ?: run {
                         logger.info(
                             "Henter nytt token fra Azure AD {}",
-                            StructuredArguments.fields(loggingMeta)
+                            StructuredArguments.fields(loggingMeta),
                         )
                         val response: AadAccessTokenV2 =
                             httpClient
@@ -52,8 +52,8 @@ class AccessTokenClient(
                                                 append("scope", resource)
                                                 append("grant_type", "client_credentials")
                                                 append("client_secret", clientSecret)
-                                            },
-                                        ),
+                                            }
+                                        )
                                     )
                                 }
                                 .body()
@@ -66,7 +66,7 @@ class AccessTokenClient(
                         tokenMap[resource] = tokenMedExpiry
                         logger.info(
                             "Har hentet nytt token fra Azure AD {}",
-                            StructuredArguments.fields(loggingMeta)
+                            StructuredArguments.fields(loggingMeta),
                         )
                         return@run tokenMedExpiry
                     })
@@ -76,10 +76,7 @@ class AccessTokenClient(
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class AadAccessTokenV2(
-    val access_token: String,
-    val expires_in: Int,
-)
+data class AadAccessTokenV2(val access_token: String, val expires_in: Int)
 
 data class AadAccessTokenMedExpiry(
     val access_token: String,

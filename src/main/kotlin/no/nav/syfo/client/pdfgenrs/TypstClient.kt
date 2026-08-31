@@ -4,10 +4,10 @@ import java.awt.Font
 import java.io.File
 import java.nio.file.Files
 import java.time.LocalDateTime
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.logger
 import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.ValidationResult
-import no.nav.syfo.objectMapper
 import no.nav.syfo.secureLogger
 
 class TypstClient(
@@ -22,12 +22,11 @@ class TypstClient(
                 runCatching { Font.createFont(Font.TRUETYPE_FONT, file) }
                     .onFailure { logger.warn("Could not load font ${file.name}: ${it.message}") }
                     .getOrNull()
-            }
-            ?: emptyList()
+            } ?: emptyList()
     }
 
     fun createPdf(payload: PdfrsModel): ByteArray {
-        val jsonData = objectMapper.writeValueAsString(payload)
+        val jsonData = jsonMapper.writeValueAsString(payload)
 
         return try {
             runTypst(payload.legeerklaering.id, jsonData)
@@ -53,10 +52,8 @@ class TypstClient(
         input
             .codePoints()
             .filter { cp ->
-
                 val ok = !isFormatChar(cp) && (cp < 0x80 || canDisplay(cp))
-                if (!ok)
-                    dropped.add("U+%04X".format(cp))
+                if (!ok) dropped.add("U+%04X".format(cp))
                 ok
             }
             .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)

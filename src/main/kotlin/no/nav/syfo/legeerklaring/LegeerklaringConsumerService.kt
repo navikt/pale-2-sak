@@ -1,6 +1,5 @@
 package no.nav.syfo.legeerklaring
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.cloud.storage.Storage
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.time.Duration
@@ -23,15 +22,16 @@ import no.nav.syfo.client.dokArkivClient.DokArkivClient
 import no.nav.syfo.client.norskHelsenettClient.NorskHelsenettClient
 import no.nav.syfo.client.pdfgenrs.TypstClient
 import no.nav.syfo.journalpost.createJournalPost.onJournalRequest
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.loggingMeta.TrackableException
 import no.nav.syfo.model.kafka.LegeerklaeringKafkaMessage
-import no.nav.syfo.objectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.errors.WakeupException
 import org.slf4j.LoggerFactory
+import tools.jackson.module.kotlin.readValue
 
 class LegeerklaringConsumerService(
     private val kafkaLegeerklaeringAivenConsumer: KafkaConsumer<String, String>,
@@ -73,13 +73,13 @@ class LegeerklaringConsumerService(
                             logger.error(
                                 "Error running kafka consumer, unsubscribing and waiting 60 seconds for retry",
                                 StructuredArguments.fields(trackableExepction.loggingMeta),
-                                trackableExepction
+                                trackableExepction,
                             )
                             delay(delayTime)
                         } catch (ex: Exception) {
                             logger.error(
                                 "Error running kafka consumer, unsubscribing and waiting 60 seconds for retry",
-                                ex
+                                ex,
                             )
                             delay(delayTime)
                         } finally {
@@ -106,10 +106,10 @@ class LegeerklaringConsumerService(
     @WithSpan
     private suspend fun handleConsumerRecord(consumerRecord: ConsumerRecord<String, String>) {
         logger.info(
-            "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}",
+            "Offset for topic: ${environmentVariables.legeerklaringTopic}, offset: ${consumerRecord.offset()}"
         )
         val legeerklaeringKafkaMessage: LegeerklaeringKafkaMessage =
-            objectMapper.readValue(consumerRecord.value())
+            jsonMapper.readValue(consumerRecord.value())
         val receivedLegeerklaering =
             getLegeerklaering(
                 legeerklaeringBucketName,
@@ -151,7 +151,7 @@ class LegeerklaringConsumerService(
                     .onFailure {
                         log.error(
                             "Error closing KafkaConsumer for LegeerklaringConsumerService",
-                            it
+                            it,
                         )
                     }
                 job = null

@@ -1,10 +1,6 @@
 package no.nav.syfo.journalpost.createJournalPost
 
-data class Vedlegg(
-    val content: Content,
-    val type: String,
-    val description: String,
-)
+data class Vedlegg(val content: Content, val type: String, val description: String)
 
 data class VedleggMessage(
     val vedlegg: Vedlegg,

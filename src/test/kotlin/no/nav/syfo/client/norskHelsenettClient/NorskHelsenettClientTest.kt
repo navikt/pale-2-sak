@@ -1,16 +1,11 @@
 package no.nav.syfo.client.norskHelsenettClient
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache5.Apache5
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.jackson.jackson
-import io.ktor.server.application.call
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -35,15 +30,8 @@ class NorskHelsenettClientTest {
     private val fnr = "12345647981"
     private val accessTokenClient = mockk<AccessTokenClient>()
     private val httpClient =
-        HttpClient(Apache) {
-            install(ContentNegotiation) {
-                jackson {
-                    registerKotlinModule()
-                    registerModule(JavaTimeModule())
-                    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                }
-            }
+        HttpClient(Apache5) {
+            install(ContentNegotiation) { jackson {} }
             install(HttpRequestRetry) {
                 maxRetries = 3
                 delayMillis { retry -> retry * 100L }
@@ -66,24 +54,14 @@ class NorskHelsenettClientTest {
 
     private val mockServer =
         embeddedServer(Netty, mockHttpServerPort) {
-                install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
-                    jackson {
-                        registerKotlinModule()
-                        registerModule(JavaTimeModule())
-                        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    }
-                }
+                install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) { jackson {} }
                 routing {
                     get("/syfohelsenettproxy/api/v2/behandler") {
                         when {
                             call.request.headers["behandlerFnr"] == fnr ->
                                 call.respond(defaultBehandler)
                             call.request.headers["behandlerFnr"] == "behandlerFinnesIkke" ->
-                                call.respond(
-                                    HttpStatusCode.NotFound,
-                                    "Behandler finnes ikke",
-                                )
+                                call.respond(HttpStatusCode.NotFound, "Behandler finnes ikke")
                             else ->
                                 call.respond(HttpStatusCode.InternalServerError, "Noe gikk galt")
                         }
@@ -97,7 +75,7 @@ class NorskHelsenettClientTest {
             "$mockHttpServerUrl/syfohelsenettproxy",
             accessTokenClient,
             "resourceId",
-            httpClient
+            httpClient,
         )
 
     @BeforeAll
