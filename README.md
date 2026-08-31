@@ -42,6 +42,9 @@ This the high level flow of the application
 
 ### Local development for pdf
 Download and install typst: https://typst.app/open-source/#download
+> **Note**
+> Due not install Typst from Snap package, its sandbox has a separate /tmp, so Typst cannot see the JVM-created file.
+> That we use in unit testing for this application
 
 To render the template locally with repository test data, run:
 ```bash
