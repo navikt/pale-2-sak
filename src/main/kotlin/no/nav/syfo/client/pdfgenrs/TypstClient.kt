@@ -55,7 +55,6 @@ class TypstClient(
         input
             .codePoints()
             .filter(keep)
-            .sequential()
             .collect(::StringBuilder, StringBuilder::appendCodePoint) { first, second ->
                 first.append(second)
             }
