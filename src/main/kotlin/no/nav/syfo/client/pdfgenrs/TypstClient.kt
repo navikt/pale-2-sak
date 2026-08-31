@@ -54,17 +54,17 @@ class TypstClient(
             .codePoints()
             .filter { codePoint -> !isFormatChar(codePoint) }
             .sequential()
-            .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
+            .collect(::StringBuilder, StringBuilder::appendCodePoint) { first, second ->
+                first.append(second)
+            }
             .toString()
 
     private fun filterUndisplayable(input: String, dropped: MutableList<String>): String =
         input
             .codePoints()
             .filter { cp ->
-
                 val ok = !isFormatChar(cp) && (cp < 0x80 || canDisplay(cp))
-                if (!ok)
-                    dropped.add("U+%04X".format(cp))
+                if (!ok) dropped.add("U+%04X".format(cp))
                 ok
             }
             .collect(::StringBuilder, StringBuilder::appendCodePoint, StringBuilder::append)
