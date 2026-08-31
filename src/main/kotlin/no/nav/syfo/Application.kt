@@ -45,9 +45,7 @@ import org.slf4j.LoggerFactory
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.jacksonMapperBuilder
 
-
 val jsonMapper: JsonMapper = jacksonMapperBuilder().build()
-
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.syfo.pale2sak")
 val secureLogger: Logger = LoggerFactory.getLogger("securelog")
