@@ -1,6 +1,7 @@
 package no.nav.syfo.client.pdfgenrs
 
 import java.time.LocalDateTime
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.model.Arbeidsgiver
 import no.nav.syfo.model.Diagnose
 import no.nav.syfo.model.ForslagTilTiltak
@@ -16,7 +17,6 @@ import no.nav.syfo.model.Signatur
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.Sykdomsopplysninger
 import no.nav.syfo.model.ValidationResult
-import no.nav.syfo.objectMapper
 import org.junit.jupiter.api.Test
 
 internal class PdfrsModelTest {
@@ -52,17 +52,9 @@ internal class PdfrsModelTest {
                 sykdomsopplysninger =
                     Sykdomsopplysninger(
                         hoveddiagnose =
-                            Diagnose(
-                                tekst = "Fysikalsk behandling/rehabilitering",
-                                kode = "-57",
-                            ),
+                            Diagnose(tekst = "Fysikalsk behandling/rehabilitering", kode = "-57"),
                         bidiagnose =
-                            listOf(
-                                Diagnose(
-                                    tekst = "Engstelig for hjertesykdom",
-                                    kode = "K24",
-                                ),
-                            ),
+                            listOf(Diagnose(tekst = "Engstelig for hjertesykdom", kode = "K24")),
                         arbeidsuforFra = LocalDateTime.now().minusDays(3),
                         sykdomshistorie = "Tekst",
                         statusPresens = "Tekst",
@@ -174,7 +166,7 @@ internal class PdfrsModelTest {
                     ),
                 mottattDato = LocalDateTime.now(),
             )
-        println(objectMapper.writeValueAsString(pdfPayload))
+        println(jsonMapper.writeValueAsString(pdfPayload))
     }
 
     @Test
@@ -210,17 +202,9 @@ internal class PdfrsModelTest {
                 sykdomsopplysninger =
                     Sykdomsopplysninger(
                         hoveddiagnose =
-                            Diagnose(
-                                tekst = "Fysikalsk behandling/rehabilitering",
-                                kode = "-57",
-                            ),
+                            Diagnose(tekst = "Fysikalsk behandling/rehabilitering", kode = "-57"),
                         bidiagnose =
-                            listOf(
-                                Diagnose(
-                                    tekst = "Engstelig for hjertesykdom",
-                                    kode = "K24",
-                                ),
-                            ),
+                            listOf(Diagnose(tekst = "Engstelig for hjertesykdom", kode = "K24")),
                         arbeidsuforFra = LocalDateTime.now().minusDays(3),
                         sykdomshistorie = "Tekst",
                         statusPresens = "Tekst",

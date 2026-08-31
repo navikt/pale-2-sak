@@ -9,7 +9,7 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 
 fun Routing.naisPrometheusRoute(
-    collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry,
+    collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 ) {
     get("/internal/prometheus") {
         val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()

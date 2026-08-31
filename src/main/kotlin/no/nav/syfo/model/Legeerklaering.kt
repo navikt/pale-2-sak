@@ -20,7 +20,7 @@ data class Legeerklaering(
     val pasientenBurdeIkkeVite: String?,
     val tilbakeholdInnhold: Boolean,
     val signatur: Signatur,
-    val signaturDato: LocalDateTime
+    val signaturDato: LocalDateTime,
 )
 
 data class Plan(
@@ -30,7 +30,7 @@ data class Plan(
     val behandlingsplan: String?,
     val vurderingAvTidligerePlan: String?,
     val narSporreOmNyeLegeopplysninger: String?,
-    val videreBehandlingIkkeAktueltGrunn: String?
+    val videreBehandlingIkkeAktueltGrunn: String?,
 )
 
 data class Pasient(
@@ -43,14 +43,14 @@ data class Pasient(
     val postnummer: Int?,
     val poststed: String?,
     val yrke: String?,
-    val arbeidsgiver: Arbeidsgiver
+    val arbeidsgiver: Arbeidsgiver,
 )
 
 data class Arbeidsgiver(
     val navn: String?,
     val adresse: String?,
     val postnummer: Int?,
-    val poststed: String?
+    val poststed: String?,
 )
 
 data class Henvisning(val tekst: String, val dato: LocalDateTime, val antattVentetIUker: Int)
@@ -62,7 +62,7 @@ data class Sykdomsopplysninger(
     val sykdomshistorie: String,
     val statusPresens: String,
     val borNavKontoretVurdereOmDetErEnYrkesskade: Boolean,
-    val yrkesSkadeDato: LocalDateTime?
+    val yrkesSkadeDato: LocalDateTime?,
 )
 
 data class Diagnose(val tekst: String?, val kode: String?)
@@ -77,7 +77,7 @@ data class ForslagTilTiltak(
     val friskmeldingTilArbeidsformidling: Boolean,
     val andreTiltak: String?,
     val naermereOpplysninger: String,
-    val tekst: String
+    val tekst: String,
 )
 
 data class FunksjonsOgArbeidsevne(
@@ -94,14 +94,14 @@ data class FunksjonsOgArbeidsevne(
     val kanTaAnnetArbeid: Boolean,
     val kanTaAnnetArbeidNa: Boolean,
     val kanTaAnnetArbeidEtterBehandling: Boolean,
-    val kanIkkeTaAnnetArbeid: String?
+    val kanIkkeTaAnnetArbeid: String?,
 )
 
 data class Prognose(
     val vilForbedreArbeidsevne: Boolean,
     val anslattVarighetSykdom: String?,
     val anslattVarighetFunksjonsnedsetting: String?,
-    val anslattVarighetNedsattArbeidsevne: String?
+    val anslattVarighetNedsattArbeidsevne: String?,
 )
 
 data class Kontakt(
@@ -109,7 +109,7 @@ data class Kontakt(
     val skalKontakteArbeidsgiver: Boolean,
     val skalKontakteBasisgruppe: Boolean,
     val kontakteAnnenInstans: String?,
-    val onskesKopiAvVedtak: Boolean
+    val onskesKopiAvVedtak: Boolean,
 )
 
 data class Signatur(
@@ -119,5 +119,5 @@ data class Signatur(
     val postnummer: String?,
     val poststed: String?,
     val signatur: String?,
-    val tlfNummer: String?
+    val tlfNummer: String?,
 )

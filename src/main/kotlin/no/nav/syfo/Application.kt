@@ -1,17 +1,11 @@
 package no.nav.syfo
 
-import com.fasterxml.jackson.core.StreamReadConstraints
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.engine.apache5.Apache5
+import io.ktor.client.engine.apache5.Apache5EngineConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -19,7 +13,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
-import io.ktor.serialization.jackson.jackson
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStarted
 import io.ktor.server.application.ApplicationStopping
@@ -48,17 +42,10 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 
-val objectMapper: ObjectMapper =
-    ObjectMapper().apply {
-        registerKotlinModule()
-        registerModule(JavaTimeModule())
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        factory.setStreamReadConstraints(
-            StreamReadConstraints.builder().maxStringLength(50_000_000).build(),
-        )
-    }
+val jsonMapper: JsonMapper = jacksonMapperBuilder().build()
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.syfo.pale2sak")
 val secureLogger: Logger = LoggerFactory.getLogger("securelog")
@@ -74,7 +61,7 @@ fun main() {
         .addShutdownHook(
             Thread {
                 embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
-            },
+            }
         )
     embeddedServer.start(true)
 }
@@ -88,15 +75,8 @@ fun Application.module() {
 
     DefaultExports.initialize()
 
-    val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        install(ContentNegotiation) {
-            jackson {
-                registerKotlinModule()
-                registerModule(JavaTimeModule())
-                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            }
-        }
+    val config: HttpClientConfig<Apache5EngineConfig>.() -> Unit = {
+        install(ContentNegotiation) { jackson {} }
         expectSuccess = false
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
@@ -128,7 +108,7 @@ fun Application.module() {
         }
     }
 
-    val httpClient = HttpClient(Apache, config)
+    val httpClient = HttpClient(Apache5, config)
 
     val accessTokenClient =
         AccessTokenClient(
@@ -198,9 +178,6 @@ fun Application.configureRouting(applicationState: ApplicationState) {
     }
 }
 
-data class ApplicationState(
-    var alive: Boolean = true,
-    var ready: Boolean = true,
-)
+data class ApplicationState(var alive: Boolean = true, var ready: Boolean = true)
 
 class ServiceUnavailableException(message: String?) : Exception(message)

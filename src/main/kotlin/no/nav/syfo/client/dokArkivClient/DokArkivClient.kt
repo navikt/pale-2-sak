@@ -24,12 +24,12 @@ import no.nav.syfo.journalpost.createJournalPost.GosysVedlegg
 import no.nav.syfo.journalpost.createJournalPost.JournalpostRequest
 import no.nav.syfo.journalpost.createJournalPost.JournalpostResponse
 import no.nav.syfo.journalpost.createJournalPost.Vedlegg
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
 import no.nav.syfo.model.Legeerklaering
 import no.nav.syfo.model.Status
 import no.nav.syfo.model.ValidationResult
-import no.nav.syfo.objectMapper
 
 class DokArkivClient(
     private val url: String,
@@ -52,7 +52,7 @@ class DokArkivClient(
                     contentType(ContentType.Application.Json)
                     header(
                         "Authorization",
-                        "Bearer ${accessTokenClient.getAccessToken(scope, loggingMeta)}"
+                        "Bearer ${accessTokenClient.getAccessToken(scope, loggingMeta)}",
                     )
                     header("Nav-Callid", journalpostRequest.eksternReferanseId)
                     setBody(journalpostRequest)
@@ -67,7 +67,7 @@ class DokArkivClient(
                 logger.error(
                     "Mottok uventet statuskode fra dokarkiv: {}, {}",
                     httpResponse.status,
-                    fields(loggingMeta)
+                    fields(loggingMeta),
                 )
                 throw RuntimeException(
                     "Mottok uventet statuskode fra dokarkiv: ${httpResponse.status}"
@@ -101,11 +101,7 @@ fun createJournalpostPayload(
                     else -> createAvsenderMottakerNotValidFnr(legeerklaering)
                 }
             },
-        bruker =
-            Bruker(
-                id = legeerklaering.pasient.fnr,
-                idType = "FNR",
-            ),
+        bruker = Bruker(id = legeerklaering.pasient.fnr, idType = "FNR"),
         dokumenter =
             leggtilDokument(
                 msgId = msgId,
@@ -147,12 +143,12 @@ fun leggtilDokument(
                         filnavn = "Legeerklæring Original",
                         filtype = "JSON",
                         variantformat = "ORIGINAL",
-                        fysiskDokument = objectMapper.writeValueAsBytes(legeerklaering),
+                        fysiskDokument = jsonMapper.writeValueAsBytes(legeerklaering),
                     ),
                 ),
             tittel = createTittleJournalpost(validationResult, signaturDato),
             brevkode = "NAV 08-07.08",
-        ),
+        )
     )
     if (!vedleggListe.isNullOrEmpty()) {
         val listVedleggDokumenter = ArrayList<Dokument>()
@@ -170,10 +166,10 @@ fun leggtilDokument(
                                     filnavn = "Vedlegg_nr_${index}_Legeerklaering_$msgId",
                                     variantformat = "ARKIV",
                                     fysiskDokument = vedlegg.content,
-                                ),
+                                )
                             ),
                         tittel = "Vedlegg til legeerklæring ${formaterDato(signaturDato)}",
-                    ),
+                    )
                 )
             }
         listVedleggDokumenter.map { vedlegg -> listDokument.add(vedlegg) }
@@ -224,7 +220,7 @@ fun findFiltype(vedlegg: GosysVedlegg): String =
 
 fun createAvsenderMottakerValidFnr(
     avsenderFnr: String,
-    legeerklaering: Legeerklaering
+    legeerklaering: Legeerklaering,
 ): AvsenderMottaker =
     AvsenderMottaker(
         id = avsenderFnr,
@@ -234,14 +230,11 @@ fun createAvsenderMottakerValidFnr(
     )
 
 fun createAvsenderMottakerNotValidFnr(legeerklaering: Legeerklaering): AvsenderMottaker =
-    AvsenderMottaker(
-        land = "Norge",
-        navn = legeerklaering.signatur.navn ?: "",
-    )
+    AvsenderMottaker(land = "Norge", navn = legeerklaering.signatur.navn ?: "")
 
 fun createAvsenderMottakerValidHpr(
     hprNr: String,
-    legeerklaering: Legeerklaering
+    legeerklaering: Legeerklaering,
 ): AvsenderMottaker =
     AvsenderMottaker(
         id = hprnummerMedRiktigLengde(hprNr),
@@ -252,7 +245,7 @@ fun createAvsenderMottakerValidHpr(
 
 fun createTittleJournalpost(
     validationResult: ValidationResult,
-    signaturDato: LocalDateTime
+    signaturDato: LocalDateTime,
 ): String {
     return if (validationResult.status == Status.INVALID) {
         "Avvist Legeerklæring ${formaterDato(signaturDato)}"

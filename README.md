@@ -13,7 +13,7 @@ persist it
 * Typst
 
 ### Prerequisites
-Make sure you have the Java JDK 21 installed
+Make sure you have the Java JDK 25 installed
 You can check which version you have installed using this command:
 ``` bash
 java -version
@@ -45,7 +45,7 @@ Download and install typst: https://typst.app/open-source/#download
 
 To render the template locally with repository test data, run:
 ```bash
-typst watch --pdf-standard=a-2a --font-path=typst-pdf/fonts --input=data-path=./test-data/pale-2.json typst-pdf/pale-2.typ pale-2-local.pdf
+typst watch --pdf-standard=a-2a --pdf-standard=ua-1 --font-path=typst-pdf/fonts --input=data-path=./test-data/pale-2.json typst-pdf/pale-2.typ pale-2-local.pdf
 ```
 
 #### Build and run tests

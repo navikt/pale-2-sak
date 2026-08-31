@@ -1,17 +1,11 @@
 package no.nav.syfo.client.dokArkivClient
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.jackson.jackson
-import io.ktor.server.application.call
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -28,27 +22,21 @@ import no.nav.syfo.client.accessToken.AccessTokenClient
 import no.nav.syfo.journalpost.createJournalPost.JournalpostRequest
 import no.nav.syfo.journalpost.createJournalPost.JournalpostResponse
 import no.nav.syfo.journalpost.createJournalPost.VedleggMessage
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.logger
 import no.nav.syfo.loggingMeta.LoggingMeta
-import no.nav.syfo.objectMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 
 internal class DokArkivClientTest {
     private val accessTokenClient = mockk<AccessTokenClient>()
     private val httpClient =
         HttpClient(CIO) {
-            install(ContentNegotiation) {
-                jackson {
-                    registerKotlinModule()
-                    registerModule(JavaTimeModule())
-                    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                }
-            }
+            install(ContentNegotiation) { jackson {} }
             install(HttpRequestRetry) {
                 constantDelay(100, 0, false)
                 retryOnExceptionIf(3) { request, throwable ->
@@ -81,13 +69,7 @@ internal class DokArkivClientTest {
                             call.request.header("Nav-Callid") == "NY" ->
                                 call.respond(
                                     HttpStatusCode.Created,
-                                    JournalpostResponse(
-                                        emptyList(),
-                                        "nyJpId",
-                                        true,
-                                        null,
-                                        null,
-                                    ),
+                                    JournalpostResponse(emptyList(), "nyJpId", true, null, null),
                                 )
                             call.request.header("Nav-Callid") == "DUPLIKAT" ->
                                 call.respond(
@@ -126,10 +108,7 @@ internal class DokArkivClientTest {
         runBlocking {
             jpResponse =
                 dokArkivClient.createJournalpost(
-                    JournalpostRequest(
-                        dokumenter = emptyList(),
-                        eksternReferanseId = "NY",
-                    ),
+                    JournalpostRequest(dokumenter = emptyList(), eksternReferanseId = "NY"),
                     loggingMetadata,
                 )
         }
@@ -143,10 +122,7 @@ internal class DokArkivClientTest {
         runBlocking {
             jpResponse =
                 dokArkivClient.createJournalpost(
-                    JournalpostRequest(
-                        dokumenter = emptyList(),
-                        eksternReferanseId = "DUPLIKAT",
-                    ),
+                    JournalpostRequest(dokumenter = emptyList(), eksternReferanseId = "DUPLIKAT"),
                     loggingMetadata,
                 )
         }
@@ -157,7 +133,7 @@ internal class DokArkivClientTest {
     @Test
     internal fun `Returnerer samme vedlegg hvis vedlegget er PDF`() {
         val vedleggMessage: VedleggMessage =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_pdf.json")!!
             )
         val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
@@ -170,7 +146,7 @@ internal class DokArkivClientTest {
     @Test
     internal fun `Konverterer til PDF hvis vedlegget ikke er PDF`() {
         val vedleggMessage: VedleggMessage =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_bilde.json")!!
             )
         val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)
@@ -185,7 +161,7 @@ internal class DokArkivClientTest {
     @Test
     internal fun `Ignorerer vedlegg av ugyldig type`() {
         val vedleggMessage: VedleggMessage =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 DokArkivClientTest::class.java.getResourceAsStream("/vedlegg_html.json")!!
             )
         val gosysVedlegg = toGosysVedlegg(vedleggMessage.vedlegg)

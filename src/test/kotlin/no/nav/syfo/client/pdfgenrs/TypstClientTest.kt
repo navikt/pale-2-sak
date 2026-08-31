@@ -62,8 +62,8 @@ internal class TypstClientTest {
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7",
-                    ),
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "\uF0B7"
+                    )
             )
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
@@ -76,8 +76,8 @@ internal class TypstClientTest {
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "이",
-                    ),
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "이"
+                    )
             )
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
@@ -90,8 +90,8 @@ internal class TypstClientTest {
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "⦁",
-                    ),
+                        andreOpplysninger = pdfrsModel.legeerklaering.andreOpplysninger + "⦁"
+                    )
             )
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
@@ -105,8 +105,8 @@ internal class TypstClientTest {
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
                         andreOpplysninger =
-                            "\u2011" + "\u2642" + "\u2640" + "\uD83E\uDE7A" + "\uD83D\uDD39",
-                    ),
+                            "\u2011" + "\u2642" + "\u2640" + "\uD83E\uDE7A" + "\uD83D\uDD39"
+                    )
             )
 
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
@@ -119,10 +119,7 @@ internal class TypstClientTest {
         val pdfrsModel = buildPdfrsModel()
         val pdfModelWithPrivateUseArea =
             pdfrsModel.copy(
-                legeerklaering =
-                    pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = "�",
-                    ),
+                legeerklaering = pdfrsModel.legeerklaering.copy(andreOpplysninger = "�")
             )
 
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
@@ -137,8 +134,8 @@ internal class TypstClientTest {
             pdfrsModel.copy(
                 legeerklaering =
                     pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = String(Character.toChars(0x1001AF)),
-                    ),
+                        andreOpplysninger = String(Character.toChars(0x1001AF))
+                    )
             )
 
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
@@ -151,10 +148,7 @@ internal class TypstClientTest {
         val pdfrsModel = buildPdfrsModel()
         val pdfModelWithPrivateUseArea =
             pdfrsModel.copy(
-                legeerklaering =
-                    pdfrsModel.legeerklaering.copy(
-                        andreOpplysninger = "\r\u200B\r",
-                    ),
+                legeerklaering = pdfrsModel.legeerklaering.copy(andreOpplysninger = "\r\u200B\r")
             )
         val pdf = typstClient.createPdf(pdfModelWithPrivateUseArea)
         assertTrue(pdf.isNotEmpty())
@@ -197,10 +191,7 @@ internal class TypstClientTest {
                                 ),
                             bidiagnose =
                                 listOf(
-                                    Diagnose(
-                                        tekst = "Engstelig for hjertesykdom",
-                                        kode = "K24",
-                                    ),
+                                    Diagnose(tekst = "Engstelig for hjertesykdom", kode = "K24")
                                 ),
                             arbeidsuforFra = LocalDateTime.now().minusDays(3),
                             sykdomshistorie = "Tekst",
@@ -284,11 +275,7 @@ internal class TypstClientTest {
                         ),
                     signaturDato = LocalDateTime.now(),
                 ),
-            validationResult =
-                ValidationResult(
-                    status = Status.OK,
-                    ruleHits = emptyList(),
-                ),
+            validationResult = ValidationResult(status = Status.OK, ruleHits = emptyList()),
             mottattDato = LocalDateTime.now(),
         )
 }

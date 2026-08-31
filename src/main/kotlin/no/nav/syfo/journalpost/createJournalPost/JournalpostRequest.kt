@@ -25,11 +25,7 @@ data class AvsenderMottaker(
     val navn: String,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class Bruker(
-    val id: String,
-    val idType: String,
-)
+@JsonInclude(JsonInclude.Include.NON_NULL) data class Bruker(val id: String, val idType: String)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Dokument(
@@ -47,7 +43,4 @@ data class Dokumentvarianter(
     val variantformat: String,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class Sak(
-    val sakstype: String? = null,
-)
+@JsonInclude(JsonInclude.Include.NON_NULL) data class Sak(val sakstype: String? = null)
