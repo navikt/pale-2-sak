@@ -60,7 +60,8 @@ class TypstClient(
             .toString()
 
     private fun runTypst(id: String, jsonData: String): ByteArray {
-        val dataFile = Files.createTempFile(id, ".json")
+        val templateDir = File(templatePath).parentFile ?: File(System.getProperty("java.io.tmpdir"))
+        val dataFile = Files.createTempFile(templateDir.toPath(), "typst-data-$id-", ".json")
         try {
             Files.writeString(dataFile, jsonData)
 
@@ -72,7 +73,8 @@ class TypstClient(
                         "--pdf-standard=ua-1",
                         "--root=/",
                         "--font-path=$fontPath",
-                        "--input=data-path=${dataFile}",
+                        "--input",
+                        "data-path=${dataFile.toAbsolutePath()}",
                         templatePath,
                         "-",
                     )
