@@ -14,6 +14,7 @@ class TypstClient(
     private val typstBinaryPath: String = "/app/typst-pdf/typst",
     private val templatePath: String = "/app/typst-pdf/pale-2.typ",
     private val fontPath: String = "/app/typst-pdf/fonts",
+    private val tempDirectory: File = File(System.getProperty("java.io.tmpdir")),
 ) {
     private val fonts: List<Font> by lazy {
         File(fontPath)
@@ -63,7 +64,7 @@ class TypstClient(
             .toString()
 
     private fun runTypst(id: String, jsonData: String): ByteArray {
-        val dataFile = Files.createTempFile(id, ".json")
+        val dataFile = Files.createTempFile(tempDirectory.toPath(), id, ".json")
         try {
             Files.writeString(dataFile, jsonData)
 

@@ -39,6 +39,7 @@ internal class TypstClientTest {
                 typstBinaryPath = typstBinaryPath,
                 templatePath = templatePath,
                 fontPath = fontPath,
+                tempDirectory = File(typstPdfDir),
             )
     }
 
