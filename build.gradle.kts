@@ -14,7 +14,7 @@ val junitVersion="6.1.3"
 val ioMockVersion="1.14.11"
 val testcontainersVersion="2.0.5"
 val googleCloudStorageVersion="2.73.0"
-val pdfboxVersion="2.0.35"
+val pdfboxVersion="2.0.37"
 val ktfmtVersion="0.56"
 val otelAnnotationsVersion = "2.31.1"
 val otelVersion = "1.65.0"
@@ -25,8 +25,8 @@ val javaVersion = JvmTarget.JVM_25
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.4.10"
-    id("com.diffplug.spotless") version "8.10.1"
+    kotlin("jvm") version "2.4.20"
+    id("com.diffplug.spotless") version "8.10.2"
     id("com.gradleup.shadow") version "9.6.1"
 }
 
