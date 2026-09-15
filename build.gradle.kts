@@ -3,6 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.syfo"
 version = "1.0.0"
 
+val javaVersion = JvmTarget.JVM_25
+
+
 val coroutinesVersion="1.11.0"
 val jacksonVersion="3.2.2"
 val kafkaVersion="4.3.1"
@@ -14,19 +17,18 @@ val junitVersion="6.1.3"
 val ioMockVersion="1.14.11"
 val testcontainersVersion="2.0.5"
 val googleCloudStorageVersion="2.73.0"
-val pdfboxVersion="2.0.35"
+val pdfboxVersion="2.0.37"
 val ktfmtVersion="0.56"
 val otelAnnotationsVersion = "2.31.1"
 val otelVersion = "1.65.0"
 
-
-val javaVersion = JvmTarget.JVM_25
-
+// Included due vulnerabilities in this transitive dependency
+val nettyVersion = "4.2.17.Final"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.4.10"
-    id("com.diffplug.spotless") version "8.10.1"
+    kotlin("jvm") version "2.4.20"
+    id("com.diffplug.spotless") version "8.10.2"
     id("com.gradleup.shadow") version "9.6.1"
 }
 
@@ -53,6 +55,11 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    constraints {
+        implementation("io.netty:netty-handler:$nettyVersion") {
+            because("Due to vulnerabilitie CVE-2026-75595")
+        }
+    }
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache5:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")

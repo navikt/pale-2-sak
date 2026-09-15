@@ -53,7 +53,7 @@ class LegeerklaringConsumerService(
         private val log = LoggerFactory.getLogger(LegeerklaringConsumerService::class.java)
     }
 
-    suspend fun start() =
+    suspend fun start(): Unit =
         mutex.withLock {
             if (job != null) {
                 log.warn("LegeerklaringConsumerService is allready running")
