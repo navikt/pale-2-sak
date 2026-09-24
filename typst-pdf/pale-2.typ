@@ -33,7 +33,7 @@
 #set table(stroke: 1pt + black, inset: 4pt)
 
 
-// Header with NAV logo
+// Header with Nav logo
 #grid(
   columns: (80%, 20%),
   table(
@@ -41,7 +41,7 @@
     fill: (_, _) => header_fill,
     [*#if validationResult.status == "INVALID" [AVVIST ]LEGEERKLÆRING*],
   ),
-  align(right + horizon, image("resources/NAVLogoRed.png", width: 100%, alt: "NAV logo")),
+  align(right + horizon, image("resources/NAVLogoRed.png", width: 100%, alt: "Nav logo")),
 )
 
 // Section 0: Erklæringen gjelder
@@ -111,7 +111,7 @@
   [*2.4*], [*Helt arbeidsufør f.o.m.*], [#iso_to_nor_date(syk.arbeidsuforFra)], [],
   [*2.5*], table.cell(colspan: 3)[*Sykehistorie med symptomer og behandling* \ #breaklines(syk.sykdomshistorie)],
   [*2.6*], table.cell(colspan: 3)[*Status presens (angi dato). Resultat av relevante undersøkelser.* \ #breaklines(syk.statusPresens)],
-  [*2.7*], [*Bør NAV-kontoret vurdere om det er en:*], table.cell(colspan: 2)[*2.7.1 Yrkesskade/Yrkessykdom* \ #yesno(syk.borNavKontoretVurdereOmDetErEnYrkesskade)],
+  [*2.7*], [*Bør Nav-kontoret vurdere om det er en:*], table.cell(colspan: 2)[*2.7.1 Yrkesskade/Yrkessykdom* \ #yesno(syk.borNavKontoretVurdereOmDetErEnYrkesskade)],
 )
 
 // Section 3: Plan for medisinsk utreding og behandling
@@ -129,7 +129,7 @@
   if behandling != none {
     cells.push([*3.2*])
     cells.push([*Pasienten henvist til Behandling* \ #behandling.tekst])
-    cells.push([*3.2.1 Dato for henvisn..* \ #iso_to_nor_date(behandling.dato)])
+    cells.push([*3.2.1 Dato for henvisning* \ #iso_to_nor_date(behandling.dato)])
     cells.push([*3.2.2 Antatt ventetid (uker).* \ #behandling.antattVentetIUker])
   }
   cells
