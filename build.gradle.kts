@@ -9,7 +9,7 @@ val javaVersion = JvmTarget.JVM_25
 val coroutinesVersion="1.11.0"
 val jacksonVersion="3.2.2"
 val kafkaVersion="4.3.1"
-val ktorVersion="3.5.2"
+val ktorVersion="3.6.0"
 val logstashLogbackEncoder="9.0"
 val logbackVersion="1.6.3"
 val prometheusVersion="0.16.0"
@@ -20,10 +20,10 @@ val googleCloudStorageVersion="2.73.0"
 val pdfboxVersion="2.0.37"
 val ktfmtVersion="0.56"
 val otelAnnotationsVersion = "2.31.1"
-val otelVersion = "1.65.0"
+val otelVersion = "1.66.0"
 
 // Included due vulnerabilities in this transitive dependency
-val nettyVersion = "4.2.17.Final"
+val nettyVersion = "4.2.18.Final"
 
 plugins {
     id("application")
