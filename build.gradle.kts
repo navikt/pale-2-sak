@@ -7,28 +7,26 @@ val javaVersion = JvmTarget.JVM_25
 
 
 val coroutinesVersion="1.11.0"
-val jacksonVersion="3.2.2"
+val jacksonVersion="3.2.4"
 val kafkaVersion="4.3.1"
 val ktorVersion="3.6.0"
 val logstashLogbackEncoder="9.0"
-val logbackVersion="1.6.3"
+val logbackVersion="1.6.5"
 val prometheusVersion="0.16.0"
 val junitVersion="6.1.3"
 val ioMockVersion="1.14.11"
 val testcontainersVersion="2.0.5"
-val googleCloudStorageVersion="2.73.0"
+val googleCloudStorageVersion="2.75.0"
 val pdfboxVersion="2.0.37"
 val ktfmtVersion="0.56"
-val otelAnnotationsVersion = "2.31.1"
-val otelVersion = "1.66.0"
+val otelAnnotationsVersion="2.31.1"
+val otelVersion="1.66.0"
 
-// Included due vulnerabilities in this transitive dependency
-val nettyVersion = "4.2.18.Final"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.4.20"
-    id("com.diffplug.spotless") version "8.10.2"
+    kotlin("jvm") version "2.4.21"
+    id("com.diffplug.spotless") version "8.10.4"
     id("com.gradleup.shadow") version "9.6.1"
 }
 
@@ -55,11 +53,7 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    constraints {
-        implementation("io.netty:netty-handler:$nettyVersion") {
-            because("Due to vulnerabilitie CVE-2026-75595")
-        }
-    }
+
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache5:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
