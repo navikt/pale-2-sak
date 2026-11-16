@@ -20,7 +20,7 @@ val googleCloudStorageVersion="2.75.0"
 val pdfboxVersion="2.0.37"
 val ktfmtVersion="0.56"
 val otelAnnotationsVersion="2.31.1"
-val otelVersion="1.66.0"
+val otelVersion="1.67.0"
 
 
 plugins {
