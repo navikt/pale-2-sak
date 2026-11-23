@@ -7,26 +7,26 @@ val javaVersion = JvmTarget.JVM_25
 
 
 val coroutinesVersion="1.11.0"
-val jacksonVersion="3.2.4"
-val kafkaVersion="4.3.1"
-val ktorVersion="3.6.0"
+val jacksonVersion="3.3.0"
+val kafkaVersion="4.4.0"
+val ktorVersion="3.6.1"
 val logstashLogbackEncoder="9.0"
-val logbackVersion="1.6.5"
+val logbackVersion="1.6.7"
 val prometheusVersion="0.16.0"
 val junitVersion="6.1.3"
-val ioMockVersion="1.14.11"
+val ioMockVersion="1.14.12"
 val testcontainersVersion="2.0.5"
-val googleCloudStorageVersion="2.75.0"
+val googleCloudStorageVersion="2.78.0"
 val pdfboxVersion="2.0.37"
 val ktfmtVersion="0.56"
-val otelAnnotationsVersion="2.31.1"
-val otelVersion="1.67.0"
+val otelAnnotationsVersion="2.33.1"
+val otelVersion="1.68.0"
 
 
 plugins {
     id("application")
     kotlin("jvm") version "2.4.21"
-    id("com.diffplug.spotless") version "8.10.4"
+    id("com.diffplug.spotless") version "8.11.0"
     id("com.gradleup.shadow") version "9.6.1"
 }
 
